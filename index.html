@@ -1,0 +1,1069 @@
+```html
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f8fc">
+<title>FormWheel Clicker</title>
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  min-height:100%;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:#f7f8fc;
+  color:#17181c;
+}
+
+body{
+  padding-bottom:40px;
+}
+
+header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  height:64px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 24px;
+  background:rgba(255,255,255,.82);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid #e8e9ed;
+}
+
+.logo{
+  text-decoration:none;
+  color:#17181c;
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:-1px;
+}
+
+.logo span{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:27px;
+  height:27px;
+  margin:0 3px;
+  border-radius:50%;
+  background:#17181c;
+  color:white;
+  font-size:15px;
+}
+
+.home{
+  border:0;
+  background:#f0f1f4;
+  color:#17181c;
+  padding:9px 14px;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+main{
+  width:min(1050px,calc(100% - 28px));
+  margin:32px auto;
+}
+
+.hero{
+  text-align:center;
+  margin-bottom:25px;
+}
+
+.hero h1{
+  margin:0;
+  font-size:42px;
+  letter-spacing:-2px;
+}
+
+.hero p{
+  margin:9px 0 0;
+  color:#777b84;
+}
+
+.layout{
+  display:grid;
+  grid-template-columns:1.3fr .7fr;
+  gap:18px;
+}
+
+.card{
+  background:white;
+  border:1px solid #e7e8ec;
+  border-radius:24px;
+  box-shadow:0 10px 35px rgba(20,25,35,.05);
+}
+
+.game{
+  padding:30px;
+  text-align:center;
+}
+
+.score-label{
+  color:#777b84;
+  font-weight:700;
+  font-size:14px;
+}
+
+.score{
+  font-size:58px;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:-3px;
+  margin:10px 0 24px;
+  word-break:break-word;
+}
+
+.click-button{
+  width:min(330px,100%);
+  aspect-ratio:1;
+  border:0;
+  border-radius:50%;
+  background:#17181c;
+  color:white;
+  font-size:32px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 16px 35px rgba(0,0,0,.16);
+  transition:transform .08s,box-shadow .08s;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+
+.click-button:hover{
+  transform:scale(1.025);
+}
+
+.click-button:active{
+  transform:scale(.95);
+  box-shadow:0 7px 16px rgba(0,0,0,.13);
+}
+
+.click-info{
+  margin-top:20px;
+  color:#777b84;
+  font-size:14px;
+}
+
+.upgrades{
+  padding:22px;
+}
+
+.section-title{
+  font-size:20px;
+  font-weight:900;
+  margin:2px 0 16px;
+}
+
+.upgrade{
+  width:100%;
+  text-align:left;
+  border:1px solid #e6e7eb;
+  background:#fafbfc;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:10px;
+  cursor:pointer;
+  transition:.15s;
+}
+
+.upgrade:hover{
+  background:#f2f3f6;
+  transform:translateY(-1px);
+}
+
+.upgrade:disabled{
+  cursor:not-allowed;
+  opacity:.48;
+  transform:none;
+}
+
+.upgrade-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.upgrade-name{
+  font-weight:900;
+}
+
+.upgrade-price{
+  font-weight:900;
+}
+
+.upgrade-desc{
+  color:#777b84;
+  font-size:13px;
+  margin-top:5px;
+}
+
+.stats{
+  margin-top:16px;
+  padding-top:16px;
+  border-top:1px solid #e7e8ec;
+}
+
+.stat{
+  display:flex;
+  justify-content:space-between;
+  padding:7px 0;
+  color:#666a73;
+}
+
+.stat strong{
+  color:#17181c;
+}
+
+.leaderboard{
+  margin-top:18px;
+  padding:24px;
+}
+
+.lb-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:15px;
+}
+
+.lb-title{
+  font-size:21px;
+  font-weight:900;
+}
+
+.name-area{
+  display:flex;
+  gap:8px;
+  margin-bottom:16px;
+}
+
+input{
+  min-width:0;
+  flex:1;
+  border:1px solid #dddfe4;
+  background:#fff;
+  border-radius:12px;
+  padding:11px 13px;
+  outline:none;
+  font:inherit;
+}
+
+input:focus{
+  border-color:#999da7;
+}
+
+button.small{
+  border:0;
+  border-radius:12px;
+  padding:10px 14px;
+  background:#17181c;
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.my-rank{
+  display:none;
+  padding:12px 14px;
+  border-radius:12px;
+  background:#f2f3f6;
+  margin-bottom:12px;
+  font-size:14px;
+  font-weight:800;
+}
+
+.rank-row{
+  display:grid;
+  grid-template-columns:45px 1fr auto;
+  gap:10px;
+  align-items:center;
+  padding:12px 8px;
+  border-bottom:1px solid #eeeef1;
+}
+
+.rank-row:last-child{
+  border-bottom:0;
+}
+
+.rank{
+  font-weight:900;
+  color:#777b84;
+}
+
+.player{
+  font-weight:800;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.points{
+  font-weight:900;
+}
+
+.empty{
+  text-align:center;
+  color:#858992;
+  padding:20px;
+}
+
+.notice{
+  margin-top:12px;
+  color:#8a8d95;
+  font-size:12px;
+  line-height:1.5;
+}
+
+@media(max-width:760px){
+  header{
+    padding:0 15px;
+  }
+
+  main{
+    width:min(100% - 18px,1050px);
+    margin-top:20px;
+  }
+
+  .hero h1{
+    font-size:34px;
+  }
+
+  .layout{
+    grid-template-columns:1fr;
+  }
+
+  .game{
+    padding:22px;
+  }
+
+  .score{
+    font-size:48px;
+  }
+
+  .click-button{
+    width:min(270px,80vw);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <a class="logo" href="https://semicolonxss.github.io/Formwheel/">
+    Form<span>◉</span>Wheel
+  </a>
+
+  <button class="home" onclick="location.href='https://semicolonxss.github.io/Formwheel/'">
+    Home
+  </button>
+</header>
+
+<main>
+
+  <section class="hero">
+    <h1>Clicker</h1>
+    <p>클릭하고, 성장하고, 순위를 올려보세요.</p>
+  </section>
+
+  <div class="layout">
+
+    <section class="card game">
+
+      <div class="score-label">현재 점수</div>
+      <div class="score" id="score">0</div>
+
+      <button class="click-button" id="clickButton">
+        CLICK
+      </button>
+
+      <div class="click-info">
+        한 번 클릭할 때마다 <strong id="clickPowerText">+1</strong>
+      </div>
+
+    </section>
+
+    <aside class="card upgrades">
+
+      <div class="section-title">업그레이드</div>
+
+      <button class="upgrade" id="powerUpgrade">
+        <div class="upgrade-top">
+          <div class="upgrade-name">⚡ 클릭 파워</div>
+          <div class="upgrade-price" id="powerPrice">10</div>
+        </div>
+        <div class="upgrade-desc">
+          한 번 클릭할 때 얻는 점수를 증가시킵니다.
+        </div>
+      </button>
+
+      <button class="upgrade" id="autoUpgrade">
+        <div class="upgrade-top">
+          <div class="upgrade-name">🤖 자동 클릭</div>
+          <div class="upgrade-price" id="autoPrice">50</div>
+        </div>
+        <div class="upgrade-desc">
+          일정 시간마다 자동으로 점수를 얻습니다.
+        </div>
+      </button>
+
+      <div class="stats">
+
+        <div class="stat">
+          <span>클릭 파워</span>
+          <strong id="power">1</strong>
+        </div>
+
+        <div class="stat">
+          <span>자동 클릭</span>
+          <strong id="auto">0 /초</strong>
+        </div>
+
+        <div class="stat">
+          <span>총 클릭</span>
+          <strong id="totalClicks">0</strong>
+        </div>
+
+        <div class="stat">
+          <span>최고 점수</span>
+          <strong id="highScore">0</strong>
+        </div>
+
+      </div>
+
+    </aside>
+
+  </div>
+
+  <section class="card leaderboard">
+
+    <div class="lb-head">
+      <div class="lb-title">🏆 리더보드</div>
+      <button class="small" onclick="submitScore()">점수 등록</button>
+    </div>
+
+    <div class="name-area">
+      <input
+        id="nickname"
+        maxlength="12"
+        placeholder="닉네임 (최대 12자)"
+      >
+    </div>
+
+    <div class="my-rank" id="myRank"></div>
+
+    <div id="leaderboardList">
+      <div class="empty">리더보드를 불러오는 중...</div>
+    </div>
+
+    <div class="notice">
+      ※ 현재 버전은 브라우저에 게임 진행 상황을 자동 저장합니다.
+      온라인 전체 리더보드는 Firebase 설정 후 사용할 수 있습니다.
+    </div>
+
+  </section>
+
+</main>
+
+<script type="module">
+
+/* =========================================================
+   Firebase 설정
+   =========================================================
+   아래 부분에 Firebase 웹 앱 설정을 넣으면
+   온라인 리더보드가 활성화됩니다.
+
+   예:
+   const firebaseConfig = {
+     apiKey: "...",
+     authDomain: "...",
+     databaseURL: "...",
+     projectId: "...",
+     storageBucket: "...",
+     messagingSenderId: "...",
+     appId: "..."
+   };
+*/
+
+const firebaseConfig = {
+  apiKey: "",
+  authDomain: "",
+  databaseURL: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
+
+let firebaseEnabled = false;
+let db = null;
+
+if(firebaseConfig.apiKey && firebaseConfig.databaseURL){
+
+  try{
+
+    const { initializeApp } =
+      await import(
+        "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js"
+      );
+
+    const {
+      getDatabase,
+      ref,
+      set,
+      get,
+      query,
+      orderByChild,
+      limitToLast
+    } =
+      await import(
+        "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js"
+      );
+
+    const app = initializeApp(firebaseConfig);
+
+    db = {
+      database:getDatabase(app),
+      ref,
+      set,
+      get,
+      query,
+      orderByChild,
+      limitToLast
+    };
+
+    firebaseEnabled = true;
+
+  }catch(error){
+
+    console.error("Firebase 초기화 실패:",error);
+
+  }
+
+}
+
+
+/* =========================================================
+   게임 데이터
+   ========================================================= */
+
+const SAVE_KEY = "formwheel_clicker_save_v1";
+
+let game = {
+  score:0,
+  power:1,
+  auto:0,
+  totalClicks:0,
+  highScore:0
+};
+
+function loadGame(){
+
+  try{
+
+    const saved = localStorage.getItem(SAVE_KEY);
+
+    if(saved){
+
+      const data = JSON.parse(saved);
+
+      game = {
+        ...game,
+        ...data
+      };
+
+    }
+
+  }catch(error){
+
+    console.error("저장 데이터 불러오기 실패",error);
+
+  }
+
+  updateUI();
+
+}
+
+function saveGame(){
+
+  localStorage.setItem(
+    SAVE_KEY,
+    JSON.stringify(game)
+  );
+
+}
+
+function formatNumber(number){
+
+  return Math.floor(number).toLocaleString("ko-KR");
+
+}
+
+
+/* =========================================================
+   UI
+   ========================================================= */
+
+const scoreEl = document.getElementById("score");
+const powerEl = document.getElementById("power");
+const autoEl = document.getElementById("auto");
+const totalClicksEl = document.getElementById("totalClicks");
+const highScoreEl = document.getElementById("highScore");
+
+const powerPriceEl = document.getElementById("powerPrice");
+const autoPriceEl = document.getElementById("autoPrice");
+
+const clickPowerText =
+  document.getElementById("clickPowerText");
+
+const powerUpgrade =
+  document.getElementById("powerUpgrade");
+
+const autoUpgrade =
+  document.getElementById("autoUpgrade");
+
+
+function getPowerPrice(){
+
+  return Math.floor(
+    10 * Math.pow(1.65,game.power - 1)
+  );
+
+}
+
+function getAutoPrice(){
+
+  return Math.floor(
+    50 * Math.pow(1.75,game.auto)
+  );
+
+}
+
+
+function updateUI(){
+
+  scoreEl.textContent = formatNumber(game.score);
+
+  powerEl.textContent =
+    formatNumber(game.power);
+
+  autoEl.textContent =
+    formatNumber(game.auto) + " /초";
+
+  totalClicksEl.textContent =
+    formatNumber(game.totalClicks);
+
+  highScoreEl.textContent =
+    formatNumber(game.highScore);
+
+  clickPowerText.textContent =
+    "+" + formatNumber(game.power);
+
+  const powerPrice = getPowerPrice();
+  const autoPrice = getAutoPrice();
+
+  powerPriceEl.textContent =
+    formatNumber(powerPrice);
+
+  autoPriceEl.textContent =
+    formatNumber(autoPrice);
+
+  powerUpgrade.disabled =
+    game.score < powerPrice;
+
+  autoUpgrade.disabled =
+    game.score < autoPrice;
+
+}
+
+
+/* =========================================================
+   클릭
+   ========================================================= */
+
+document
+  .getElementById("clickButton")
+  .addEventListener("click",()=>{
+
+    game.score += game.power;
+    game.totalClicks++;
+
+    if(game.score > game.highScore){
+      game.highScore = game.score;
+    }
+
+    updateUI();
+    saveGame();
+
+  });
+
+
+/* =========================================================
+   클릭 파워 업그레이드
+   ========================================================= */
+
+powerUpgrade.addEventListener("click",()=>{
+
+  const price = getPowerPrice();
+
+  if(game.score < price) return;
+
+  game.score -= price;
+  game.power++;
+
+  updateUI();
+  saveGame();
+
+});
+
+
+/* =========================================================
+   자동 클릭 업그레이드
+   ========================================================= */
+
+autoUpgrade.addEventListener("click",()=>{
+
+  const price = getAutoPrice();
+
+  if(game.score < price) return;
+
+  game.score -= price;
+  game.auto++;
+
+  updateUI();
+  saveGame();
+
+});
+
+
+/* =========================================================
+   자동 클릭
+   ========================================================= */
+
+setInterval(()=>{
+
+  if(game.auto <= 0) return;
+
+  game.score += game.auto;
+
+  if(game.score > game.highScore){
+    game.highScore = game.score;
+  }
+
+  updateUI();
+  saveGame();
+
+},1000);
+
+
+/* =========================================================
+   리더보드
+   ========================================================= */
+
+const leaderboardList =
+  document.getElementById("leaderboardList");
+
+const nicknameInput =
+  document.getElementById("nickname");
+
+const myRankEl =
+  document.getElementById("myRank");
+
+
+let localLeaderboard = [];
+
+function loadLocalLeaderboard(){
+
+  try{
+
+    const saved =
+      localStorage.getItem(
+        "formwheel_clicker_leaderboard_v1"
+      );
+
+    if(saved){
+      localLeaderboard = JSON.parse(saved);
+    }
+
+  }catch(e){
+
+    localLeaderboard = [];
+
+  }
+
+}
+
+
+function saveLocalLeaderboard(){
+
+  localStorage.setItem(
+    "formwheel_clicker_leaderboard_v1",
+    JSON.stringify(localLeaderboard)
+  );
+
+}
+
+
+function renderLeaderboard(list){
+
+  leaderboardList.innerHTML = "";
+
+  if(!list.length){
+
+    leaderboardList.innerHTML =
+      '<div class="empty">아직 등록된 점수가 없습니다.</div>';
+
+    return;
+
+  }
+
+  list
+    .sort((a,b)=>b.score-a.score)
+    .slice(0,20)
+    .forEach((item,index)=>{
+
+      const row =
+        document.createElement("div");
+
+      row.className = "rank-row";
+
+      row.innerHTML = `
+        <div class="rank">${index+1}</div>
+        <div class="player"></div>
+        <div class="points">
+          ${formatNumber(item.score)}
+        </div>
+      `;
+
+      row.querySelector(".player").textContent =
+        item.name;
+
+      leaderboardList.appendChild(row);
+
+    });
+
+}
+
+
+/* =========================================================
+   온라인 리더보드
+   ========================================================= */
+
+async function loadLeaderboard(){
+
+  if(!firebaseEnabled){
+
+    loadLocalLeaderboard();
+
+    renderLeaderboard(localLeaderboard);
+
+    return;
+
+  }
+
+  try{
+
+    const leaderboardRef =
+      db.ref(db.database,"clickerLeaderboard");
+
+    const snapshot =
+      await db.get(leaderboardRef);
+
+    const data =
+      snapshot.exists()
+        ? snapshot.val()
+        : {};
+
+    const list =
+      Object.values(data);
+
+    renderLeaderboard(list);
+
+  }catch(error){
+
+    console.error(error);
+
+    loadLocalLeaderboard();
+
+    renderLeaderboard(localLeaderboard);
+
+  }
+
+}
+
+
+/* =========================================================
+   점수 등록
+   ========================================================= */
+
+window.submitScore = async function(){
+
+  let name =
+    nicknameInput.value.trim();
+
+  if(!name){
+
+    name = prompt("리더보드에 사용할 닉네임을 입력하세요.");
+
+    if(!name) return;
+
+    name = name.trim();
+
+  }
+
+  if(!name) return;
+
+  if(name.length > 12){
+    name = name.slice(0,12);
+  }
+
+  const score = Math.floor(game.highScore);
+
+  if(score <= 0){
+
+    alert("먼저 점수를 만들어주세요!");
+
+    return;
+
+  }
+
+
+  /* 온라인 */
+
+  if(firebaseEnabled){
+
+    try{
+
+      const safeName =
+        name.replace(/[.#$/[\]]/g,"_");
+
+      const playerRef =
+        db.ref(
+          db.database,
+          "clickerLeaderboard/" + safeName
+        );
+
+      const old =
+        await db.get(playerRef);
+
+      if(!old.exists() || score > old.val().score){
+
+        await db.set(
+          playerRef,
+          {
+            name:name,
+            score:score,
+            updatedAt:Date.now()
+          }
+        );
+
+      }
+
+      alert("리더보드에 점수가 등록되었습니다!");
+
+      await loadLeaderboard();
+
+      showMyRank(name,score);
+
+      return;
+
+    }catch(error){
+
+      console.error(error);
+
+      alert(
+        "온라인 등록에 실패했습니다. 로컬 리더보드에 저장합니다."
+      );
+
+    }
+
+  }
+
+
+  /* 로컬 */
+
+  const existing =
+    localLeaderboard.find(
+      x => x.name === name
+    );
+
+  if(existing){
+
+    if(score > existing.score){
+      existing.score = score;
+    }
+
+  }else{
+
+    localLeaderboard.push({
+      name:name,
+      score:score
+    });
+
+  }
+
+  saveLocalLeaderboard();
+  renderLeaderboard(localLeaderboard);
+  showMyRank(name,score);
+
+};
+
+
+function showMyRank(name,score){
+
+  const sorted =
+    [...localLeaderboard]
+      .sort((a,b)=>b.score-a.score);
+
+  const index =
+    sorted.findIndex(
+      x => x.name === name && x.score <= score
+    );
+
+  if(index >= 0){
+
+    myRankEl.style.display = "block";
+
+    myRankEl.textContent =
+      `내 최고 기록: ${formatNumber(score)}점 · ${index+1}위`;
+
+  }
+
+}
+
+
+/* =========================================================
+   시작
+   ========================================================= */
+
+loadGame();
+
+loadLeaderboard();
+
+
+/* =========================================================
+   주기적 저장
+   ========================================================= */
+
+setInterval(()=>{
+
+  saveGame();
+
+},5000);
+
+window.addEventListener("beforeunload",saveGame);
+
+</script>
+
+</body>
+</html>
+```

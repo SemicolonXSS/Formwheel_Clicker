@@ -1,4 +1,3 @@
-```html
 <!doctype html>
 <html lang="ko">
 <head>
@@ -18,20 +17,19 @@ html,body{
   color:#17181c;
 }
 
-body{
-  padding-bottom:40px;
-}
+body{padding-bottom:50px}
+button,input{font:inherit}
 
 header{
   position:sticky;
   top:0;
-  z-index:20;
+  z-index:50;
   height:64px;
   display:flex;
   align-items:center;
   justify-content:space-between;
   padding:0 24px;
-  background:rgba(255,255,255,.82);
+  background:rgba(255,255,255,.86);
   backdrop-filter:blur(16px);
   border-bottom:1px solid #e8e9ed;
 }
@@ -46,10 +44,10 @@ header{
 
 .logo span{
   display:inline-flex;
+  width:28px;
+  height:28px;
   align-items:center;
   justify-content:center;
-  width:27px;
-  height:27px;
   margin:0 3px;
   border-radius:50%;
   background:#17181c;
@@ -59,17 +57,17 @@ header{
 
 .home{
   border:0;
+  border-radius:12px;
+  padding:9px 14px;
   background:#f0f1f4;
   color:#17181c;
-  padding:9px 14px;
-  border-radius:12px;
+  font-weight:800;
   cursor:pointer;
-  font-weight:700;
 }
 
 main{
   width:min(1050px,calc(100% - 28px));
-  margin:32px auto;
+  margin:30px auto;
 }
 
 .hero{
@@ -79,7 +77,7 @@ main{
 
 .hero h1{
   margin:0;
-  font-size:42px;
+  font-size:44px;
   letter-spacing:-2px;
 }
 
@@ -95,11 +93,13 @@ main{
 }
 
 .card{
-  background:white;
-  border:1px solid #e7e8ec;
+  background:#fff;
+  border:1px solid #e6e7eb;
   border-radius:24px;
   box-shadow:0 10px 35px rgba(20,25,35,.05);
 }
+
+/* GAME */
 
 .game{
   padding:30px;
@@ -108,17 +108,17 @@ main{
 
 .score-label{
   color:#777b84;
-  font-weight:700;
   font-size:14px;
+  font-weight:700;
 }
 
 .score{
+  margin:10px 0 25px;
   font-size:58px;
   line-height:1;
   font-weight:950;
   letter-spacing:-3px;
-  margin:10px 0 24px;
-  word-break:break-word;
+  overflow-wrap:anywhere;
 }
 
 .click-button{
@@ -129,12 +129,12 @@ main{
   background:#17181c;
   color:white;
   font-size:32px;
-  font-weight:900;
+  font-weight:950;
   cursor:pointer;
-  box-shadow:0 16px 35px rgba(0,0,0,.16);
-  transition:transform .08s,box-shadow .08s;
   user-select:none;
   -webkit-tap-highlight-color:transparent;
+  box-shadow:0 17px 38px rgba(0,0,0,.17);
+  transition:transform .08s,box-shadow .08s;
 }
 
 .click-button:hover{
@@ -142,8 +142,8 @@ main{
 }
 
 .click-button:active{
-  transform:scale(.95);
-  box-shadow:0 7px 16px rgba(0,0,0,.13);
+  transform:scale(.94);
+  box-shadow:0 8px 18px rgba(0,0,0,.13);
 }
 
 .click-info{
@@ -152,41 +152,44 @@ main{
   font-size:14px;
 }
 
+/* UPGRADES */
+
 .upgrades{
   padding:22px;
 }
 
 .section-title{
+  margin:2px 0 16px;
   font-size:20px;
   font-weight:900;
-  margin:2px 0 16px;
 }
 
 .upgrade{
   width:100%;
-  text-align:left;
-  border:1px solid #e6e7eb;
-  background:#fafbfc;
-  border-radius:16px;
-  padding:16px;
   margin-bottom:10px;
+  padding:16px;
+  text-align:left;
+  border:1px solid #e5e6ea;
+  border-radius:16px;
+  background:#fafbfc;
   cursor:pointer;
   transition:.15s;
 }
 
 .upgrade:hover{
-  background:#f2f3f6;
+  background:#f1f2f5;
   transform:translateY(-1px);
 }
 
 .upgrade:disabled{
+  opacity:.45;
   cursor:not-allowed;
-  opacity:.48;
   transform:none;
 }
 
 .upgrade-top{
   display:flex;
+  align-items:center;
   justify-content:space-between;
   gap:10px;
 }
@@ -200,14 +203,15 @@ main{
 }
 
 .upgrade-desc{
+  margin-top:5px;
   color:#777b84;
   font-size:13px;
-  margin-top:5px;
+  line-height:1.4;
 }
 
 .stats{
   margin-top:16px;
-  padding-top:16px;
+  padding-top:13px;
   border-top:1px solid #e7e8ec;
 }
 
@@ -215,12 +219,14 @@ main{
   display:flex;
   justify-content:space-between;
   padding:7px 0;
-  color:#666a73;
+  color:#6f737c;
 }
 
 .stat strong{
   color:#17181c;
 }
+
+/* LEADERBOARD */
 
 .leaderboard{
   margin-top:18px;
@@ -229,10 +235,10 @@ main{
 
 .lb-head{
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  gap:12px;
-  margin-bottom:15px;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:16px;
 }
 
 .lb-title{
@@ -240,28 +246,7 @@ main{
   font-weight:900;
 }
 
-.name-area{
-  display:flex;
-  gap:8px;
-  margin-bottom:16px;
-}
-
-input{
-  min-width:0;
-  flex:1;
-  border:1px solid #dddfe4;
-  background:#fff;
-  border-radius:12px;
-  padding:11px 13px;
-  outline:none;
-  font:inherit;
-}
-
-input:focus{
-  border-color:#999da7;
-}
-
-button.small{
+.small{
   border:0;
   border-radius:12px;
   padding:10px 14px;
@@ -271,22 +256,49 @@ button.small{
   cursor:pointer;
 }
 
+.name-area{
+  display:flex;
+  gap:8px;
+  margin-bottom:14px;
+}
+
+.nickname{
+  width:100%;
+  min-width:0;
+  padding:11px 13px;
+  border:1px solid #dddfe4;
+  border-radius:12px;
+  outline:none;
+  background:#fff;
+}
+
+.nickname:focus{
+  border-color:#999da7;
+}
+
+.status{
+  min-height:18px;
+  margin:5px 0 12px;
+  color:#777b84;
+  font-size:13px;
+}
+
 .my-rank{
   display:none;
+  margin-bottom:12px;
   padding:12px 14px;
   border-radius:12px;
-  background:#f2f3f6;
-  margin-bottom:12px;
+  background:#f1f2f5;
   font-size:14px;
   font-weight:800;
 }
 
 .rank-row{
   display:grid;
-  grid-template-columns:45px 1fr auto;
+  grid-template-columns:48px 1fr auto;
   gap:10px;
   align-items:center;
-  padding:12px 8px;
+  padding:13px 8px;
   border-bottom:1px solid #eeeef1;
 }
 
@@ -300,10 +312,11 @@ button.small{
 }
 
 .player{
-  font-weight:800;
+  min-width:0;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
+  font-weight:800;
 }
 
 .points{
@@ -311,30 +324,31 @@ button.small{
 }
 
 .empty{
+  padding:25px;
   text-align:center;
   color:#858992;
-  padding:20px;
 }
 
 .notice{
-  margin-top:12px;
-  color:#8a8d95;
+  margin-top:15px;
+  color:#92959d;
   font-size:12px;
   line-height:1.5;
 }
 
 @media(max-width:760px){
+
   header{
     padding:0 15px;
   }
 
   main{
-    width:min(100% - 18px,1050px);
+    width:calc(100% - 18px);
     margin-top:20px;
   }
 
   .hero h1{
-    font-size:34px;
+    font-size:35px;
   }
 
   .layout{
@@ -350,7 +364,7 @@ button.small{
   }
 
   .click-button{
-    width:min(270px,80vw);
+    width:min(275px,80vw);
   }
 }
 </style>
@@ -359,61 +373,127 @@ button.small{
 <body>
 
 <header>
-  <a class="logo" href="https://semicolonxss.github.io/Formwheel/">
+
+  <a
+    class="logo"
+    href="https://semicolonxss.github.io/Formwheel/"
+  >
     Form<span>◉</span>Wheel
   </a>
 
-  <button class="home" onclick="location.href='https://semicolonxss.github.io/Formwheel/'">
+  <button
+    class="home"
+    onclick="location.href='https://semicolonxss.github.io/Formwheel/'"
+  >
     Home
   </button>
+
 </header>
 
 <main>
 
   <section class="hero">
+
     <h1>Clicker</h1>
-    <p>클릭하고, 성장하고, 순위를 올려보세요.</p>
+
+    <p>
+      클릭하고 업그레이드해서 최고 점수에 도전하세요.
+    </p>
+
   </section>
 
   <div class="layout">
 
+    <!-- GAME -->
+
     <section class="card game">
 
-      <div class="score-label">현재 점수</div>
-      <div class="score" id="score">0</div>
+      <div class="score-label">
+        현재 점수
+      </div>
 
-      <button class="click-button" id="clickButton">
+      <div
+        class="score"
+        id="score"
+      >
+        0
+      </div>
+
+      <button
+        class="click-button"
+        id="clickButton"
+      >
         CLICK
       </button>
 
       <div class="click-info">
-        한 번 클릭할 때마다 <strong id="clickPowerText">+1</strong>
+        클릭당
+        <strong id="clickPowerText">+1</strong>
       </div>
 
     </section>
 
+    <!-- UPGRADES -->
+
     <aside class="card upgrades">
 
-      <div class="section-title">업그레이드</div>
+      <div class="section-title">
+        업그레이드
+      </div>
 
-      <button class="upgrade" id="powerUpgrade">
+      <button
+        class="upgrade"
+        id="powerUpgrade"
+      >
+
         <div class="upgrade-top">
-          <div class="upgrade-name">⚡ 클릭 파워</div>
-          <div class="upgrade-price" id="powerPrice">10</div>
+
+          <div class="upgrade-name">
+            ⚡ 클릭 파워
+          </div>
+
+          <div
+            class="upgrade-price"
+            id="powerPrice"
+          >
+            10
+          </div>
+
         </div>
-        <div class="upgrade-desc">
-          한 번 클릭할 때 얻는 점수를 증가시킵니다.
+
+        <div
+          class="upgrade-desc"
+          id="powerDesc"
+        >
+          클릭 한 번으로 얻는 점수를 증가시킵니다.
         </div>
+
       </button>
 
-      <button class="upgrade" id="autoUpgrade">
+      <button
+        class="upgrade"
+        id="autoUpgrade"
+      >
+
         <div class="upgrade-top">
-          <div class="upgrade-name">🤖 자동 클릭</div>
-          <div class="upgrade-price" id="autoPrice">50</div>
+
+          <div class="upgrade-name">
+            🤖 자동 클릭
+          </div>
+
+          <div
+            class="upgrade-price"
+            id="autoPrice"
+          >
+            50
+          </div>
+
         </div>
+
         <div class="upgrade-desc">
-          일정 시간마다 자동으로 점수를 얻습니다.
+          매초 자동으로 점수를 얻습니다.
         </div>
+
       </button>
 
       <div class="stats">
@@ -444,30 +524,58 @@ button.small{
 
   </div>
 
+  <!-- LEADERBOARD -->
+
   <section class="card leaderboard">
 
     <div class="lb-head">
-      <div class="lb-title">🏆 리더보드</div>
-      <button class="small" onclick="submitScore()">점수 등록</button>
+
+      <div class="lb-title">
+        🏆 리더보드
+      </div>
+
+      <button
+        class="small"
+        id="submitButton"
+      >
+        점수 등록
+      </button>
+
     </div>
 
     <div class="name-area">
+
       <input
+        class="nickname"
         id="nickname"
         maxlength="12"
+        autocomplete="off"
         placeholder="닉네임 (최대 12자)"
       >
+
     </div>
 
-    <div class="my-rank" id="myRank"></div>
+    <div
+      class="status"
+      id="status"
+    ></div>
+
+    <div
+      class="my-rank"
+      id="myRank"
+    ></div>
 
     <div id="leaderboardList">
-      <div class="empty">리더보드를 불러오는 중...</div>
+
+      <div class="empty">
+        리더보드를 불러오는 중...
+      </div>
+
     </div>
 
     <div class="notice">
-      ※ 현재 버전은 브라우저에 게임 진행 상황을 자동 저장합니다.
-      온라인 전체 리더보드는 Firebase 설정 후 사용할 수 있습니다.
+      게임 진행 상황은 이 브라우저에 자동 저장됩니다.
+      리더보드 점수는 Firebase Realtime Database에 저장됩니다.
     </div>
 
   </section>
@@ -477,115 +585,223 @@ button.small{
 <script type="module">
 
 /* =========================================================
-   Firebase 설정
-   =========================================================
-   아래 부분에 Firebase 웹 앱 설정을 넣으면
-   온라인 리더보드가 활성화됩니다.
+   FIREBASE
+   ========================================================= */
 
-   예:
-   const firebaseConfig = {
-     apiKey: "...",
-     authDomain: "...",
-     databaseURL: "...",
-     projectId: "...",
-     storageBucket: "...",
-     messagingSenderId: "...",
-     appId: "..."
-   };
-*/
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+import {
+  getDatabase,
+  ref,
+  set,
+  get
+}
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
+
 
 const firebaseConfig = {
-  apiKey: "",
-  authDomain: "",
-  databaseURL: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: ""
+
+  apiKey:
+    "AIzaSyBreTSe1m0-xlbF4aupnU5isRZCihR25IE",
+
+  authDomain:
+    "formwheel.firebaseapp.com",
+
+  databaseURL:
+    "https://formwheel-default-rtdb.firebaseio.com",
+
+  projectId:
+    "formwheel",
+
+  storageBucket:
+    "formwheel.firebasestorage.app",
+
+  messagingSenderId:
+    "431583088241",
+
+  appId:
+    "1:431583088241:web:74e0e34ea1e3e1170c55d0",
+
+  measurementId:
+    "G-T372YXDF8D"
+
 };
 
-let firebaseEnabled = false;
-let db = null;
 
-if(firebaseConfig.apiKey && firebaseConfig.databaseURL){
+const app =
+  initializeApp(firebaseConfig);
 
-  try{
+const db =
+  getDatabase(app);
 
-    const { initializeApp } =
-      await import(
-        "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js"
-      );
 
-    const {
-      getDatabase,
-      ref,
-      set,
-      get,
-      query,
-      orderByChild,
-      limitToLast
-    } =
-      await import(
-        "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js"
-      );
+/* =========================================================
+   GAME DATA
+   ========================================================= */
 
-    const app = initializeApp(firebaseConfig);
+const SAVE_KEY =
+  "formwheel_clicker_save_v2";
 
-    db = {
-      database:getDatabase(app),
-      ref,
-      set,
-      get,
-      query,
-      orderByChild,
-      limitToLast
-    };
 
-    firebaseEnabled = true;
+/*
+  클릭 파워 업그레이드 단계
 
-  }catch(error){
+  1 → 2 → 3 → 5 → 10 → 15 → 30
+  → 50 → 100 → 200 → 500
+  → 1000 → 2500 → 5000
+  → 10000 → 25000 → 50000
+  → 100000 → 250000 → 500000
+  → 1000000
+*/
 
-    console.error("Firebase 초기화 실패:",error);
+const POWER_LEVELS = [
+
+  1,
+  2,
+  3,
+  5,
+  10,
+  15,
+  30,
+  50,
+  100,
+  200,
+  500,
+  1000,
+  2500,
+  5000,
+  10000,
+  25000,
+  50000,
+  100000,
+  250000,
+  500000,
+  1000000,
+  5000000,
+  10000000,
+  50000000,
+  100000000
+
+];
+
+
+let game = {
+
+  score:0,
+
+  power:1,
+
+  auto:0,
+
+  totalClicks:0,
+
+  highScore:0
+
+};
+
+
+/* =========================================================
+   POWER NORMALIZE
+   ========================================================= */
+
+/*
+  예전에 4 같은 값으로 저장된 데이터가 있다면
+  다음 단계인 5로 자동 변환합니다.
+*/
+
+function normalizePower(value){
+
+  const number =
+    Number(value) || 1;
+
+
+  if(
+    POWER_LEVELS.includes(number)
+  ){
+
+    return number;
 
   }
+
+
+  const next =
+    POWER_LEVELS.find(
+      power => power >= number
+    );
+
+
+  return next ||
+    POWER_LEVELS[POWER_LEVELS.length - 1];
 
 }
 
 
 /* =========================================================
-   게임 데이터
+   LOAD / SAVE
    ========================================================= */
-
-const SAVE_KEY = "formwheel_clicker_save_v1";
-
-let game = {
-  score:0,
-  power:1,
-  auto:0,
-  totalClicks:0,
-  highScore:0
-};
 
 function loadGame(){
 
   try{
 
-    const saved = localStorage.getItem(SAVE_KEY);
+    const saved =
+      localStorage.getItem(SAVE_KEY);
+
 
     if(saved){
 
-      const data = JSON.parse(saved);
+      const data =
+        JSON.parse(saved);
+
 
       game = {
+
         ...game,
+
         ...data
+
       };
+
+
+      game.power =
+        normalizePower(
+          game.power
+        );
+
+
+      game.score =
+        Math.max(
+          0,
+          Number(game.score) || 0
+        );
+
+      game.auto =
+        Math.max(
+          0,
+          Number(game.auto) || 0
+        );
+
+      game.totalClicks =
+        Math.max(
+          0,
+          Number(game.totalClicks) || 0
+        );
+
+      game.highScore =
+        Math.max(
+          0,
+          Number(game.highScore) || 0
+        );
 
     }
 
   }catch(error){
 
-    console.error("저장 데이터 불러오기 실패",error);
+    console.error(
+      "게임 저장 데이터 오류:",
+      error
+    );
 
   }
 
@@ -593,18 +809,170 @@ function loadGame(){
 
 }
 
+
 function saveGame(){
 
-  localStorage.setItem(
-    SAVE_KEY,
-    JSON.stringify(game)
+  try{
+
+    localStorage.setItem(
+      SAVE_KEY,
+      JSON.stringify(game)
+    );
+
+  }catch(error){
+
+    console.error(
+      "게임 저장 실패:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
+
+const scoreEl =
+  document.getElementById("score");
+
+const powerEl =
+  document.getElementById("power");
+
+const autoEl =
+  document.getElementById("auto");
+
+const totalClicksEl =
+  document.getElementById("totalClicks");
+
+const highScoreEl =
+  document.getElementById("highScore");
+
+const clickPowerText =
+  document.getElementById("clickPowerText");
+
+const powerPriceEl =
+  document.getElementById("powerPrice");
+
+const powerDescEl =
+  document.getElementById("powerDesc");
+
+const autoPriceEl =
+  document.getElementById("autoPrice");
+
+const powerUpgrade =
+  document.getElementById("powerUpgrade");
+
+const autoUpgrade =
+  document.getElementById("autoUpgrade");
+
+const clickButton =
+  document.getElementById("clickButton");
+
+const nickname =
+  document.getElementById("nickname");
+
+const leaderboardList =
+  document.getElementById("leaderboardList");
+
+const myRank =
+  document.getElementById("myRank");
+
+const statusEl =
+  document.getElementById("status");
+
+
+/* =========================================================
+   NUMBER
+   ========================================================= */
+
+function formatNumber(number){
+
+  return Math.floor(number)
+    .toLocaleString("ko-KR");
+
+}
+
+
+/* =========================================================
+   POWER UPGRADE
+   ========================================================= */
+
+function getPowerIndex(){
+
+  return POWER_LEVELS.indexOf(
+    game.power
   );
 
 }
 
-function formatNumber(number){
 
-  return Math.floor(number).toLocaleString("ko-KR");
+function getNextPower(){
+
+  const index =
+    getPowerIndex();
+
+
+  if(index === -1){
+
+    return POWER_LEVELS.find(
+      power => power > game.power
+    ) || null;
+
+  }
+
+
+  return POWER_LEVELS[index + 1] || null;
+
+}
+
+
+/*
+  업그레이드 가격
+
+  1 → 2 : 10
+  2 → 3 : 17
+  3 → 5 : 30
+  5 → 10 : 52
+  10 → 15 : 91
+  ...
+*/
+
+function getPowerPrice(){
+
+  const index =
+    getPowerIndex();
+
+
+  if(index < 0){
+
+    return 10;
+
+  }
+
+
+  return Math.floor(
+    10 *
+    Math.pow(
+      1.75,
+      index
+    )
+  );
+
+}
+
+
+function getAutoPrice(){
+
+  return Math.floor(
+    50 *
+    Math.pow(
+      1.75,
+      game.auto
+    )
+  );
 
 }
 
@@ -613,72 +981,78 @@ function formatNumber(number){
    UI
    ========================================================= */
 
-const scoreEl = document.getElementById("score");
-const powerEl = document.getElementById("power");
-const autoEl = document.getElementById("auto");
-const totalClicksEl = document.getElementById("totalClicks");
-const highScoreEl = document.getElementById("highScore");
-
-const powerPriceEl = document.getElementById("powerPrice");
-const autoPriceEl = document.getElementById("autoPrice");
-
-const clickPowerText =
-  document.getElementById("clickPowerText");
-
-const powerUpgrade =
-  document.getElementById("powerUpgrade");
-
-const autoUpgrade =
-  document.getElementById("autoUpgrade");
-
-
-function getPowerPrice(){
-
-  return Math.floor(
-    10 * Math.pow(1.65,game.power - 1)
-  );
-
-}
-
-function getAutoPrice(){
-
-  return Math.floor(
-    50 * Math.pow(1.75,game.auto)
-  );
-
-}
-
-
 function updateUI(){
 
-  scoreEl.textContent = formatNumber(game.score);
+  scoreEl.textContent =
+    formatNumber(game.score);
+
 
   powerEl.textContent =
     formatNumber(game.power);
 
+
   autoEl.textContent =
-    formatNumber(game.auto) + " /초";
+    formatNumber(game.auto) +
+    " /초";
+
 
   totalClicksEl.textContent =
     formatNumber(game.totalClicks);
 
+
   highScoreEl.textContent =
     formatNumber(game.highScore);
 
+
   clickPowerText.textContent =
-    "+" + formatNumber(game.power);
+    "+" +
+    formatNumber(game.power);
 
-  const powerPrice = getPowerPrice();
-  const autoPrice = getAutoPrice();
 
-  powerPriceEl.textContent =
-    formatNumber(powerPrice);
+  const nextPower =
+    getNextPower();
+
+
+  if(nextPower === null){
+
+    powerPriceEl.textContent =
+      "MAX";
+
+
+    powerDescEl.textContent =
+      "최대 클릭 파워에 도달했습니다.";
+
+
+    powerUpgrade.disabled =
+      true;
+
+  }else{
+
+    const powerPrice =
+      getPowerPrice();
+
+
+    powerPriceEl.textContent =
+      formatNumber(powerPrice);
+
+
+    powerDescEl.textContent =
+      `클릭 파워를 ${formatNumber(game.power)} → ${formatNumber(nextPower)}로 증가시킵니다.`;
+
+
+    powerUpgrade.disabled =
+      game.score < powerPrice;
+
+  }
+
+
+  const autoPrice =
+    getAutoPrice();
+
 
   autoPriceEl.textContent =
     formatNumber(autoPrice);
 
-  powerUpgrade.disabled =
-    game.score < powerPrice;
 
   autoUpgrade.disabled =
     game.score < autoPrice;
@@ -687,214 +1061,303 @@ function updateUI(){
 
 
 /* =========================================================
-   클릭
+   CLICK
    ========================================================= */
 
-document
-  .getElementById("clickButton")
-  .addEventListener("click",()=>{
+clickButton.addEventListener(
+  "click",
+  ()=>{
 
-    game.score += game.power;
+    game.score +=
+      game.power;
+
     game.totalClicks++;
 
-    if(game.score > game.highScore){
-      game.highScore = game.score;
+
+    if(
+      game.score >
+      game.highScore
+    ){
+
+      game.highScore =
+        game.score;
+
     }
+
 
     updateUI();
     saveGame();
 
-  });
-
-
-/* =========================================================
-   클릭 파워 업그레이드
-   ========================================================= */
-
-powerUpgrade.addEventListener("click",()=>{
-
-  const price = getPowerPrice();
-
-  if(game.score < price) return;
-
-  game.score -= price;
-  game.power++;
-
-  updateUI();
-  saveGame();
-
-});
-
-
-/* =========================================================
-   자동 클릭 업그레이드
-   ========================================================= */
-
-autoUpgrade.addEventListener("click",()=>{
-
-  const price = getAutoPrice();
-
-  if(game.score < price) return;
-
-  game.score -= price;
-  game.auto++;
-
-  updateUI();
-  saveGame();
-
-});
-
-
-/* =========================================================
-   자동 클릭
-   ========================================================= */
-
-setInterval(()=>{
-
-  if(game.auto <= 0) return;
-
-  game.score += game.auto;
-
-  if(game.score > game.highScore){
-    game.highScore = game.score;
   }
-
-  updateUI();
-  saveGame();
-
-},1000);
+);
 
 
 /* =========================================================
-   리더보드
+   POWER UPGRADE
    ========================================================= */
 
-const leaderboardList =
-  document.getElementById("leaderboardList");
+powerUpgrade.addEventListener(
+  "click",
+  ()=>{
 
-const nicknameInput =
-  document.getElementById("nickname");
-
-const myRankEl =
-  document.getElementById("myRank");
+    const nextPower =
+      getNextPower();
 
 
-let localLeaderboard = [];
+    if(nextPower === null){
 
-function loadLocalLeaderboard(){
+      return;
 
-  try{
-
-    const saved =
-      localStorage.getItem(
-        "formwheel_clicker_leaderboard_v1"
-      );
-
-    if(saved){
-      localLeaderboard = JSON.parse(saved);
     }
 
-  }catch(e){
 
-    localLeaderboard = [];
+    const price =
+      getPowerPrice();
+
+
+    if(
+      game.score <
+      price
+    ){
+
+      return;
+
+    }
+
+
+    game.score -=
+      price;
+
+
+    /*
+      기존처럼 +1 하는 것이 아니라
+      다음 단계의 숫자로 바로 변경
+    */
+
+    game.power =
+      nextPower;
+
+
+    updateUI();
+    saveGame();
 
   }
+);
 
-}
+
+/* =========================================================
+   AUTO CLICK UPGRADE
+   ========================================================= */
+
+autoUpgrade.addEventListener(
+  "click",
+  ()=>{
+
+    const price =
+      getAutoPrice();
 
 
-function saveLocalLeaderboard(){
+    if(
+      game.score <
+      price
+    ){
 
-  localStorage.setItem(
-    "formwheel_clicker_leaderboard_v1",
-    JSON.stringify(localLeaderboard)
-  );
+      return;
 
-}
+    }
 
+
+    game.score -=
+      price;
+
+    game.auto++;
+
+
+    updateUI();
+    saveGame();
+
+  }
+);
+
+
+/* =========================================================
+   AUTO CLICK
+   ========================================================= */
+
+setInterval(
+  ()=>{
+
+    if(game.auto <= 0){
+      return;
+    }
+
+
+    game.score +=
+      game.auto;
+
+
+    if(
+      game.score >
+      game.highScore
+    ){
+
+      game.highScore =
+        game.score;
+
+    }
+
+
+    updateUI();
+    saveGame();
+
+  },
+  1000
+);
+
+
+/* =========================================================
+   LEADERBOARD RENDER
+   ========================================================= */
 
 function renderLeaderboard(list){
 
   leaderboardList.innerHTML = "";
 
-  if(!list.length){
+
+  list.sort(
+    (a,b)=>
+      Number(b.score) -
+      Number(a.score)
+  );
+
+
+  const top =
+    list.slice(0,20);
+
+
+  if(!top.length){
 
     leaderboardList.innerHTML =
-      '<div class="empty">아직 등록된 점수가 없습니다.</div>';
+      `
+      <div class="empty">
+        아직 등록된 점수가 없습니다.
+      </div>
+      `;
 
     return;
 
   }
 
-  list
-    .sort((a,b)=>b.score-a.score)
-    .slice(0,20)
-    .forEach((item,index)=>{
+
+  top.forEach(
+    (item,index)=>{
 
       const row =
         document.createElement("div");
 
-      row.className = "rank-row";
+      row.className =
+        "rank-row";
 
-      row.innerHTML = `
-        <div class="rank">${index+1}</div>
-        <div class="player"></div>
-        <div class="points">
-          ${formatNumber(item.score)}
-        </div>
-      `;
 
-      row.querySelector(".player").textContent =
-        item.name;
+      const rank =
+        document.createElement("div");
+
+      rank.className =
+        "rank";
+
+      rank.textContent =
+        index + 1;
+
+
+      const player =
+        document.createElement("div");
+
+      player.className =
+        "player";
+
+      player.textContent =
+        item.name || "Unknown";
+
+
+      const points =
+        document.createElement("div");
+
+      points.className =
+        "points";
+
+      points.textContent =
+        formatNumber(
+          Number(item.score) || 0
+        );
+
+
+      row.appendChild(rank);
+      row.appendChild(player);
+      row.appendChild(points);
+
 
       leaderboardList.appendChild(row);
 
-    });
+    }
+  );
 
 }
 
 
 /* =========================================================
-   온라인 리더보드
+   LOAD LEADERBOARD
    ========================================================= */
 
 async function loadLeaderboard(){
 
-  if(!firebaseEnabled){
+  statusEl.textContent =
+    "리더보드를 불러오는 중...";
 
-    loadLocalLeaderboard();
-
-    renderLeaderboard(localLeaderboard);
-
-    return;
-
-  }
 
   try{
 
     const leaderboardRef =
-      db.ref(db.database,"clickerLeaderboard");
+      ref(
+        db,
+        "clickerLeaderboard"
+      );
+
 
     const snapshot =
-      await db.get(leaderboardRef);
+      await get(
+        leaderboardRef
+      );
+
 
     const data =
       snapshot.exists()
         ? snapshot.val()
         : {};
 
+
     const list =
       Object.values(data);
 
+
     renderLeaderboard(list);
+
+
+    statusEl.textContent =
+      "온라인 리더보드 연결됨";
 
   }catch(error){
 
     console.error(error);
 
-    loadLocalLeaderboard();
+    leaderboardList.innerHTML =
+      `
+      <div class="empty">
+        리더보드를 불러오지 못했습니다.
+      </div>
+      `;
 
-    renderLeaderboard(localLeaderboard);
+    statusEl.textContent =
+      "Firebase 연결을 확인해주세요.";
 
   }
 
@@ -902,62 +1365,122 @@ async function loadLeaderboard(){
 
 
 /* =========================================================
-   점수 등록
+   SAFE KEY
    ========================================================= */
 
-window.submitScore = async function(){
+function makePlayerKey(name){
+
+  return name
+    .replace(/[.#$/[\]]/g,"_")
+    .slice(0,30);
+
+}
+
+
+/* =========================================================
+   SUBMIT SCORE
+   ========================================================= */
+
+async function submitScore(){
 
   let name =
-    nicknameInput.value.trim();
+    nickname.value.trim();
+
 
   if(!name){
 
-    name = prompt("리더보드에 사용할 닉네임을 입력하세요.");
+    alert(
+      "닉네임을 입력해주세요."
+    );
 
-    if(!name) return;
-
-    name = name.trim();
-
-  }
-
-  if(!name) return;
-
-  if(name.length > 12){
-    name = name.slice(0,12);
-  }
-
-  const score = Math.floor(game.highScore);
-
-  if(score <= 0){
-
-    alert("먼저 점수를 만들어주세요!");
+    nickname.focus();
 
     return;
 
   }
 
 
-  /* 온라인 */
+  if(name.length > 12){
 
-  if(firebaseEnabled){
+    name =
+      name.slice(0,12);
 
-    try{
+  }
 
-      const safeName =
-        name.replace(/[.#$/[\]]/g,"_");
 
-      const playerRef =
-        db.ref(
-          db.database,
-          "clickerLeaderboard/" + safeName
+  const score =
+    Math.floor(
+      game.highScore
+    );
+
+
+  if(score <= 0){
+
+    alert(
+      "먼저 점수를 만들어주세요!"
+    );
+
+    return;
+
+  }
+
+
+  const key =
+    makePlayerKey(name);
+
+
+  if(!key){
+
+    alert(
+      "사용할 수 없는 닉네임입니다."
+    );
+
+    return;
+
+  }
+
+
+  statusEl.textContent =
+    "점수를 등록하는 중...";
+
+
+  try{
+
+    const playerRef =
+      ref(
+        db,
+        "clickerLeaderboard/" +
+        key
+      );
+
+
+    const oldSnapshot =
+      await get(
+        playerRef
+      );
+
+
+    if(oldSnapshot.exists()){
+
+      const oldData =
+        oldSnapshot.val();
+
+
+      const oldScore =
+        Number(
+          oldData.score || 0
         );
 
-      const old =
-        await db.get(playerRef);
 
-      if(!old.exists() || score > old.val().score){
+      if(score <= oldScore){
 
-        await db.set(
+        alert(
+          `기존 최고 기록은 ${formatNumber(oldScore)}점입니다.`
+        );
+
+      }else{
+
+        await set(
           playerRef,
           {
             name:name,
@@ -966,75 +1489,49 @@ window.submitScore = async function(){
           }
         );
 
+        alert(
+          "최고 기록이 갱신되었습니다!"
+        );
+
       }
 
-      alert("리더보드에 점수가 등록되었습니다!");
+    }else{
 
-      await loadLeaderboard();
-
-      showMyRank(name,score);
-
-      return;
-
-    }catch(error){
-
-      console.error(error);
+      await set(
+        playerRef,
+        {
+          name:name,
+          score:score,
+          updatedAt:Date.now()
+        }
+      );
 
       alert(
-        "온라인 등록에 실패했습니다. 로컬 리더보드에 저장합니다."
+        "리더보드에 등록되었습니다!"
       );
 
     }
 
-  }
 
+    await loadLeaderboard();
 
-  /* 로컬 */
-
-  const existing =
-    localLeaderboard.find(
-      x => x.name === name
+    await showMyRank(
+      name,
+      score
     );
 
-  if(existing){
 
-    if(score > existing.score){
-      existing.score = score;
-    }
+  }catch(error){
 
-  }else{
+    console.error(error);
 
-    localLeaderboard.push({
-      name:name,
-      score:score
-    });
+    statusEl.textContent =
+      "점수 등록 실패";
 
-  }
-
-  saveLocalLeaderboard();
-  renderLeaderboard(localLeaderboard);
-  showMyRank(name,score);
-
-};
-
-
-function showMyRank(name,score){
-
-  const sorted =
-    [...localLeaderboard]
-      .sort((a,b)=>b.score-a.score);
-
-  const index =
-    sorted.findIndex(
-      x => x.name === name && x.score <= score
+    alert(
+      "점수 등록에 실패했습니다.\n\n" +
+      "Firebase Realtime Database 규칙을 확인해주세요."
     );
-
-  if(index >= 0){
-
-    myRankEl.style.display = "block";
-
-    myRankEl.textContent =
-      `내 최고 기록: ${formatNumber(score)}점 · ${index+1}위`;
 
   }
 
@@ -1042,7 +1539,106 @@ function showMyRank(name,score){
 
 
 /* =========================================================
-   시작
+   MY RANK
+   ========================================================= */
+
+async function showMyRank(
+  name,
+  score
+){
+
+  try{
+
+    const leaderboardRef =
+      ref(
+        db,
+        "clickerLeaderboard"
+      );
+
+
+    const snapshot =
+      await get(
+        leaderboardRef
+      );
+
+
+    if(!snapshot.exists()){
+      return;
+    }
+
+
+    const data =
+      snapshot.val();
+
+
+    const list =
+      Object.values(data)
+        .sort(
+          (a,b)=>
+            Number(b.score) -
+            Number(a.score)
+        );
+
+
+    const index =
+      list.findIndex(
+        item =>
+          item.name === name
+      );
+
+
+    if(index >= 0){
+
+      myRank.style.display =
+        "block";
+
+
+      myRank.textContent =
+        `내 기록 · ${formatNumber(score)}점 · ${index+1}위`;
+
+    }
+
+  }catch(error){
+
+    console.error(error);
+
+  }
+
+}
+
+
+/* =========================================================
+   BUTTON
+   ========================================================= */
+
+document
+  .getElementById("submitButton")
+  .addEventListener(
+    "click",
+    submitScore
+  );
+
+
+/* =========================================================
+   ENTER KEY
+   ========================================================= */
+
+nickname.addEventListener(
+  "keydown",
+  event => {
+
+    if(event.key === "Enter"){
+
+      submitScore();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   START
    ========================================================= */
 
 loadGame();
@@ -1051,19 +1647,21 @@ loadLeaderboard();
 
 
 /* =========================================================
-   주기적 저장
+   AUTO SAVE
    ========================================================= */
 
-setInterval(()=>{
+setInterval(
+  saveGame,
+  5000
+);
 
-  saveGame();
 
-},5000);
-
-window.addEventListener("beforeunload",saveGame);
+window.addEventListener(
+  "beforeunload",
+  saveGame
+);
 
 </script>
 
 </body>
 </html>
-```

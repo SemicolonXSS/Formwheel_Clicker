@@ -490,7 +490,10 @@ main{
 
         </div>
 
-        <div class="upgrade-desc">
+        <div
+          class="upgrade-desc"
+          id="autoDesc"
+        >
           매초 자동으로 점수를 얻습니다.
         </div>
 
@@ -685,6 +688,20 @@ const POWER_LEVELS = [
 
 ];
 
+const AUTO_LEVELS = [
+  0,
+  1,
+  2,
+  5,
+  10,
+  20,
+  50,
+  100,
+  250,
+  500,
+  1000
+];
+
 
 let game = {
 
@@ -736,6 +753,32 @@ function normalizePower(value){
 
 }
 
+function normalizeAuto(value){
+
+  const number =
+    Math.max(0, Number(value) || 0);
+
+
+  if(
+    AUTO_LEVELS.includes(number)
+  ){
+
+    return number;
+
+  }
+
+
+  const next =
+    AUTO_LEVELS.find(
+      auto => auto >= number
+    );
+
+
+  return next ||
+    AUTO_LEVELS[AUTO_LEVELS.length - 1];
+
+}
+
 
 /* =========================================================
    LOAD / SAVE
@@ -777,9 +820,8 @@ function loadGame(){
         );
 
       game.auto =
-        Math.max(
-          0,
-          Number(game.auto) || 0
+        normalizeAuto(
+          game.auto
         );
 
       game.totalClicks =
@@ -861,6 +903,9 @@ const powerDescEl =
 
 const autoPriceEl =
   document.getElementById("autoPrice");
+
+const autoDescEl =
+  document.getElementById("autoDesc");
 
 const powerUpgrade =
   document.getElementById("powerUpgrade");
@@ -964,13 +1009,53 @@ function getPowerPrice(){
 }
 
 
+function getAutoIndex(){
+
+  return AUTO_LEVELS.indexOf(
+    game.auto
+  );
+
+}
+
+
+function getNextAuto(){
+
+  const index =
+    getAutoIndex();
+
+
+  if(index === -1){
+
+    return AUTO_LEVELS.find(
+      auto => auto > game.auto
+    ) || null;
+
+  }
+
+
+  return AUTO_LEVELS[index + 1] || null;
+
+}
+
+
 function getAutoPrice(){
+
+  const index =
+    getAutoIndex();
+
+
+  if(index < 0){
+
+    return 50;
+
+  }
+
 
   return Math.floor(
     50 *
     Math.pow(
       1.75,
-      game.auto
+      index
     )
   );
 
@@ -1046,16 +1131,39 @@ function updateUI(){
   }
 
 
-  const autoPrice =
-    getAutoPrice();
+  const nextAuto =
+    getNextAuto();
 
 
-  autoPriceEl.textContent =
-    formatNumber(autoPrice);
+  if(nextAuto === null){
+
+    autoPriceEl.textContent =
+      "MAX";
+
+    autoDescEl.textContent =
+      "자동 클릭이 최대 단계입니다.";
 
 
-  autoUpgrade.disabled =
-    game.score < autoPrice;
+    autoUpgrade.disabled =
+      true;
+
+  }else{
+
+    const autoPrice =
+      getAutoPrice();
+
+
+    autoPriceEl.textContent =
+      formatNumber(autoPrice);
+
+    autoDescEl.textContent =
+      `자동 클릭을 ${formatNumber(game.auto)} → ${formatNumber(nextAuto)} /초로 증가시킵니다.`;
+
+
+    autoUpgrade.disabled =
+      game.score < autoPrice;
+
+  }
 
 }
 
@@ -1170,7 +1278,20 @@ autoUpgrade.addEventListener(
     game.score -=
       price;
 
-    game.auto++;
+
+    const nextAuto =
+      getNextAuto();
+
+
+    if(nextAuto === null){
+
+      return;
+
+    }
+
+
+    game.auto =
+      nextAuto;
 
 
     updateUI();

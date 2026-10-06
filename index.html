@@ -43,7 +43,7 @@ main{width:min(1080px,calc(100% - 28px));margin:30px auto}.hero{text-align:cente
 
 <div class="grid2">
 <section class="card panel"><div class="section-title">🏅 업적</div><div id="achievements"></div></section>
-<section class="card panel"><div class="section-title">🎯 보상 미션</div><div id="missions"></div></section>
+<section class="card panel"><div class="section-title">🎯 보상 미션 <span id="missionTimer" style="float:right;font-size:13px;color:#777b84"></span></div><div id="missions"></div></section>
 </div>
 
 <section class="card prestige-box">
@@ -77,32 +77,33 @@ const ACH=[
 ["power","파워 유저","클릭 파워 100 이상 달성",g=>g.power>=toScaled("100")],
 ["prestige","새로운 시작","Prestige 1회 달성",g=>g.prestige>=1]
 ];
+const MISSION_PERIOD=60*60*1000;
 const MISS=[
-["m1","클릭 100회","25점",g=>g.totalClicks>=100,toScaled("25")],
-["m2","업그레이드 3회","100점",g=>g.upgrades>=3,toScaled("100")],
-["m3","누적 1,000점 획득","250점",g=>g.lifetime>=toScaled("1000"),toScaled("250")],
-["m4","Prestige 1회","500점",g=>g.prestige>=1,toScaled("500")]
+["m1","1시간 동안 클릭 100회","25점",g=>g.totalClicks-(g.missionBase?.clicks||0)>=100,toScaled("25")],
+["m2","1시간 동안 업그레이드 3회","100점",g=>g.upgrades-(g.missionBase?.upgrades||0)>=3,toScaled("100")],
+["m3","1시간 동안 1,000점 획득","250점",g=>g.lifetime-BigInt(g.missionBase?.lifetime||"0")>=toScaled("1000"),toScaled("250")],
+["m4","1시간 동안 Prestige 1회","500점",g=>g.prestige-(g.missionBase?.prestige||0)>=1,toScaled("500")]
 ];
-let g={score:0n,power:toScaled("0.1"),auto:0n,totalClicks:0,highScore:0n,lifetime:0n,upgrades:0,prestige:0,achievements:{},claimed:{},lastSaved:Date.now(),lastBonus:0};
+let g={score:0n,power:toScaled("0.1"),auto:0n,totalClicks:0,highScore:0n,lifetime:0n,upgrades:0,prestige:0,achievements:{},claimed:{},missionResetAt:Date.now()+MISSION_PERIOD,missionBase:{clicks:0,upgrades:0,lifetime:"0",prestige:0},lastSaved:Date.now(),lastBonus:0};
 
 function toScaled(v){
  const s=String(v??"0").trim(); if(!s||s==="NaN") return 0n;
  if(/e/i.test(s)){ const n=Number(s); return BigInt(Math.round(n*10)); }
  const neg=s.startsWith("-"); const t=neg?s.slice(1):s; const [i="0",d=""]=t.split(".");
- const r=BigInt((i||"0").replace(/D/g,"")||"0")*10n+BigInt((d[0]||"0").replace(/D/g,"")||"0");
+ const r=BigInt((i||"0").replace(/\D/g,"")||"0")*10n+BigInt((d[0]||"0").replace(/D/g,"")||"0");
  return neg?-r:r;
 }
 function fromLegacy(v){ return toScaled(typeof v==="number" ? String(v) : (v??0)); }
 function fmt(x){
  x=BigInt(x); const neg=x<0n;if(neg)x=-x; const i=x/10n,d=x%10n;
- const raw=i.toString(); const grouped=raw.replace(/B(?=(d{3})+(?!d))/g,",");
+ const raw=i.toString(); const grouped=raw.replace(/\B(?=(\d{3})+(?!\d))/g,",");
  return (neg?"-":"")+grouped+(d? "."+d:"");
 }
 function compact(x){x=BigInt(x);const i=x/10n;if(i<1000000000000000n)return fmt(x);const s=i.toString();return s[0]+"."+s.slice(1,3)+"e"+(s.length-1);}
 function gain(base){return BigInt(base)*BigInt(4+g.prestige)/4n;}
 function price(base,index){let p=BigInt(base);for(let i=0;i<index;i++)p=(p*175n+99n)/100n;return p*SCALE;}
 function normalizeLevel(value,arr){let v=BigInt(value);for(const n of arr)if(n>=v)return n;return arr[arr.length-1];}
-function serialize(){return {version:3,score:g.score.toString(),power:g.power.toString(),auto:g.auto.toString(),totalClicks:g.totalClicks,highScore:g.highScore.toString(),lifetime:g.lifetime.toString(),upgrades:g.upgrades,prestige:g.prestige,achievements:g.achievements,claimed:g.claimed,lastSaved:Date.now(),lastBonus:g.lastBonus};}
+function serialize(){return {version:3,score:g.score.toString(),power:g.power.toString(),auto:g.auto.toString(),totalClicks:g.totalClicks,highScore:g.highScore.toString(),lifetime:g.lifetime.toString(),upgrades:g.upgrades,prestige:g.prestige,achievements:g.achievements,claimed:g.claimed,missionResetAt:g.missionResetAt,missionBase:g.missionBase,lastSaved:Date.now(),lastBonus:g.lastBonus};}
 function save(){try{g.lastSaved=Date.now();localStorage.setItem(SAVE_KEY,JSON.stringify(serialize()));}catch(e){console.warn("save",e)}}
 function load(){
  try{
@@ -110,7 +111,7 @@ function load(){
   if(!data){
    const old=localStorage.getItem(OLD_KEY); if(old){const o=JSON.parse(old);data={score:fromLegacy(o.score).toString(),power:fromLegacy(o.power??0.1).toString(),auto:fromLegacy(o.auto).toString(),totalClicks:Number(o.totalClicks)||0,highScore:fromLegacy(o.highScore).toString(),lifetime:fromLegacy(o.highScore).toString(),upgrades:0,prestige:0,achievements:{},claimed:{},lastSaved:Date.now()};}
   }
-  if(data){g={...g,...data,score:BigInt(data.score||0),power:normalizeLevel(BigInt(data.power||1),P),auto:normalizeLevel(BigInt(data.auto||0),A),highScore:BigInt(data.highScore||0),lifetime:BigInt(data.lifetime||data.highScore||0),totalClicks:Number(data.totalClicks)||0,upgrades:Number(data.upgrades)||0,prestige:Number(data.prestige)||0,achievements:data.achievements||{},claimed:data.claimed||{},lastSaved:Number(data.lastSaved)||Date.now(),lastBonus:Number(data.lastBonus)||0};}
+  if(data){g={...g,...data,score:BigInt(data.score||0),power:normalizeLevel(BigInt(data.power||1),P),auto:normalizeLevel(BigInt(data.auto||0),A),highScore:BigInt(data.highScore||0),lifetime:BigInt(data.lifetime||data.highScore||0),totalClicks:Number(data.totalClicks)||0,upgrades:Number(data.upgrades)||0,prestige:Number(data.prestige)||0,achievements:data.achievements||{},claimed:data.claimed||{},missionResetAt:Number(data.missionResetAt)||Date.now()+MISSION_PERIOD,missionBase:data.missionBase||{clicks:Number(data.totalClicks)||0,upgrades:Number(data.upgrades)||0,lifetime:String(data.lifetime||data.highScore||0),prestige:Number(data.prestige)||0},lastSaved:Number(data.lastSaved)||Date.now(),lastBonus:Number(data.lastBonus)||0};}
   const elapsed=Math.min(28800,Math.max(0,Math.floor((Date.now()-g.lastSaved)/1000)));
   if(elapsed>0&&g.auto>0n){const offline=gain(g.auto)*BigInt(elapsed);g.score+=offline;g.lifetime+=offline;if(g.score>g.highScore)g.highScore=g.score;setTimeout(()=>flash("💤 오프라인 보너스 +"+compact(offline)),50);}
  }catch(e){console.warn("load",e)}
@@ -118,6 +119,22 @@ function load(){
 const $=id=>document.getElementById(id);
 function powerIndex(){return P.indexOf(g.power)} function autoIndex(){return A.indexOf(g.auto)}
 function next(arr,val){const i=arr.indexOf(val);return i>=0?(arr[i+1]??null):(arr.find(x=>x>val)??null)}
+function resetMissions(now=Date.now()){
+ g.claimed={};
+ g.missionBase={clicks:g.totalClicks,upgrades:g.upgrades,lifetime:g.lifetime.toString(),prestige:g.prestige};
+ g.missionResetAt=now+MISSION_PERIOD;
+ flash("🎯 새로운 1시간 미션이 시작됐어요!");
+}
+function checkMissionReset(){
+ const now=Date.now();
+ if(!g.missionResetAt||now>=g.missionResetAt){
+  const periods=Math.max(1,Math.floor((now-(g.missionResetAt||now))/MISSION_PERIOD)+1);
+  resetMissions((g.missionResetAt||now)+(periods-1)*MISSION_PERIOD);
+  save();
+ }
+ const left=Math.max(0,g.missionResetAt-now),m=Math.floor(left/60000),s=Math.floor((left%60000)/1000);
+ const timer=$("missionTimer"); if(timer)timer.textContent=`다음 초기화 ${m}:${String(s).padStart(2,"0")}`;
+}
 function updateAchievements(){for(const [id,,,test] of ACH)if(!g.achievements[id]&&test(g))g.achievements[id]=true;}
 function renderAchievements(){
  $("achievements").innerHTML=ACH.map(([id,title,desc])=>`<div class="achievement ${g.achievements[id]?"done":""}"><div class="item-title">${g.achievements[id]?"✅":"⬜"} ${title}</div><div class="item-desc">${desc}</div></div>`).join("");
@@ -127,6 +144,7 @@ function renderMissions(){
  document.querySelectorAll("[data-mission]").forEach(b=>b.onclick=()=>claimMission(b.dataset.mission));
 }
 function update(){
+ checkMissionReset();
  updateAchievements();
  $("score").textContent=compact(g.score);$("power").textContent=fmt(g.power);$("auto").textContent=fmt(g.auto)+" /초";$("totalClicks").textContent=g.totalClicks.toLocaleString("ko-KR");$("highScore").textContent=compact(g.highScore);$("clickPowerText").textContent="+"+fmt(gain(g.power));$("multi").textContent="x"+(1+g.prestige*.25).toFixed(2);
  const np=next(P,g.power),na=next(A,g.auto),pi=Math.max(0,powerIndex()),ai=Math.max(0,autoIndex()),pp=price(10,pi),ap=price(50,ai);
@@ -144,7 +162,7 @@ $("powerUpgrade").onclick=()=>{const n=next(P,g.power),p=price(10,Math.max(0,pow
 $("autoUpgrade").onclick=()=>{const n=next(A,g.auto),p=price(50,Math.max(0,autoIndex()));if(n===null||g.score<p)return;g.score-=p;g.auto=n;g.upgrades++;update();save();};
 function claimMission(id){const m=MISS.find(x=>x[0]===id);if(!m||g.claimed[id]||!m[3](g))return;g.claimed[id]=true;addScore(m[4]);flash("🎁 미션 보상 +"+fmt(m[4]));update();save();}
 $("prestigeButton").onclick=()=>{if(g.highScore<PRESTIGE_REQ)return;if(!confirm("현재 점수와 업그레이드를 초기화하고 Prestige할까요?"))return;g.prestige++;g.score=0n;g.power=P[0];g.auto=A[0];g.upgrades=0;flash("✨ Prestige "+g.prestige+"회!");update();save();};
-setInterval(()=>{if(g.auto>0n){addScore(gain(g.auto));update();save();}},1000);
+setInterval(()=>{if(g.auto>0n){addScore(gain(g.auto));update();save();}else{checkMissionReset();}},1000);
 setInterval(save,5000);addEventListener("beforeunload",save);addEventListener("visibilitychange",()=>{if(document.hidden)save();});
 load();update();save();
 
@@ -169,21 +187,51 @@ try{
   import("https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js")
  ]);
  const config={apiKey:"AIzaSyBreTSe1m0-xlbF4aupnU5isRZCihR25IE",authDomain:"formwheel.firebaseapp.com",databaseURL:"https://formwheel-default-rtdb.firebaseio.com",projectId:"formwheel",storageBucket:"formwheel.firebasestorage.app",messagingSenderId:"431583088241",appId:"1:431583088241:web:74e0e34ea1e3e1170c55d0",measurementId:"G-T372YXDF8D"};
- const app=initializeApp(config),db=getDatabase(app),auth=getAuth(app);let uid=null,lastTop=[];
+ const app=initializeApp(config),db=getDatabase(app),auth=getAuth(app);let uid=null;
  const key=s=>String(s).padStart(140,"0");
- async function ensureAuth(){if(auth.currentUser){uid=auth.currentUser.uid;return uid;}const r=await signInAnonymously(auth);uid=r.user.uid;return uid;}
+
  async function loadTop(){
   const snap=await get(query(ref(db,"clickerLeaderboard"),orderByChild("scoreKey"),limitToLast(20)));
-  const data=snap.exists()?snap.val():{};lastTop=Object.values(data).sort((a,b)=>String(b.scoreKey||"").localeCompare(String(a.scoreKey||"")));ui.render(lastTop);ui.status("온라인 리더보드 연결됨");
+  const data=snap.exists()?snap.val():{};
+  const list=Object.values(data).sort((a,b)=>String(b.scoreKey||"").localeCompare(String(a.scoreKey||"")));
+  ui.render(list);
+  ui.status(auth.currentUser?"온라인 리더보드 연결됨 · 사용자 인증 완료":"온라인 리더보드 연결됨 · 점수 등록 시 사용자 인증");
+  return true;
  }
- async function showRank(finalRecord){
-  const snap=await get(query(ref(db,"clickerLeaderboard"),orderByChild("scoreKey"),startAt(finalRecord.scoreKey)));
-  const count=snap.exists()?Object.keys(snap.val()).length:1;ui.rank(`내 최고 기록 · ${ui.formatScaled(finalRecord.score)}점 · 약 ${count}위`);
- }
- async function submit(){
+
+ async function ensureAuth(){
+  if(auth.currentUser){uid=auth.currentUser.uid;return uid;}
   try{
-   const name=ui.getNickname();if(!name){alert("닉네임을 입력해주세요.");return;}
-   const userId=await ensureAuth(),score=ui.getScore();if(BigInt(score)<=0n){alert("먼저 점수를 만들어주세요!");return;}
+   const r=await signInAnonymously(auth);uid=r.user.uid;return uid;
+  }catch(e){
+   console.error("Firebase Auth failed",e);
+   throw new Error("AUTH:"+String(e?.code||e?.message||e));
+  }
+ }
+
+ async function showRank(finalRecord){
+  try{
+   const snap=await get(query(ref(db,"clickerLeaderboard"),orderByChild("scoreKey"),startAt(finalRecord.scoreKey)));
+   const count=snap.exists()?Object.keys(snap.val()).length:1;
+   ui.rank(`내 최고 기록 · ${ui.formatScaled(finalRecord.score)}점 · 약 ${count}위`);
+  }catch(e){console.warn("rank lookup",e);}
+ }
+
+ async function submit(){
+  const name=ui.getNickname();
+  if(!name){alert("닉네임을 입력해주세요.");return;}
+  const score=ui.getScore();
+  if(BigInt(score)<=0n){alert("먼저 점수를 만들어주세요!");return;}
+  ui.status("사용자 인증 확인 중...");
+  let userId;
+  try{userId=await ensureAuth();}
+  catch(e){
+   ui.status("인터넷은 연결됨 · Firebase 익명 인증을 사용할 수 없음");
+   alert("온라인 연결은 정상입니다.\n하지만 Firebase 익명 로그인이 비활성화되어 점수를 등록할 수 없습니다.\nFirebase Console → Authentication → Sign-in method에서 Anonymous를 활성화해주세요.");
+   return;
+  }
+
+  try{
    ui.status("점수를 등록하는 중...");
    const playerRef=ref(db,"clickerLeaderboard/"+userId);
    const result=await runTransaction(playerRef,current=>{
@@ -193,13 +241,40 @@ try{
    const finalRecord=result.snapshot.val();
    await loadTop();await showRank(finalRecord);
    alert(BigInt(finalRecord.score||0)===BigInt(score)?"최고 기록이 저장되었습니다!":"기존 최고 기록이 더 높아 유지했습니다.");
-  }catch(e){console.error(e);ui.offline("점수 등록 실패 · Firebase 인증/규칙을 확인해주세요.");}
+  }catch(e){
+   console.error("Leaderboard write failed",e);
+   ui.status("Firebase 연결됨 · 점수 쓰기 권한/규칙 오류");
+   alert("인터넷 연결 문제는 아닙니다. Firebase Realtime Database Rules에서 clickerLeaderboard 쓰기 권한을 확인해주세요.");
+  }
  }
+
  document.getElementById("submitButton").addEventListener("click",submit);
  document.getElementById("nickname").addEventListener("keydown",e=>{if(e.key==="Enter")submit();});
- try{await ensureAuth();await loadTop();}catch(e){console.error(e);ui.offline("Firebase 연결 실패 · 로컬 게임 모드");}
  onAuthStateChanged(auth,u=>{uid=u?.uid||null;});
-}catch(e){console.error("Firebase module load failed",e);ui.offline("Firebase SDK를 불러오지 못했습니다 · 로컬 게임 모드");}
+
+ try{
+  await loadTop();
+ }catch(e){
+  console.error("Leaderboard read failed",e);
+  if(navigator.onLine){
+   ui.status("인터넷은 연결됨 · Firebase 리더보드 읽기 오류");
+   document.getElementById("leaderboardList").innerHTML='<div class="empty">Firebase Database Rules 또는 인덱스를 확인해주세요.</div>';
+  }else{
+   ui.offline("인터넷 연결 없음 · 로컬 게임 모드");
+  }
+ }
+
+ addEventListener("online",()=>{ui.status("인터넷 재연결됨 · 리더보드 다시 연결 중...");loadTop().catch(()=>ui.status("인터넷은 연결됨 · Firebase 리더보드 읽기 오류"));});
+ addEventListener("offline",()=>ui.offline("인터넷 연결 없음 · 로컬 게임 모드"));
+}catch(e){
+ console.error("Firebase SDK load failed",e);
+ if(navigator.onLine){
+  ui.status("인터넷은 연결됨 · Firebase SDK 로드 실패");
+  document.getElementById("leaderboardList").innerHTML='<div class="empty">Firebase 라이브러리를 불러오지 못했습니다. 잠시 후 새로고침해주세요.</div>';
+ }else{
+  ui.offline("인터넷 연결 없음 · 로컬 게임 모드");
+ }
+}
 </script>
 </body>
 </html>

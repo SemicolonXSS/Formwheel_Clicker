@@ -52,7 +52,7 @@ main{width:min(1080px,calc(100% - 28px));margin:30px auto}.hero{text-align:cente
 <button class="danger" id="prestigeButton">Prestige 하기</button>
 </section>
 
-<section class="card leaderboard">
+<section class="card leaderboard"><p class="notice">이 랭킹은 이용자가 제출한 점수이며 서버에서 플레이 기록을 검증하지 않습니다.</p>
 <div class="lb-head"><div class="lb-title">🏆 리더보드</div><button class="small" id="submitButton">점수 등록</button></div>
 <div class="name-area"><input class="nickname" id="nickname" maxlength="12" autocomplete="off" placeholder="닉네임 (최대 12자)"></div>
 <div class="status" id="status">게임은 오프라인에서도 실행됩니다.</div>
@@ -159,11 +159,16 @@ function flash(t){$("bonusText").textContent=t;clearTimeout(flash.t);flash.t=set
 function maybeBonus(){if(Date.now()-g.lastBonus<10000||Math.random()>=.01)return;g.lastBonus=Date.now();const b=gain(g.power)*50n;addScore(b);flash("✨ 랜덤 보너스! +"+compact(b));}
 $("clickButton").onclick=()=>{addScore(gain(g.power));g.totalClicks++;maybeBonus();update();save();};
 $("powerUpgrade").onclick=()=>{const n=next(P,g.power),p=price(10,Math.max(0,powerIndex()));if(n===null||g.score<p)return;g.score-=p;g.power=n;g.upgrades++;update();save();};
-$("autoUpgrade").onclick=()=>{const n=next(A,g.auto),p=price(50,Math.max(0,autoIndex()));if(n===null||g.score<p)return;g.score-=p;g.auto=n;g.upgrades++;update();save();};
+$("autoUpgrade").onclick=()=>{collectAuto();const n=next(A,g.auto),p=price(50,Math.max(0,autoIndex()));if(n===null||g.score<p)return;g.score-=p;g.auto=n;g.upgrades++;update();save();};
 function claimMission(id){const m=MISS.find(x=>x[0]===id);if(!m||g.claimed[id]||!m[3](g))return;g.claimed[id]=true;addScore(m[4]);flash("🎁 미션 보상 +"+fmt(m[4]));update();save();}
-$("prestigeButton").onclick=()=>{if(g.highScore<PRESTIGE_REQ)return;if(!confirm("현재 점수와 업그레이드를 초기화하고 Prestige할까요?"))return;g.prestige++;g.score=0n;g.power=P[0];g.auto=A[0];g.upgrades=0;flash("✨ Prestige "+g.prestige+"회!");update();save();};
-setInterval(()=>{if(g.auto>0n){addScore(gain(g.auto));update();save();}else{checkMissionReset();}},1000);
-setInterval(save,5000);addEventListener("beforeunload",save);addEventListener("visibilitychange",()=>{if(document.hidden)save();});
+$("prestigeButton").onclick=()=>{collectAuto();if(g.highScore<PRESTIGE_REQ)return;if(!confirm("현재 점수와 업그레이드를 초기화하고 Prestige할까요?"))return;g.prestige++;g.score=0n;g.power=P[0];g.auto=A[0];g.upgrades=0;flash("✨ Prestige "+g.prestige+"회!");update();save();};
+let lastAutoAt=Date.now(),autoRemainder=0n;
+function collectAuto(at=Date.now()){
+ const elapsed=Math.min(28800000,Math.max(0,at-lastAutoAt));lastAutoAt=at;
+ if(g.auto>0n&&elapsed>0){const scaled=gain(g.auto)*BigInt(Math.floor(elapsed))+autoRemainder;autoRemainder=scaled%1000n;addScore(scaled/1000n);}else checkMissionReset();
+}
+setInterval(()=>{collectAuto();update();save();},1000);
+setInterval(save,5000);addEventListener("beforeunload",save);addEventListener("visibilitychange",()=>{collectAuto();update();save();});
 load();update();save();
 
 window.ClickerOnline={

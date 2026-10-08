@@ -1,6 +1,6 @@
 # Formwheel_Clicker
 
-Formwheel 프로젝트와 게임을 모아 실행하는 홈 화면.
+클릭을 통해 점수와 업그레이드를 쌓는 클릭 게임.
 
 - 실행: https://semicolonxss.github.io/Formwheel_Clicker/
 - 프로젝트 목록: https://semicolonxss.github.io/Formwheel/

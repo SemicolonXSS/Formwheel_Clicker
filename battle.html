@@ -32,12 +32,12 @@ $("start").onclick=async()=>{if(!isHost||!room||Object.keys(room.players||{}).le
 $("leave").onclick=async()=>{if(!code)return;try{await runTransaction(roomRef(code),v=>{if(!v?.players?.[id])return;delete v.players[id];if(!Object.keys(v.players).length)return null;if(v.host===id)v.host=Object.keys(v.players)[0];if(v.phase==="playing")v.phase="finished";return v},{applyLocally:false})}finally{location.href="./index.html"}};
 $("copy").onclick=()=>navigator.clipboard.writeText(code);
 async function publish(value){if(!active()||value<=published)return;published=value;try{await runTransaction(ref(db,base+"/"+code+"/players/"+id+"/score"),v=>Math.max(Number(v||0),value),{applyLocally:false})}catch(e){say("점수 전송 실패: "+e.message);published=-1}}
-function increment(n){if(!active())return;money+=n;score=Math.max(score,money);publish(score);$("money").textContent=Math.floor(money).toLocaleString();}
+function increment(n){if(!active())return;money+=n;score=Math.max(score,money);$("money").textContent=Math.floor(money).toLocaleString();}
 
 $("tap").onclick=()=>increment(power);
 $("upPower").onclick=()=>{if(!active()||money<pc)return;money-=pc;power+=Math.max(1,Math.ceil(power*.6));pc=Math.ceil(pc*1.65);$("power").textContent=power.toLocaleString();$("powerCost").textContent=pc.toLocaleString();$("money").textContent=Math.floor(money).toLocaleString();};
 $("upAuto").onclick=()=>{if(!active()||money<ac)return;money-=ac;auto+=Math.max(1,Math.ceil(auto*.6));ac=Math.ceil(ac*1.7);$("auto").textContent=auto.toLocaleString();$("autoCost").textContent=ac.toLocaleString();$("money").textContent=Math.floor(money).toLocaleString();};
-setInterval(async()=>{if(!room)return;display();if(room.phase==="playing"&&timeLeft()===0&&isHost){try{await runTransaction(roomRef(code),v=>{if(!v||v.phase!=="playing"||Date.now()<v.startedAt+duration)return;v.phase="finished";return v},{applyLocally:false})}catch(e){say("종료 처리 실패: "+e.message)}}
+setInterval(async()=>{if(!room)return;if(active()&&score>published)publish(Math.floor(score));display();if(room.phase==="playing"&&timeLeft()===0&&isHost){try{await runTransaction(roomRef(code),v=>{if(!v||v.phase!=="playing"||Date.now()<v.startedAt+duration)return;v.phase="finished";return v},{applyLocally:false})}catch(e){say("종료 처리 실패: "+e.message)}}
 const now=Date.now();if(active()&&auto){const secs=Math.min(2,(now-lastTick)/1000);increment(Math.floor(auto*secs));}lastTick=now;
 },500);
 </script></body></html>

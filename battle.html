@@ -40,10 +40,14 @@ $("enter").onclick=async()=>{if(locked)return;locked=true;const button=$("enter"
  if(initial.phase!=="waiting")throw Error(initial.phase==="playing"?"이미 시작된 방이에요.":"이미 종료된 방이에요.");
  if(!initial.players||Object.keys(initial.players).length>=2)throw Error("방 정원이 이미 찼어요 (2명).");
  const result=await runTransaction(target,current=>{
-   if(!current||current.phase!=="waiting"||!current.players)return;
-   if(current.players[id])return current;
-   if(Object.keys(current.players).length>=2)return;
-   return {...current,players:{...current.players,[id]:{name:safeName($("name").value),score:0}}};
+   // The first callback may receive null from the local cache even after get().
+   // Seed it with the freshly fetched room; Firebase will retry against the
+   // server value if the server's room differs.
+   const existing=current===null?initial:current;
+   if(!existing||existing.phase!=="waiting"||!existing.players)return;
+   if(existing.players[id])return existing;
+   if(Object.keys(existing.players).length>=2)return;
+   return {...existing,players:{...existing.players,[id]:{name:safeName($("name").value),score:0}}};
  },{applyLocally:false});
  if(!result.committed){
    const newest=(await get(target)).val();

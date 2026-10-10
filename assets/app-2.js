@@ -13,9 +13,10 @@ try{
  let submitting=false;
 
  async function loadTop(){
-  const snap=await get(query(ref(db,"clickerLeaderboardSeason3"),orderByChild("scoreKey"),limitToLast(20)));
+  // Read the season leaderboard without requiring a Firebase .indexOn rule.
+  const snap=await get(ref(db,"clickerLeaderboardSeason3"));
   const data=snap.exists()?snap.val():{};
-  const list=Object.values(data).sort((a,b)=>String(b.scoreKey||"").localeCompare(String(a.scoreKey||"")));
+  const list=Object.values(data).sort((a,b)=>String(b.scoreKey||"").localeCompare(String(a.scoreKey||""))).slice(0,20);
   ui.render(list);
   ui.status(auth.currentUser?"온라인 리더보드 연결됨 · 사용자 인증 완료":"온라인 리더보드 연결됨 · 점수 등록 시 사용자 인증");
   return true;
@@ -33,8 +34,9 @@ try{
 
  async function showRank(finalRecord){
   try{
-   const snap=await get(query(ref(db,"clickerLeaderboardSeason3"),orderByChild("scoreKey"),startAt(finalRecord.scoreKey)));
-   const count=snap.exists()?Object.keys(snap.val()).length:1;
+   const snap=await get(ref(db,"clickerLeaderboardSeason3"));
+   const records=snap.exists()?Object.values(snap.val()):[];
+   const count=Math.max(1,records.filter(r=>String(r.scoreKey||"")>=String(finalRecord.scoreKey)).length);
    ui.rank(`내 최고 기록 · ${ui.formatScaled(finalRecord.score)}점 · 약 ${count}위`);
   }catch(e){console.warn("rank lookup",e);}
  }
@@ -117,14 +119,14 @@ try{
     ui.status(authProblem?"인터넷은 연결됨 · Firebase 인증 설정 오류":"인터넷은 연결됨 · Firebase Database 읽기 오류");
     document.getElementById("leaderboardList").innerHTML=authProblem
      ? '<div class="empty">온라인 연결은 정상입니다. Firebase Anonymous Auth 설정을 확인해주세요.</div>'
-     : '<div class="empty">온라인 연결은 정상입니다. Firebase Database Rules 또는 인덱스를 확인해주세요.</div>';
+     : '<div class="empty">온라인 연결은 정상입니다. Firebase Database 읽기 권한을 확인해주세요.</div>';
    }else{
     ui.offline("인터넷 연결 없음 · 로컬 게임 모드");
    }
   }
  }
 
- addEventListener("online",()=>{ui.status("인터넷 재연결됨 · 리더보드 다시 연결 중...");loadTop().catch(()=>ui.status("인터넷은 연결됨 · Firebase 리더보드 읽기 오류"));});
+ addEventListener("online",()=>{ui.status("인터넷 재연결됨 · 리더보드 다시 연결 중...");loadTop().catch(()=>ui.status("인터넷은 연결됨 · Firebase 리더보드 읽기 권한 오류"));});
  addEventListener("offline",()=>ui.offline("인터넷 연결 없음 · 로컬 게임 모드"));
 }catch(e){
  console.error("Firebase SDK load failed",e);

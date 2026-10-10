@@ -160,6 +160,16 @@ function addScore(v){const n=BigInt(v);g.score+=n;g.lifetime+=n;if(g.score>g.hig
 function flash(t){$("bonusText").textContent=t;clearTimeout(flash.t);flash.t=setTimeout(()=>$("bonusText").textContent="",2600);}
 function maybeBonus(){if(Date.now()-g.lastBonus<10000||Math.random()>=.01)return;g.lastBonus=Date.now();const b=gain(g.power)*50n;addScore(b);flash("✨ 랜덤 보너스! +"+compact(b));}
 $("clickButton").onclick=()=>{addScore(gain(g.power));g.totalClicks++;maybeBonus();update();save();};
+// Ignore keyboard auto-repeat: one physical key press earns only one click.
+$("clickButton").addEventListener("keydown",e=>{
+ if(e.key!=="Enter"&&e.key!==" ")return;
+ e.preventDefault();
+ if(e.repeat)return;
+ $("clickButton").click();
+});
+$("clickButton").addEventListener("keyup",e=>{
+ if(e.key==="Enter"||e.key===" ")e.preventDefault();
+});
 $("powerUpgrade").onclick=()=>{const n=next(P,g.power),p=price(10,Math.max(0,powerIndex()));if(n===null||g.score<p)return;g.score-=p;g.power=n;g.upgrades++;update();save();};
 $("autoUpgrade").onclick=()=>{collectAuto();const n=next(A,g.auto),p=price(50,Math.max(0,autoIndex()));if(n===null||g.score<p)return;g.score-=p;g.auto=n;g.upgrades++;update();save();};
 function claimMission(id){const m=MISS.find(x=>x[0]===id);if(!m||g.claimed[id]||!m[3](g))return;g.claimed[id]=true;addScore(m[4]);flash("🎁 미션 보상 +"+fmt(m[4]));update();save();}

@@ -11,6 +11,36 @@ const ACH=[
 ["auto","자동화 시작","자동 클릭 1 이상 달성",g=>g.auto>=toScaled("1")],
 ["power","파워 유저","클릭 파워 100 이상 달성",g=>g.power>=toScaled("100")],
 ["prestige","새로운 시작","Prestige 1회 달성",g=>g.prestige>=1]
+,
+["click10","클릭 견습생","10번 클릭하기",g=>g.totalClicks>=10],
+["click500","손가락 단련","500번 클릭하기",g=>g.totalClicks>=500],
+["click1000","클릭 장인","1,000번 클릭하기",g=>g.totalClicks>=1000],
+["click10000","만 번의 노력","10,000번 클릭하기",g=>g.totalClicks>=10000],
+["click100000","전설의 손가락","100,000번 클릭하기",g=>g.totalClicks>=100000],
+["score10","첫 수익","최고 점수 10점 달성",g=>g.highScore>=toScaled('10')],
+["score100","백점 돌파","최고 점수 100점 달성",g=>g.highScore>=toScaled('100')],
+["score10000","만점의 기쁨","최고 점수 10,000점 달성",g=>g.highScore>=toScaled('10000')],
+["score100000","십만장자","최고 점수 100,000점 달성",g=>g.highScore>=toScaled('100000')],
+["scoreMillion","백만장자","최고 점수 1,000,000점 달성",g=>g.highScore>=toScaled('1000000')],
+["scoreBillion","십억장자","최고 점수 1,000,000,000점 달성",g=>g.highScore>=toScaled('1000000000')],
+["lifetime10000","차곡차곡","누적 획득 10,000점 달성",g=>g.lifetime>=toScaled('10000')],
+["lifetimeMillion","누적의 힘","누적 획득 1,000,000점 달성",g=>g.lifetime>=toScaled('1000000')],
+["lifetimeBillion","끝없는 수익","누적 획득 1,000,000,000점 달성",g=>g.lifetime>=toScaled('1000000000')],
+["power1","제법 강한 클릭","클릭 파워 1 이상 달성",g=>g.power>=toScaled('1')],
+["power10","클릭 강화","클릭 파워 10 이상 달성",g=>g.power>=toScaled('10')],
+["power1000","강력한 손끝","클릭 파워 1,000 이상 달성",g=>g.power>=toScaled('1000')],
+["powerMillion","초월한 클릭","클릭 파워 1,000,000 이상 달성",g=>g.power>=toScaled('1000000')],
+["auto10","작은 공장","초당 자동 생산 10 이상 달성",g=>g.auto>=toScaled('10')],
+["auto100","자동화 전문가","초당 자동 생산 100 이상 달성",g=>g.auto>=toScaled('100')],
+["auto1000","클릭 공장장","초당 자동 생산 1,000 이상 달성",g=>g.auto>=toScaled('1000')],
+["autoMillion","무한 생산 라인","초당 자동 생산 1,000,000 이상 달성",g=>g.auto>=toScaled('1000000')],
+["upgrade1","첫 투자","업그레이드 1회 구매하기",g=>g.upgrades>=1],
+["upgrade10","꾸준한 투자자","한 Prestige 주기에서 업그레이드 10회 구매",g=>g.upgrades>=10],
+["upgrade30","업그레이드 수집가","한 Prestige 주기에서 업그레이드 30회 구매",g=>g.upgrades>=30],
+["prestige3","새 출발 전문가","Prestige 3회 달성",g=>g.prestige>=3],
+["prestige5","환생의 달인","Prestige 5회 달성",g=>g.prestige>=5],
+["prestige10","열 번의 시작","Prestige 10회 달성",g=>g.prestige>=10],
+["prestige25","불멸의 클릭러","Prestige 25회 달성",g=>g.prestige>=25]
 ];
 const MISSION_PERIOD=60*60*1000;
 const MISS=[
@@ -72,7 +102,7 @@ function checkMissionReset(){
 }
 function updateAchievements(){for(const [id,,,test] of ACH)if(!g.achievements[id]&&test(g))g.achievements[id]=true;}
 function renderAchievements(){
- $("achievements").innerHTML=ACH.map(([id,title,desc])=>`<div class="achievement ${g.achievements[id]?"done":""}"><div class="item-title">${g.achievements[id]?"✅":"⬜"} ${title}</div><div class="item-desc">${desc}</div></div>`).join("");
+ $("achievements").innerHTML=`<div class="item-desc" style="margin-bottom:12px">달성 ${ACH.filter(([id])=>g.achievements[id]).length} / ${ACH.length}개 · Prestige 후에도 유지</div>`+ACH.map(([id,title,desc])=>`<div class="achievement ${g.achievements[id]?"done":""}"><div class="item-title">${g.achievements[id]?"✅":"⬜"} ${title}</div><div class="item-desc">${desc}</div></div>`).join("");
 }
 function renderMissions(){
  $("missions").innerHTML=MISS.map(([id,title,reward,test])=>{const ready=test(g),claimed=!!g.claimed[id];return `<div class="mission ${claimed?"done":""}"><div class="mission-row"><div><div class="item-title">${claimed?"✅":"🎯"} ${title}</div><div class="item-desc">보상 ${reward}</div></div><button class="claim" data-mission="${id}" ${!ready||claimed?"disabled":""}>${claimed?"완료":"받기"}</button></div></div>`;}).join("");

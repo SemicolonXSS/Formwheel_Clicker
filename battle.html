@@ -27,7 +27,34 @@ function subscribe(c){unsubscribe?.();code=c;$("join").classList.add("hidden");$
 async function authReady(){if(auth.currentUser)return;try{await signInAnonymously(auth)}catch(e){if(e.code==="auth/operation-not-allowed"||e.code==="auth/admin-restricted-operation"){console.warn("Anonymous sign-in disabled; trying database access under existing rules.");return}throw e}}
 function error(e){const msg=e?.code==="PERMISSION_DENIED"||e?.code==="permission-denied"?"Firebase Database Rules에서 formwheelBattles 경로 접근이 거부됐어요.":e?.code==="auth/operation-not-allowed"?"Firebase 익명 로그인이 비활성화되어 있어요.":e?.message||String(e);$("joinStatus").textContent="연결 실패: "+msg;console.error("Battle connection",e)}
 $("create").onclick=async()=>{if(locked)return;locked=true;try{await authReady();let c;for(let i=0;i<6;i++){c=Array.from(crypto.getRandomValues(new Uint8Array(6)),x=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[x%32]).join("");const r=await runTransaction(roomRef(c),v=>v===null?{host:id,phase:"waiting",createdAt:Date.now(),players:{[id]:{name:safeName($("name").value),score:0}}}:undefined,{applyLocally:false});if(r.committed){subscribe(c);return}}throw Error("방 코드 생성에 실패했어요.")}catch(e){error(e)}finally{locked=false}};
-$("enter").onclick=async()=>{if(locked)return;locked=true;try{await authReady();const c=$("codeInput").value.trim().toUpperCase();if(!/^[A-Z0-9]{6}$/.test(c))throw Error("6자리 방 코드를 입력하세요.");const r=await runTransaction(roomRef(c),v=>{if(!v||v.phase!=="waiting")return;if(v.players?.[id])return; if(Object.keys(v.players||{}).length>=2)return;v.players={...v.players,[id]:{name:safeName($("name").value),score:0}};return v},{applyLocally:false});if(!r.committed)throw Error("방이 없거나 이미 시작했거나 정원이 찼어요.");subscribe(c)}catch(e){error(e)}finally{locked=false}};
+$("enter").onclick=async()=>{if(locked)return;locked=true;const button=$("enter");button.disabled=true;$("joinStatus").textContent="방을 확인하고 있어요…";try{
+ await authReady();
+ const c=$("codeInput").value.replace(/[\\s-]/g,"").trim().toUpperCase();
+ if(!/^[A-Z0-9]{6}$/.test(c))throw Error("6자리 방 코드를 입력하세요.");
+ const target=roomRef(c);
+ // Important: Firebase RTDB transactions may first run on an empty local cache.
+ // Fetch the room before starting a transaction so an existing remote room
+ // isn't mistaken for a nonexistent room and rejected immediately.
+ const initial=(await get(target)).val();
+ if(!initial)throw Error("이 코드의 방이 존재하지 않아요. 방장에게 새 코드를 확인해 주세요.");
+ if(initial.phase!=="waiting")throw Error(initial.phase==="playing"?"이미 시작된 방이에요.":"이미 종료된 방이에요.");
+ if(!initial.players||Object.keys(initial.players).length>=2)throw Error("방 정원이 이미 찼어요 (2명).");
+ const result=await runTransaction(target,current=>{
+   if(!current||current.phase!=="waiting"||!current.players)return;
+   if(current.players[id])return current;
+   if(Object.keys(current.players).length>=2)return;
+   return {...current,players:{...current.players,[id]:{name:safeName($("name").value),score:0}}};
+ },{applyLocally:false});
+ if(!result.committed){
+   const newest=(await get(target)).val();
+   if(!newest)throw Error("참가하는 동안 방이 삭제됐어요.");
+   if(newest.phase!=="waiting")throw Error("참가하는 동안 대결이 시작되거나 종료됐어요.");
+   if(Object.keys(newest.players||{}).length>=2)throw Error("참가하는 동안 방 정원이 찼어요.");
+   throw Error("방 참가 트랜잭션이 취소됐어요. 한 번 더 눌러주세요.");
+ }
+ $("joinStatus").textContent="방 참가 완료!";
+ subscribe(c);
+ }catch(e){error(e)}finally{locked=false;button.disabled=false}};
 $("start").onclick=async()=>{if(!isHost||!room||Object.keys(room.players||{}).length!==2)return;try{const r=await runTransaction(roomRef(code),v=>{if(v?.host!==id||v.phase!=="waiting"||Object.keys(v.players||{}).length!==2)return;v.phase="playing";v.startedAt=Date.now();return v},{applyLocally:false});if(r.committed){score=money=0;power=1;auto=0;pc=20;ac=60;lastTick=Date.now();}}catch(e){say(e.message)}};
 $("leave").onclick=async()=>{if(!code)return;try{await runTransaction(roomRef(code),v=>{if(!v?.players?.[id])return;delete v.players[id];if(!Object.keys(v.players).length)return null;if(v.host===id)v.host=Object.keys(v.players)[0];if(v.phase==="playing")v.phase="finished";return v},{applyLocally:false})}finally{location.href="./index.html"}};
 $("copy").onclick=()=>navigator.clipboard.writeText(code);

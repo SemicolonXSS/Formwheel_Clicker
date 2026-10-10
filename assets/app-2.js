@@ -13,7 +13,7 @@ try{
  let submitting=false;
 
  async function loadTop(){
-  const snap=await get(query(ref(db,"clickerLeaderboardSeason2"),orderByChild("scoreKey"),limitToLast(20)));
+  const snap=await get(query(ref(db,"clickerLeaderboardSeason3"),orderByChild("scoreKey"),limitToLast(20)));
   const data=snap.exists()?snap.val():{};
   const list=Object.values(data).sort((a,b)=>String(b.scoreKey||"").localeCompare(String(a.scoreKey||"")));
   ui.render(list);
@@ -33,7 +33,7 @@ try{
 
  async function showRank(finalRecord){
   try{
-   const snap=await get(query(ref(db,"clickerLeaderboardSeason2"),orderByChild("scoreKey"),startAt(finalRecord.scoreKey)));
+   const snap=await get(query(ref(db,"clickerLeaderboardSeason3"),orderByChild("scoreKey"),startAt(finalRecord.scoreKey)));
    const count=snap.exists()?Object.keys(snap.val()).length:1;
    ui.rank(`내 최고 기록 · ${ui.formatScaled(finalRecord.score)}점 · 약 ${count}위`);
   }catch(e){console.warn("rank lookup",e);}
@@ -58,7 +58,7 @@ try{
     return;
    }
    ui.status("하루 1회 등록 가능 여부 확인 중...");
-   const playerRef=ref(db,"clickerLeaderboardSeason2/"+userId);
+   const playerRef=ref(db,"clickerLeaderboardSeason3/"+userId);
    const before=(await get(playerRef)).val();
    if(submittedToday(before)){
     ui.status("오늘 점수를 이미 등록했습니다 · 내일 00:00(KST)에 다시 등록 가능");

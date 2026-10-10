@@ -136,8 +136,13 @@ function checkMissionReset(){
  const timer=$("missionTimer"); if(timer)timer.textContent=`다음 초기화 ${m}:${String(s).padStart(2,"0")}`;
 }
 function updateAchievements(){for(const [id,,,test] of ACH)if(!g.achievements[id]&&test(g))g.achievements[id]=true;}
+let achievementsExpanded=false;
 function renderAchievements(){
- $("achievements").innerHTML=`<div class="item-desc" style="margin-bottom:12px">달성 ${ACH.filter(([id])=>g.achievements[id]).length} / ${ACH.length}개 · Prestige 후에도 유지</div>`+ACH.map(([id,title,desc])=>`<div class="achievement ${g.achievements[id]?"done":""}"><div class="item-title">${g.achievements[id]?"✅":"⬜"} ${title}</div><div class="item-desc">${desc}</div></div>`).join("");
+ const visible=achievementsExpanded?ACH:ACH.slice(0,3);
+ $("achievements").innerHTML=`<div class="item-desc" style="margin-bottom:12px">달성 ${ACH.filter(([id])=>g.achievements[id]).length} / ${ACH.length}개 · Prestige 후에도 유지</div>`+
+ visible.map(([id,title,desc])=>`<div class="achievement ${g.achievements[id]?"done":""}"><div class="item-title">${g.achievements[id]?"✅":"⬜"} ${title}</div><div class="item-desc">${desc}</div></div>`).join("")+
+ `<button type="button" id="toggleAchievements" class="small" style="margin-top:12px;width:100%" aria-expanded="${achievementsExpanded}">${achievementsExpanded?"업적 접기 ▲":"업적 더보기 ("+(ACH.length-3)+"개) ▼"}</button>`;
+ $("toggleAchievements").onclick=()=>{achievementsExpanded=!achievementsExpanded;renderAchievements();};
 }
 function renderMissions(){
  $("missions").innerHTML=MISS.map(([id,title,reward,test])=>{const ready=test(g),claimed=!!g.claimed[id];return `<div class="mission ${claimed?"done":""}"><div class="mission-row"><div><div class="item-title">${claimed?"✅":"🎯"} ${title}</div><div class="item-desc">보상 ${reward}</div></div><button class="claim" data-mission="${id}" ${!ready||claimed?"disabled":""}>${claimed?"완료":"받기"}</button></div></div>`;}).join("");

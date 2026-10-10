@@ -40,7 +40,42 @@ const ACH=[
 ["prestige3","새 출발 전문가","Prestige 3회 달성",g=>g.prestige>=3],
 ["prestige5","환생의 달인","Prestige 5회 달성",g=>g.prestige>=5],
 ["prestige10","열 번의 시작","Prestige 10회 달성",g=>g.prestige>=10],
-["prestige25","불멸의 클릭러","Prestige 25회 달성",g=>g.prestige>=25]
+["prestige25","불멸의 클릭러","Prestige 25회 달성",g=>g.prestige>=25],
+["click50","손풀기 완료","50번 클릭하기",g=>g.totalClicks>=50],
+["click250","반복의 힘","250번 클릭하기",g=>g.totalClicks>=250],
+["click2500","클릭 고수","2,500번 클릭하기",g=>g.totalClicks>=2500],
+["click5000","쉬지 않는 손","5,000번 클릭하기",g=>g.totalClicks>=5000],
+["click25000","끈기의 증명","25,000번 클릭하기",g=>g.totalClicks>=25000],
+["click50000","초인적인 클릭","50,000번 클릭하기",g=>g.totalClicks>=50000],
+["click250000","클릭 전설 II","250,000번 클릭하기",g=>g.totalClicks>=250000],
+["clickMillion","백만 번의 클릭","1,000,000번 클릭하기",g=>g.totalClicks>=1000000],
+["score500","다섯 배의 성장","최고 점수 500점 달성",g=>g.highScore>=toScaled('500')],
+["score5000","오천점 정복","최고 점수 5,000점 달성",g=>g.highScore>=toScaled('5000')],
+["score50000","오만점 정복","최고 점수 50,000점 달성",g=>g.highScore>=toScaled('50000')],
+["score500000","오십만점 정복","최고 점수 500,000점 달성",g=>g.highScore>=toScaled('500000')],
+["scoreTenMillion","천만장자","최고 점수 10,000,000점 달성",g=>g.highScore>=toScaled('10000000')],
+["scoreHundredMillion","억만장자","최고 점수 100,000,000점 달성",g=>g.highScore>=toScaled('100000000')],
+["scoreTrillion","조 단위의 세계","최고 점수 1,000,000,000,000점 달성",g=>g.highScore>=toScaled('1000000000000')],
+["lifetime100","첫 저축","누적 획득 100점 달성",g=>g.lifetime>=toScaled('100')],
+["lifetime1000","천천히 부자되기","누적 획득 1,000점 달성",g=>g.lifetime>=toScaled('1000')],
+["lifetime100000","꾸준한 수입","누적 획득 100,000점 달성",g=>g.lifetime>=toScaled('100000')],
+["lifetimeTenMillion","천만의 발자취","누적 획득 10,000,000점 달성",g=>g.lifetime>=toScaled('10000000')],
+["lifetimeTrillion","평생의 기록","누적 획득 1,000,000,000,000점 달성",g=>g.lifetime>=toScaled('1000000000000')],
+["power5","단단한 손가락","클릭 파워 5 이상 달성",g=>g.power>=toScaled('5')],
+["power50","손끝의 힘","클릭 파워 50 이상 달성",g=>g.power>=toScaled('50')],
+["power500","파워 상승","클릭 파워 500 이상 달성",g=>g.power>=toScaled('500')],
+["power10000","거대한 한 방","클릭 파워 10,000 이상 달성",g=>g.power>=toScaled('10000')],
+["auto5","작은 로봇","초당 자동 생산 5 이상 달성",g=>g.auto>=toScaled('5')],
+["auto50","자동화 작업장","초당 자동 생산 50 이상 달성",g=>g.auto>=toScaled('50')],
+["auto500","생산 라인 확장","초당 자동 생산 500 이상 달성",g=>g.auto>=toScaled('500')],
+["auto10000","대형 자동 공장","초당 자동 생산 10,000 이상 달성",g=>g.auto>=toScaled('10000')],
+["upgrade5","기술 도입","한 Prestige 주기에서 업그레이드 5회 구매",g=>g.upgrades>=5],
+["upgrade20","투자의 달인","한 Prestige 주기에서 업그레이드 20회 구매",g=>g.upgrades>=20],
+["upgrade50","업그레이드 전문가","한 Prestige 주기에서 업그레이드 50회 구매",g=>g.upgrades>=50],
+["upgrade100","완벽한 설비","한 Prestige 주기에서 업그레이드 100회 구매",g=>g.upgrades>=100],
+["prestige2","다시 시작","Prestige 2회 달성",g=>g.prestige>=2],
+["prestige15","열다섯 번의 도전","Prestige 15회 달성",g=>g.prestige>=15],
+["prestige50","반복의 제왕","Prestige 50회 달성",g=>g.prestige>=50]
 ];
 const MISSION_PERIOD=60*60*1000;
 const MISS=[
@@ -116,7 +151,7 @@ function update(){
  $("powerPrice").textContent=np===null?"MAX":fmt(pp);$("autoPrice").textContent=na===null?"MAX":fmt(ap);
  $("powerDesc").textContent=np===null?"최대 클릭 파워입니다.":`클릭 파워를 ${fmt(g.power)} → ${fmt(np)}로 증가`;
  $("autoDesc").textContent=na===null?"최대 자동 클릭입니다.":`자동 클릭을 ${fmt(g.auto)} → ${fmt(na)} /초로 증가`;
- $("powerUpgrade").disabled=np===null||g.score<pp;$("autoUpgrade").disabled=na===null||g.score<ap;$("prestigeButton").disabled=g.highScore<PRESTIGE_REQ;
+ $("powerUpgrade").disabled=np===null||g.score<pp;$("autoUpgrade").disabled=na===null||g.score<ap;$("prestigeButton").disabled=g.score<PRESTIGE_REQ;
  renderAchievements();renderMissions();
 }
 function addScore(v){const n=BigInt(v);g.score+=n;g.lifetime+=n;if(g.score>g.highScore)g.highScore=g.score;}
@@ -126,7 +161,7 @@ $("clickButton").onclick=()=>{addScore(gain(g.power));g.totalClicks++;maybeBonus
 $("powerUpgrade").onclick=()=>{const n=next(P,g.power),p=price(10,Math.max(0,powerIndex()));if(n===null||g.score<p)return;g.score-=p;g.power=n;g.upgrades++;update();save();};
 $("autoUpgrade").onclick=()=>{collectAuto();const n=next(A,g.auto),p=price(50,Math.max(0,autoIndex()));if(n===null||g.score<p)return;g.score-=p;g.auto=n;g.upgrades++;update();save();};
 function claimMission(id){const m=MISS.find(x=>x[0]===id);if(!m||g.claimed[id]||!m[3](g))return;g.claimed[id]=true;addScore(m[4]);flash("🎁 미션 보상 +"+fmt(m[4]));update();save();}
-$("prestigeButton").onclick=()=>{collectAuto();if(g.highScore<PRESTIGE_REQ)return;if(!confirm("현재 점수와 업그레이드를 초기화하고 Prestige할까요?"))return;g.prestige++;g.score=0n;g.power=P[0];g.auto=A[0];g.upgrades=0;flash("✨ Prestige "+g.prestige+"회!");update();save();};
+$("prestigeButton").onclick=()=>{collectAuto();if(g.score<PRESTIGE_REQ)return;if(!confirm("현재 점수와 업그레이드를 초기화하고 Prestige할까요?"))return;collectAuto();if(g.score<PRESTIGE_REQ)return;g.prestige++;g.score=0n;g.power=P[0];g.auto=A[0];g.upgrades=0;flash("✨ Prestige "+g.prestige+"회!");update();save();};
 let lastAutoAt=Date.now(),autoRemainder=0n;
 function collectAuto(at=Date.now()){
  const elapsed=Math.min(28800000,Math.max(0,at-lastAutoAt));lastAutoAt=at;

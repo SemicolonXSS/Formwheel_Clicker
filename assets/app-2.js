@@ -1,6 +1,6 @@
 const ui=window.ClickerOnline;
 try{
- const [{initializeApp},{getDatabase,ref,query,orderByChild,limitToLast,startAt,get,runTransaction},{getAuth,signInAnonymously,onAuthStateChanged}]=await Promise.all([
+ const [{initializeApp},{getDatabase,ref,query,orderByChild,limitToLast,startAt,get,runTransaction,onValue,serverTimestamp},{getAuth,signInAnonymously,onAuthStateChanged}]=await Promise.all([
   import("https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js"),
   import("https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js"),
   import("https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js")
@@ -8,21 +8,25 @@ try{
  const config={apiKey:"AIzaSyBreTSe1m0-xlbF4aupnU5isRZCihR25IE",authDomain:"formwheel.firebaseapp.com",databaseURL:"https://formwheel-default-rtdb.firebaseio.com",projectId:"formwheel",storageBucket:"formwheel.firebasestorage.app",messagingSenderId:"431583088241",appId:"1:431583088241:web:74e0e34ea1e3e1170c55d0",measurementId:"G-T372YXDF8D"};
  const app=initializeApp(config),db=getDatabase(app),auth=getAuth(app);let uid=null;
  const key=s=>String(s).padStart(140,"0");
+ let clockOffset=0,clockReady=false,topRecords=[];
+ onValue(ref(db,".info/serverTimeOffset"),s=>{clockOffset=Number(s.val())||0;clockReady=true});
+ const serverNow=()=>Date.now()+clockOffset;
  const koreaDay=ms=>new Intl.DateTimeFormat("sv-SE",{timeZone:"Asia/Seoul",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(ms));
- const submittedToday=record=>!!record&&(record.lastSubmissionDay===koreaDay(Date.now())||(!record.lastSubmissionDay&&record.updatedAt&&koreaDay(record.updatedAt)===koreaDay(Date.now())));
+ const submittedToday=record=>!!record&&(record.lastSubmissionDay===koreaDay(serverNow())||(!record.lastSubmissionDay&&record.updatedAt&&koreaDay(record.updatedAt)===koreaDay(serverNow())));
  let submitting=false;
 
  async function loadTop(){
-  // Read the season leaderboard without requiring a Firebase .indexOn rule.
-  const snap=await get(ref(db,"clickerLeaderboardSeason3"));
+  // Fetch only the visible page; scoreKey has a matching database index.
+  const snap=await get(query(ref(db,"clickerLeaderboardSeason3"),orderByChild("scoreKey"),limitToLast(20)));
   const data=snap.exists()?snap.val():{};
-  const list=Object.values(data).sort((a,b)=>String(b.scoreKey||"").localeCompare(String(a.scoreKey||""))).slice(0,20);
-  ui.render(list);
+  const list=Object.values(data).filter(r=>r&&/^\d{1,140}$/.test(String(r.score))&&/^\d{140}$/.test(String(r.scoreKey))).sort((a,b)=>String(b.scoreKey||"").localeCompare(String(a.scoreKey||""))).slice(0,20);
+  topRecords=list;ui.render(list);
   ui.status(auth.currentUser?"온라인 리더보드 연결됨 · 사용자 인증 완료":"온라인 리더보드 연결됨 · 점수 등록 시 사용자 인증");
   return true;
  }
 
  async function ensureAuth(){
+  await auth.authStateReady();
   if(auth.currentUser){uid=auth.currentUser.uid;return uid;}
   try{
    const r=await signInAnonymously(auth);uid=r.user.uid;return uid;
@@ -33,19 +37,18 @@ try{
  }
 
  async function showRank(finalRecord){
-  try{
-   const snap=await get(ref(db,"clickerLeaderboardSeason3"));
-   const records=snap.exists()?Object.values(snap.val()):[];
-   const count=Math.max(1,records.filter(r=>String(r.scoreKey||"")>=String(finalRecord.scoreKey)).length);
-   ui.rank(`내 최고 기록 · ${ui.formatScaled(finalRecord.score)}점 · 약 ${count}위`);
-  }catch(e){console.warn("rank lookup",e);}
+  const index=topRecords.findIndex(r=>r.uid===finalRecord.uid);
+  const rank=index<0?"상위 20위 밖":(1+topRecords.filter(r=>String(r.scoreKey)>String(finalRecord.scoreKey)).length)+"위";
+  ui.rank(`내 최고 기록 · ${ui.formatScaled(finalRecord.score)}점 · ${rank}`);
  }
 
  async function submit(){
   if(submitting)return;
+  if(!clockReady){ui.status("서버 시간을 확인 중이에요. 잠시 후 다시 등록해 주세요.");return}
   const name=ui.getNickname();
   if(!name){alert("닉네임을 입력해주세요.");return;}
   const score=ui.getScore();
+  if(!/^[0-9]{1,140}$/.test(score)){ui.status("점수 형식이 올바르지 않습니다.");return;}
   if(BigInt(score)<=0n){alert("먼저 점수를 만들어주세요!");return;}
   submitting=true;
   const button=document.getElementById("submitButton");
@@ -77,8 +80,8 @@ try{
      name:isBetter?name:(current.name||name),
      score:isBetter?score:String(current.score),
      scoreKey:isBetter?key(score):(current.scoreKey||key(current.score)),
-     updatedAt:Date.now(),
-     lastSubmissionDay:koreaDay(Date.now())
+     updatedAt:serverTimestamp(),
+     lastSubmissionDay:koreaDay(serverNow())
     };
    });
    if(!result.committed){

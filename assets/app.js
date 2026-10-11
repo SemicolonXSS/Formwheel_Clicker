@@ -145,7 +145,7 @@ function renderMissions(){
  $("missions").innerHTML=MISS.map(([id,title,reward,test])=>{const ready=test(g),claimed=!!g.claimed[id];return `<div class="mission ${claimed?"done":""}"><div class="mission-row"><div><div class="item-title">${claimed?"✅":"🎯"} ${title}</div><div class="item-desc">보상 ${reward}</div></div><button class="claim" data-mission="${id}" ${!ready||claimed?"disabled":""}>${claimed?"완료":"받기"}</button></div></div>`;}).join("");
  document.querySelectorAll("[data-mission]").forEach(b=>b.onclick=()=>claimMission(b.dataset.mission));
 }
-function update(){
+function update(){\n if(typeof renderThemes==="function" && document.getElementById("themeList")){document.querySelectorAll(".theme-action[data-theme-id]").forEach(b=>{const t=THEMES.find(x=>x.id===b.dataset.themeId);if(t&&cosmetics.active!==t.id)b.disabled=!cosmetics.owned.includes(t.id)&&g.score<t.price;});}
  checkMissionReset();
  updateAchievements();
  $("score").textContent=compact(g.score);$("power").textContent=fmt(g.power);$("auto").textContent=fmt(g.auto)+" /초";$("totalClicks").textContent=g.totalClicks.toLocaleString("ko-KR");$("highScore").textContent=compact(g.highScore);$("clickPowerText").textContent="+"+fmt(gain(g.power));$("multi").textContent="x"+(1+g.prestige*.25).toFixed(2);
@@ -181,7 +181,50 @@ function collectAuto(at=Date.now()){
 }
 setInterval(()=>{collectAuto();update();save();},1000);
 setInterval(save,5000);addEventListener("beforeunload",save);addEventListener("visibilitychange",()=>{collectAuto();update();save();});
-load();update();save();
+
+const THEME_SAVE_KEY="formwheel_clicker_cosmetics_v1";
+const THEMES=[
+ {id:"classic",name:"클래식",emoji:"⚫",price:0n,desc:"익숙한 기본 디자인"},
+ {id:"ocean",name:"오션",emoji:"🌊",price:toScaled("5000"),desc:"시원한 파란 바다"},
+ {id:"forest",name:"포레스트",emoji:"🌿",price:toScaled("25000"),desc:"차분한 숲속 분위기"},
+ {id:"sunset",name:"선셋",emoji:"🌇",price:toScaled("100000"),desc:"따뜻한 노을빛"},
+ {id:"neon",name:"네온",emoji:"💜",price:toScaled("500000"),desc:"빛나는 사이버 공간"},
+ {id:"galaxy",name:"갤럭시",emoji:"🌌",price:toScaled("2000000"),desc:"우주를 담은 클릭"},
+ {id:"royal",name:"로열 골드",emoji:"👑",price:toScaled("10000000"),desc:"최고급 황금 테마"}
+];
+let cosmetics={owned:["classic"],active:"classic"};
+function loadCosmetics(){
+ try{
+  const d=JSON.parse(localStorage.getItem(THEME_SAVE_KEY)||"null");
+  if(d&&Array.isArray(d.owned)){
+   cosmetics.owned=[...new Set(["classic",...d.owned.filter(id=>THEMES.some(t=>t.id===id))])];
+   cosmetics.active=cosmetics.owned.includes(d.active)?d.active:"classic";
+  }
+ }catch(e){console.warn("theme load",e);}
+ applyTheme();
+}
+function saveCosmetics(){try{localStorage.setItem(THEME_SAVE_KEY,JSON.stringify(cosmetics));}catch(e){console.warn("theme save",e);}}
+function applyTheme(){document.body.dataset.clickerTheme=cosmetics.active;}
+function renderThemes(){
+ const root=$("themeList");if(!root)return;
+ root.innerHTML=THEMES.map(t=>{
+  const owned=cosmetics.owned.includes(t.id),active=cosmetics.active===t.id;
+  return `<div class="theme-item" data-theme-preview="${t.id}"><div class="theme-swatch theme-swatch-${t.id}" aria-hidden="true">${t.emoji}</div><div class="theme-copy"><strong>${t.name}</strong><span>${t.desc}</span><small>${owned?"영구 소장":fmt(t.price)+"점"}</small></div><button class="small theme-action" data-theme-id="${t.id}" ${active?'disabled':''} ${!owned&&g.score<t.price?'disabled':''}>${active?"적용 중":owned?"장착":"구매"}</button></div>`;
+ }).join("");
+ root.querySelectorAll("[data-theme-id]").forEach(b=>b.onclick=()=>{
+  const t=THEMES.find(x=>x.id===b.dataset.themeId);if(!t)return;
+  if(!cosmetics.owned.includes(t.id)){
+   collectAuto();
+   if(g.score<t.price){flash("점수가 부족해요!");update();return;}
+   if(!confirm(t.name+" 테마를 "+fmt(t.price)+"점에 영구 구매할까요?"))return;
+   if(g.score<t.price)return;
+   g.score-=t.price;cosmetics.owned.push(t.id);
+  }
+  cosmetics.active=t.id;saveCosmetics();applyTheme();save();update();renderThemes();
+  flash("🎨 "+t.name+" 테마 적용!");
+ });
+}
+\nloadCosmetics();load();update();renderThemes();save();
 
 window.ClickerOnline={
  getScore:()=>g.highScore.toString(),

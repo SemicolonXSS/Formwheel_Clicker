@@ -224,7 +224,8 @@ function renderThemes(){
   flash("🎨 "+t.name+" 테마 적용!");
  });
 }
-\nloadCosmetics();load();update();renderThemes();save();
+
+loadCosmetics();load();update();renderThemes();save();
 
 window.ClickerOnline={
  getScore:()=>g.highScore.toString(),

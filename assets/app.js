@@ -145,7 +145,8 @@ function renderMissions(){
  $("missions").innerHTML=MISS.map(([id,title,reward,test])=>{const ready=test(g),claimed=!!g.claimed[id];return `<div class="mission ${claimed?"done":""}"><div class="mission-row"><div><div class="item-title">${claimed?"✅":"🎯"} ${title}</div><div class="item-desc">보상 ${reward}</div></div><button class="claim" data-mission="${id}" ${!ready||claimed?"disabled":""}>${claimed?"완료":"받기"}</button></div></div>`;}).join("");
  document.querySelectorAll("[data-mission]").forEach(b=>b.onclick=()=>claimMission(b.dataset.mission));
 }
-function update(){\n if(typeof renderThemes==="function" && document.getElementById("themeList")){document.querySelectorAll(".theme-action[data-theme-id]").forEach(b=>{const t=THEMES.find(x=>x.id===b.dataset.themeId);if(t&&cosmetics.active!==t.id)b.disabled=!cosmetics.owned.includes(t.id)&&g.score<t.price;});}
+function update(){
+ if(typeof renderThemes==="function" && document.getElementById("themeList")){document.querySelectorAll(".theme-action[data-theme-id]").forEach(b=>{const t=THEMES.find(x=>x.id===b.dataset.themeId);if(t&&cosmetics.active!==t.id)b.disabled=!cosmetics.owned.includes(t.id)&&g.score<t.price;});}
  checkMissionReset();
  updateAchievements();
  $("score").textContent=compact(g.score);$("power").textContent=fmt(g.power);$("auto").textContent=fmt(g.auto)+" /초";$("totalClicks").textContent=g.totalClicks.toLocaleString("ko-KR");$("highScore").textContent=compact(g.highScore);$("clickPowerText").textContent="+"+fmt(gain(g.power));$("multi").textContent="x"+(1+g.prestige*.25).toFixed(2);

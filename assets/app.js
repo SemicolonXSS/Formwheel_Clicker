@@ -160,21 +160,33 @@ function update(){
 function addScore(v){const n=BigInt(v);g.score+=n;g.lifetime+=n;if(g.score>g.highScore)g.highScore=g.score;}
 function flash(t){$("bonusText").textContent=t;clearTimeout(flash.t);flash.t=setTimeout(()=>$("bonusText").textContent="",2600);}
 function maybeBonus(){if(Date.now()-g.lastBonus<10000||Math.random()>=.01)return;g.lastBonus=Date.now();const b=gain(g.power)*50n;addScore(b);flash("✨ 랜덤 보너스! +"+compact(b));}
-$("clickButton").onclick=()=>{addScore(gain(g.power));g.totalClicks++;maybeBonus();update();save();};
-// Ignore keyboard auto-repeat: one physical key press earns only one click.
-$("clickButton").addEventListener("keydown",e=>{
+// Physical pointer clicks work normally; held Enter/Space cannot farm repeat clicks.
+const clickControl=$("clickButton");
+let clickKeyHeld=false;
+function awardClick(){addScore(gain(g.power));g.totalClicks++;maybeBonus();update();save();}
+clickControl.addEventListener("click",e=>{
+ // A keyboard-generated native click has detail=0. Keyboard input is handled below.
+ if(e.detail===0 && e.isTrusted)return;
+ awardClick();
+});
+clickControl.addEventListener("keydown",e=>{
  if(e.key!=="Enter"&&e.key!==" ")return;
  e.preventDefault();
- if(e.repeat)return;
- $("clickButton").click();
+ if(e.repeat||clickKeyHeld)return;
+ clickKeyHeld=true;
+ awardClick();
 });
-$("clickButton").addEventListener("keyup",e=>{
- if(e.key==="Enter"||e.key===" ")e.preventDefault();
+clickControl.addEventListener("keyup",e=>{
+ if(e.key!=="Enter"&&e.key!==" ")return;
+ e.preventDefault();
+ clickKeyHeld=false;
 });
+clickControl.addEventListener("blur",()=>{clickKeyHeld=false;});
+window.addEventListener("blur",()=>{clickKeyHeld=false;});
 $("powerUpgrade").onclick=()=>{const n=next(P,g.power),p=price(10,Math.max(0,powerIndex()));if(n===null||g.score<p)return;g.score-=p;g.power=n;g.upgrades++;update();save();};
 $("autoUpgrade").onclick=()=>{collectAuto();const n=next(A,g.auto),p=price(50,Math.max(0,autoIndex()));if(n===null||g.score<p)return;g.score-=p;g.auto=n;g.upgrades++;update();save();};
 function claimMission(id){const m=MISS.find(x=>x[0]===id);if(!m||g.claimed[id]||!m[3](g))return;g.claimed[id]=true;addScore(m[4]);flash("🎁 미션 보상 +"+fmt(m[4]));update();save();}
-$("prestigeButton").onclick=()=>{collectAuto();if(g.score<PRESTIGE_REQ)return;if(!confirm("현재 점수와 업그레이드를 초기화하고 Prestige할까요?"))return;collectAuto();if(g.score<PRESTIGE_REQ)return;g.prestige++;g.score=0n;g.power=P[0];g.auto=A[0];g.upgrades=0;flash("✨ Prestige "+g.prestige+"회!");update();save();};
+$("prestigeButton").onclick=()=>{collectAuto();if(g.score<PRESTIGE_REQ)return;if(!confirm("현재 점수와 업그레이드를 초기화하고 Prestige할까요?"))return;collectAuto();if(g.score<PRESTIGE_REQ)return;g.prestige++;g.score=0n;g.power=P[0];g.auto=A[0];g.upgrades=0;autoRemainder=0n;lastAutoAt=Date.now();flash("✨ Prestige "+g.prestige+"회!");update();save();};
 let lastAutoAt=Date.now(),autoRemainder=0n;
 function collectAuto(at=Date.now()){
  const elapsed=Math.min(28800000,Math.max(0,at-lastAutoAt));lastAutoAt=at;

@@ -163,7 +163,7 @@ function maybeBonus(){if(Date.now()-g.lastBonus<10000||Math.random()>=.01)return
 // Physical pointer clicks work normally; held Enter/Space cannot farm repeat clicks.
 const clickControl=$("clickButton");
 let clickKeyHeld=false;
-function awardClick(){addScore(gain(g.power));g.totalClicks++;maybeBonus();update();save();}
+function awardClick(){addScore(gain(g.power));g.totalClicks++;maybeBonus();update();save();if(g.totalClicks>=100 && window.opener && !window.opener.closed)window.opener.postMessage({type:"formwheel-spotlight-result-v1",project:"Clicker",value:g.totalClicks},"https://semicolonxss.github.io");}
 clickControl.addEventListener("click",e=>{
  // A keyboard-generated native click has detail=0. Keyboard input is handled below.
  if(e.detail===0 && e.isTrusted)return;

@@ -16,3 +16,6 @@ body[data-clicker-theme="neon"]{background:#f2eaff}body[data-clicker-theme="neon
 body[data-clicker-theme="galaxy"]{background:#e7e8ff}body[data-clicker-theme="galaxy"] .click-button{background:radial-gradient(circle at 30% 30%,#818cf8,#312e81 75%);box-shadow:0 12px 35px #4338ca66}body[data-clicker-theme="galaxy"] .hero h1{color:#3730a3}
 body[data-clicker-theme="royal"]{background:#fff8df}body[data-clicker-theme="royal"] .click-button{background:linear-gradient(145deg,#fef08a,#d97706 65%,#78350f);color:#422006;box-shadow:0 15px 35px #ca8a0470}body[data-clicker-theme="royal"] .hero h1{color:#a16207}
 @media(max-width:760px){.theme-list{grid-template-columns:1fr}.theme-item{flex-wrap:wrap}}
+
+/* Keep rapid tapping on CLICK from triggering mobile double-tap page zoom. */
+#clickButton{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}

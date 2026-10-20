@@ -146,7 +146,6 @@ function renderMissions(){
  document.querySelectorAll("[data-mission]").forEach(b=>b.onclick=()=>claimMission(b.dataset.mission));
 }
 function update(){
- if(rapid.start)renderRapid();
  if(typeof renderThemes==="function" && document.getElementById("themeList")){document.querySelectorAll(".theme-action[data-theme-id]").forEach(b=>{const t=THEMES.find(x=>x.id===b.dataset.themeId);if(t&&cosmetics.active!==t.id)b.disabled=!cosmetics.owned.includes(t.id)&&g.score<t.price;});}
  checkMissionReset();
  updateAchievements();
@@ -184,8 +183,8 @@ clickControl.addEventListener("keyup",e=>{
 });
 clickControl.addEventListener("blur",()=>{clickKeyHeld=false;});
 window.addEventListener("blur",()=>{clickKeyHeld=false;});
-$("powerUpgrade").onclick=()=>{const n=next(P,g.power),p=price(10,Math.max(0,powerIndex()));if(n===null||g.score<p)return;g.score-=p;g.power=n;g.upgrades++;rapidUpgradeCount++;persistRapid();update();save();};
-$("autoUpgrade").onclick=()=>{collectAuto();const n=next(A,g.auto),p=price(50,Math.max(0,autoIndex()));if(n===null||g.score<p)return;g.score-=p;g.auto=n;g.upgrades++;rapidUpgradeCount++;persistRapid();update();save();};
+$("powerUpgrade").onclick=()=>{const n=next(P,g.power),p=price(10,Math.max(0,powerIndex()));if(n===null||g.score<p)return;g.score-=p;g.power=n;g.upgrades++;update();save();};
+$("autoUpgrade").onclick=()=>{collectAuto();const n=next(A,g.auto),p=price(50,Math.max(0,autoIndex()));if(n===null||g.score<p)return;g.score-=p;g.auto=n;g.upgrades++;update();save();};
 function claimMission(id){const m=MISS.find(x=>x[0]===id);if(!m||g.claimed[id]||!m[3](g))return;g.claimed[id]=true;addScore(m[4]);flash("🎁 미션 보상 +"+fmt(m[4]));update();save();}
 $("prestigeButton").onclick=()=>{collectAuto();if(g.score<PRESTIGE_REQ)return;if(!confirm("현재 점수와 업그레이드를 초기화하고 Prestige할까요?"))return;collectAuto();if(g.score<PRESTIGE_REQ)return;g.prestige++;g.score=0n;g.power=P[0];g.auto=A[0];g.upgrades=0;autoRemainder=0n;lastAutoAt=Date.now();flash("✨ Prestige "+g.prestige+"회!");update();save();};
 let lastAutoAt=Date.now(),autoRemainder=0n;
@@ -196,65 +195,6 @@ function collectAuto(at=Date.now()){
 setInterval(()=>{collectAuto();update();save();},1000);
 setInterval(save,5000);addEventListener("beforeunload",save);addEventListener("visibilitychange",()=>{collectAuto();update();save();});
 
-
-// Rapid beta: local-only currency until trusted server-side validation is deployed.
-const RAPID_EXCHANGE_COST=toScaled("10000");
-const RAPID_EXCHANGE_REWARD=10;
-const RAPID_MISSIONS=[
- {id:"click100",label:"클릭 100회",reward:5,progress:()=>Math.max(0,g.totalClicks-rapid.start.clicks),target:100},
- {id:"upgrade3",label:"업그레이드 3회 구매",reward:10,progress:()=>Math.max(0,rapidUpgradeCount-rapid.start.upgrades),target:3},
- {id:"earn1000",label:"점수 1,000점 획득",reward:10,progress:()=>g.lifetime-BigInt(rapid.start.lifetime),target:toScaled("1000")}
-];
-const RAPID_KEY="formwheel_clicker_rapid_beta_v1";
-let rapidUpgradeCount=0;
-let rapid={balance:0,claimed:{},start:null};
-function saveRapid(){try{localStorage.setItem(RAPID_KEY,JSON.stringify(rapid));}catch(e){console.warn("rapid save",e);}}
-function loadRapid(){
- try {
-  const data=JSON.parse(localStorage.getItem(RAPID_KEY)||"null");
-  if(data&&typeof data==="object"){
-   rapid.balance=Number.isSafeInteger(data.balance)&&data.balance>=0?data.balance:0;
-   rapid.claimed=data.claimed&&typeof data.claimed==="object"?data.claimed:{};
-   rapid.start=data.start&&typeof data.start==="object"?data.start:null;
-   rapidUpgradeCount=Number.isSafeInteger(data.upgradesCount)&&data.upgradesCount>=0?data.upgradesCount:0;
-  }
- }catch(e){console.warn("rapid load",e);}
- if(!rapid.start)rapid.start={clicks:g.totalClicks,upgrades:rapidUpgradeCount,lifetime:g.lifetime.toString()};
- saveRapid();
-}
-function persistRapid(){rapid.upgradesCount=rapidUpgradeCount;saveRapid();}
-function rapidNotice(message){const el=$("rapidMessage");if(el)el.textContent=message;}
-function renderRapid(){
- const balance=$("rapidBalance"),root=$("rapidMissions"),exchange=$("rapidExchange");
- if(!balance||!root||!exchange)return;
- balance.textContent=rapid.balance.toLocaleString("ko-KR")+" R";
- exchange.disabled=g.score<RAPID_EXCHANGE_COST||!Number.isSafeInteger(rapid.balance+RAPID_EXCHANGE_REWARD);
- root.innerHTML=RAPID_MISSIONS.map(m=>{
-  const done=!!rapid.claimed[m.id];
-  const p=m.progress(),ready=p>=m.target;
-  const current=typeof p==="bigint"?compact(p):p.toLocaleString("ko-KR");
-  const target=typeof m.target==="bigint"?fmt(m.target):m.target.toLocaleString("ko-KR");
-  return '<div class="mission"><div class="mission-row"><div><div class="item-title">'+m.label+'</div><div class="item-desc">'+(done?"지급 완료":current+" / "+target)+" · +"+m.reward+" R</div></div><button type="button" class="claim" data-rapid-mission="'+m.id+'" '+(!ready||done?"disabled":"")+'>'+(done?"완료":"받기")+'</button></div></div>';
- }).join("");
- root.querySelectorAll("[data-rapid-mission]").forEach(button=>button.onclick=()=>{
-  const mission=RAPID_MISSIONS.find(m=>m.id===button.dataset.rapidMission);
-  if(!mission||rapid.claimed[mission.id]||mission.progress()<mission.target)return;
-  if(!Number.isSafeInteger(rapid.balance+mission.reward))return;
-  rapid.claimed[mission.id]=true;rapid.balance+=mission.reward;
-  persistRapid();renderRapid();rapidNotice("🎁 "+mission.reward+" R 지급!");
- });
-}
-function setupRapid(){
- loadRapid();
- $("rapidExchange")?.addEventListener("click",()=>{
-  collectAuto();
-  if(g.score<RAPID_EXCHANGE_COST){rapidNotice("교환할 점수가 부족해요.");return;}
-  if(!Number.isSafeInteger(rapid.balance+RAPID_EXCHANGE_REWARD)){rapidNotice("잔액 한도를 초과했어요.");return;}
-  g.score-=RAPID_EXCHANGE_COST;rapid.balance+=RAPID_EXCHANGE_REWARD;
-  persistRapid();save();update();rapidNotice("🪙 10 R 교환 완료!");
- });
- renderRapid();
-}
 
 const THEME_SAVE_KEY="formwheel_clicker_cosmetics_v1";
 const THEMES=[
@@ -299,7 +239,7 @@ function renderThemes(){
  });
 }
 
-loadCosmetics();load();setupRapid();update();renderThemes();save();
+loadCosmetics();load();update();renderThemes();save();
 
 window.ClickerOnline={
  getScore:()=>g.highScore.toString(),

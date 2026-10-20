@@ -44,6 +44,16 @@
 <section class="card panel"><div class="section-title">🎯 보상 미션 <span id="missionTimer" style="float:right;font-size:13px;color:#777b84"></span></div><div id="missions"></div></section>
 </div>
 
+<section class="card panel" id="rapidPanel" style="margin:18px 0;border:2px solid #f5c35c">
+<div class="section-title">🪙 Rapid 지갑 <span style="font-size:12px;color:#777">베타 · 이 브라우저에 저장</span></div>
+<p style="margin:8px 0">내 Rapid: <strong id="rapidBalance" style="font-size:25px">0 R</strong></p>
+<p class="item-desc">Clicker 점수 10,000점 → Rapid 10 R · 교환 시 점수가 차감됩니다.</p>
+<button type="button" class="small" id="rapidExchange">10,000점 교환하기</button>
+<div id="rapidMessage" role="status" aria-live="polite" style="margin:8px 0;font-size:13px"></div>
+<div class="section-title" style="margin-top:20px">🎯 Rapid 미션 (각 1회)</div>
+<div id="rapidMissions"></div>
+<p class="item-desc" style="margin-top:12px">현재는 로컬 베타입니다. 다른 기기·프로젝트와 잔액이 동기화되지 않으며 실제 공용 화폐로 사용할 수 없습니다. 서버 검증 도입 전까지 정식 화폐가 아닙니다.</p>
+</section>
 <section class="card panel theme-shop"><div class="section-title">🎨 테마 상점</div><p class="theme-note">점수로 테마를 영구 구매하세요. 테마 가격은 Prestige 배수와 무관하고, 구매한 테마는 Prestige 후에도 유지됩니다. (이 브라우저에 저장)</p><div id="themeList" class="theme-list"></div></section>
 <section class="card prestige-box">
 <div class="section-title">✨ Prestige</div>
@@ -61,7 +71,7 @@
 </section>
 </main>
 
-<script src="./assets/app.js?v=20261017-spotlight"></script>
+<script src="./assets/app.js?v=20261020-rapid-beta"></script>
 
 <script type="module" src="./assets/app-2.js?v=20261011-reliability"></script>
 <script type="module" src="https://semicolonxss.github.io/Formwheel/assets/live-presence.js?v=20261017-duration"></script>

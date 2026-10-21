@@ -62,6 +62,20 @@
 </section>
 </main>
 
+<script>
+/* Rapid 베타 지갑: 다른 Clicker 저장 데이터는 변경하지 않습니다. */
+(function(){
+  try {
+    const key = "formwheel_clicker_rapid_beta_v1";
+    const raw = localStorage.getItem(key);
+    if (raw === null) {
+      localStorage.setItem(key, JSON.stringify({balance:0}));
+    }
+  } catch (error) {
+    console.warn("Rapid wallet storage unavailable", error);
+  }
+})();
+</script>
 <script src="./assets/app.js?v=20261020-clicker-recovery"></script>
 
 <script type="module" src="./assets/app-2.js?v=20261011-reliability"></script>

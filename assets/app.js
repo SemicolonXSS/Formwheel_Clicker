@@ -163,53 +163,48 @@ function maybeBonus(){if(Date.now()-g.lastBonus<10000||Math.random()>=.01)return
 // Physical pointer clicks work normally; held Enter/Space cannot farm repeat clicks.
 const clickControl=$("clickButton");
 let clickKeyHeld=false;
-// Rapid: 100 manual clicks = 1 R. Existing clicks establish the baseline once.
+// Exchange current Clicker score for Rapid manually.
 const RAPID_WALLET_KEY="formwheel_clicker_rapid_beta_v1";
-let rapidWallet=null;
+const RAPID_PRICE=1000n; // 100 points, scaled x10
 function initRapid(){
- try{
-  const stored=JSON.parse(localStorage.getItem(RAPID_WALLET_KEY)||"null");
-  if(stored && (!Number.isSafeInteger(stored.balance)||stored.balance<0))return;
-  rapidWallet=stored||{balance:0};
-  if(!Number.isSafeInteger(rapidWallet.countedClicks))rapidWallet.countedClicks=g.totalClicks;
-  localStorage.setItem(RAPID_WALLET_KEY,JSON.stringify(rapidWallet));
- }catch(e){console.warn("Rapid wallet unavailable",e);rapidWallet=null;}
+ try{if(localStorage.getItem(RAPID_WALLET_KEY)===null)localStorage.setItem(RAPID_WALLET_KEY,JSON.stringify({balance:0}));}
+ catch(e){console.warn("wallet unavailable",e)}
+}
+function getRapidWallet(){
+ try{const w=JSON.parse(localStorage.getItem(RAPID_WALLET_KEY)||"null");return w&&Number.isSafeInteger(w.balance)&&w.balance>=0?w:null;}
+ catch{return null}
 }
 function renderRapidPanel(){
- const balanceEl=document.getElementById("rapidBalance");
- if(!balanceEl)return;
- try{
-  const w=JSON.parse(localStorage.getItem(RAPID_WALLET_KEY)||"null");
-  if(!w||!Number.isSafeInteger(w.balance)||w.balance<0)throw Error("Wallet invalid");
-  const counted=Number.isSafeInteger(w.countedClicks)?w.countedClicks:g.totalClicks;
-  const progress=Math.max(0,Math.min(99,g.totalClicks-counted));
-  balanceEl.textContent=w.balance.toLocaleString("ko-KR")+" R";
-  document.getElementById("rapidRemaining").textContent=(100-progress)+"번 남음";
-  document.getElementById("rapidProgress").setAttribute("aria-valuenow",String(progress));
-  document.getElementById("rapidProgressFill").style.width=progress+"%";
- }catch(e){
-  balanceEl.textContent="지갑 확인 필요";
-  document.getElementById("rapidExchangeNote").textContent="같은 브라우저에서 새로고침한 뒤 다시 확인해 주세요.";
- }
+ const el=document.getElementById("rapidBalance");if(!el)return;
+ const w=getRapidWallet(),available=g.score/RAPID_PRICE;
+ el.textContent=w?w.balance.toLocaleString("ko-KR")+" R":"지갑 확인 필요";
+ document.getElementById("rapidAvailable").textContent=available.toLocaleString("ko-KR")+" R";
+ document.getElementById("rapidExchangeButton").disabled=!w||available<1n;
+ document.getElementById("rapidExchangeMax").disabled=available<1n;
 }
-function awardRapid(){
- if(!rapidWallet)return;
+function exchangeRapid(){
+ collectAuto();
+ const amount=Number(document.getElementById("rapidAmount").value),w=getRapidWallet(),note=document.getElementById("rapidExchangeNote");
+ if(!w)return note.textContent="지갑을 확인해 주세요.";
+ if(!Number.isSafeInteger(amount)||amount<1||!Number.isSafeInteger(w.balance+amount))return note.textContent="올바른 환전 수량을 입력해 주세요.";
+ const cost=BigInt(amount)*RAPID_PRICE;
+ if(g.score<cost)return note.textContent="Clicker 점수가 부족해요.";
+ if(!confirm(fmt(cost)+"점을 "+amount.toLocaleString("ko-KR")+" R로 환전할까요?"))return;
  try{
-  const current=JSON.parse(localStorage.getItem(RAPID_WALLET_KEY)||"null");
-  if(!current||!Number.isSafeInteger(current.balance)||current.balance<0)return;
-  const previous=Number.isSafeInteger(current.countedClicks)?current.countedClicks:rapidWallet.countedClicks;
-  if(!Number.isSafeInteger(previous)||g.totalClicks<previous)return;
-  const earned=Math.floor((g.totalClicks-previous)/100);
-  if(earned>0 && Number.isSafeInteger(current.balance+earned)){
-   current.balance+=earned;
-   current.countedClicks=previous+earned*100;
-   localStorage.setItem(RAPID_WALLET_KEY,JSON.stringify(current));
-   flash("🪙 +"+earned+" Rapid! ("+current.balance+" R)");
-  }
-  rapidWallet=current;
- }catch(e){console.warn("Rapid reward unavailable",e);}
+  const latest=getRapidWallet();if(!latest||!Number.isSafeInteger(latest.balance+amount))return;
+  latest.balance+=amount;
+  localStorage.setItem(RAPID_WALLET_KEY,JSON.stringify(latest));
+  g.score-=cost;save();update();
+  note.textContent="환전 완료! +"+amount.toLocaleString("ko-KR")+" R";
+  flash("🪙 +"+amount.toLocaleString("ko-KR")+" R");
+ }catch(e){note.textContent="환전 저장에 실패했어요.";console.warn(e)}
 }
-function awardClick(){addScore(gain(g.power));g.totalClicks++;awardRapid();maybeBonus();update();save();if(g.totalClicks>=100 && window.opener && !window.opener.closed)window.opener.postMessage({type:"formwheel-spotlight-result-v1",project:"Clicker",value:g.totalClicks},"https://semicolonxss.github.io");}
+document.getElementById("rapidExchangeButton")?.addEventListener("click",exchangeRapid);
+document.getElementById("rapidExchangeMax")?.addEventListener("click",()=>{
+ const available=g.score/RAPID_PRICE;
+ document.getElementById("rapidAmount").value=String(available>BigInt(Number.MAX_SAFE_INTEGER)?Number.MAX_SAFE_INTEGER:available);
+});
+function awardClick(){addScore(gain(g.power));g.totalClicks++;maybeBonus();update();save();if(g.totalClicks>=100 && window.opener && !window.opener.closed)window.opener.postMessage({type:"formwheel-spotlight-result-v1",project:"Clicker",value:g.totalClicks},"https://semicolonxss.github.io");}
 clickControl.addEventListener("click",e=>{
  // A keyboard-generated native click has detail=0. Keyboard input is handled below.
  if(e.detail===0 && e.isTrusted)return;

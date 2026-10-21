@@ -155,7 +155,7 @@ function update(){
  $("powerDesc").textContent=np===null?"최대 클릭 파워입니다.":`클릭 파워를 ${fmt(g.power)} → ${fmt(np)}로 증가`;
  $("autoDesc").textContent=na===null?"최대 자동 클릭입니다.":`자동 클릭을 ${fmt(g.auto)} → ${fmt(na)} /초로 증가`;
  $("powerUpgrade").disabled=np===null||g.score<pp;$("autoUpgrade").disabled=na===null||g.score<ap;$("prestigeButton").disabled=g.score<PRESTIGE_REQ;
- renderAchievements();renderMissions();
+ renderAchievements();renderMissions();renderRapidPanel();
 }
 function addScore(v){const n=BigInt(v);g.score+=n;g.lifetime+=n;if(g.score>g.highScore)g.highScore=g.score;}
 function flash(t){$("bonusText").textContent=t;clearTimeout(flash.t);flash.t=setTimeout(()=>$("bonusText").textContent="",2600);}
@@ -174,6 +174,23 @@ function initRapid(){
   if(!Number.isSafeInteger(rapidWallet.countedClicks))rapidWallet.countedClicks=g.totalClicks;
   localStorage.setItem(RAPID_WALLET_KEY,JSON.stringify(rapidWallet));
  }catch(e){console.warn("Rapid wallet unavailable",e);rapidWallet=null;}
+}
+function renderRapidPanel(){
+ const balanceEl=document.getElementById("rapidBalance");
+ if(!balanceEl)return;
+ try{
+  const w=JSON.parse(localStorage.getItem(RAPID_WALLET_KEY)||"null");
+  if(!w||!Number.isSafeInteger(w.balance)||w.balance<0)throw Error("Wallet invalid");
+  const counted=Number.isSafeInteger(w.countedClicks)?w.countedClicks:g.totalClicks;
+  const progress=Math.max(0,Math.min(99,g.totalClicks-counted));
+  balanceEl.textContent=w.balance.toLocaleString("ko-KR")+" R";
+  document.getElementById("rapidRemaining").textContent=(100-progress)+"번 남음";
+  document.getElementById("rapidProgress").setAttribute("aria-valuenow",String(progress));
+  document.getElementById("rapidProgressFill").style.width=progress+"%";
+ }catch(e){
+  balanceEl.textContent="지갑 확인 필요";
+  document.getElementById("rapidExchangeNote").textContent="같은 브라우저에서 새로고침한 뒤 다시 확인해 주세요.";
+ }
 }
 function awardRapid(){
  if(!rapidWallet)return;

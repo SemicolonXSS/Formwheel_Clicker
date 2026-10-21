@@ -5,7 +5,14 @@ const THEMES=[{id:"sunset",name:"선셋",price:30,bg:"linear-gradient(120deg,#f5
 const $=id=>document.getElementById(id);let chosen=THEMES[0].id;
 function load(k,fallback){try{return JSON.parse(localStorage.getItem(k))||fallback}catch{return fallback}}
 let state=load(SHOP_KEY,{purchases:[],equipped:null});if(!Array.isArray(state.purchases))state={purchases:[],equipped:null};
-function wallet(){const w=load(WALLET_KEY,null);return w&&Number.isSafeInteger(w.balance)&&w.balance>=0?w:null}
+function wallet(){
+  let w=load(WALLET_KEY,null);
+  if(w&&Number.isSafeInteger(w.balance)&&w.balance>=0)return w;
+  if(localStorage.getItem(WALLET_KEY)!==null)return null; // 기존 지갑 오류 시 덮어쓰지 않음
+  w={balance:0};
+  try{localStorage.setItem(WALLET_KEY,JSON.stringify(w));return w}
+  catch{return null}
+}
 function save(w){localStorage.setItem(WALLET_KEY,JSON.stringify(w));localStorage.setItem(SHOP_KEY,JSON.stringify(state))}
 function owned(id){return state.purchases.some(x=>x.theme===id&&!x.refunded)}
 function message(t){$("status").textContent=t}

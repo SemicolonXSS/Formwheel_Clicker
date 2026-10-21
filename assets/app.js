@@ -163,7 +163,36 @@ function maybeBonus(){if(Date.now()-g.lastBonus<10000||Math.random()>=.01)return
 // Physical pointer clicks work normally; held Enter/Space cannot farm repeat clicks.
 const clickControl=$("clickButton");
 let clickKeyHeld=false;
-function awardClick(){addScore(gain(g.power));g.totalClicks++;maybeBonus();update();save();if(g.totalClicks>=100 && window.opener && !window.opener.closed)window.opener.postMessage({type:"formwheel-spotlight-result-v1",project:"Clicker",value:g.totalClicks},"https://semicolonxss.github.io");}
+// Rapid: 100 manual clicks = 1 R. Existing clicks establish the baseline once.
+const RAPID_WALLET_KEY="formwheel_clicker_rapid_beta_v1";
+let rapidWallet=null;
+function initRapid(){
+ try{
+  const stored=JSON.parse(localStorage.getItem(RAPID_WALLET_KEY)||"null");
+  if(stored && (!Number.isSafeInteger(stored.balance)||stored.balance<0))return;
+  rapidWallet=stored||{balance:0};
+  if(!Number.isSafeInteger(rapidWallet.countedClicks))rapidWallet.countedClicks=g.totalClicks;
+  localStorage.setItem(RAPID_WALLET_KEY,JSON.stringify(rapidWallet));
+ }catch(e){console.warn("Rapid wallet unavailable",e);rapidWallet=null;}
+}
+function awardRapid(){
+ if(!rapidWallet)return;
+ try{
+  const current=JSON.parse(localStorage.getItem(RAPID_WALLET_KEY)||"null");
+  if(!current||!Number.isSafeInteger(current.balance)||current.balance<0)return;
+  const previous=Number.isSafeInteger(current.countedClicks)?current.countedClicks:rapidWallet.countedClicks;
+  if(!Number.isSafeInteger(previous)||g.totalClicks<previous)return;
+  const earned=Math.floor((g.totalClicks-previous)/100);
+  if(earned>0 && Number.isSafeInteger(current.balance+earned)){
+   current.balance+=earned;
+   current.countedClicks=previous+earned*100;
+   localStorage.setItem(RAPID_WALLET_KEY,JSON.stringify(current));
+   flash("🪙 +"+earned+" Rapid! ("+current.balance+" R)");
+  }
+  rapidWallet=current;
+ }catch(e){console.warn("Rapid reward unavailable",e);}
+}
+function awardClick(){addScore(gain(g.power));g.totalClicks++;awardRapid();maybeBonus();update();save();if(g.totalClicks>=100 && window.opener && !window.opener.closed)window.opener.postMessage({type:"formwheel-spotlight-result-v1",project:"Clicker",value:g.totalClicks},"https://semicolonxss.github.io");}
 clickControl.addEventListener("click",e=>{
  // A keyboard-generated native click has detail=0. Keyboard input is handled below.
  if(e.detail===0 && e.isTrusted)return;
@@ -239,7 +268,7 @@ function renderThemes(){
  });
 }
 
-loadCosmetics();load();update();renderThemes();save();
+loadCosmetics();load();initRapid();update();renderThemes();save();
 
 window.ClickerOnline={
  getScore:()=>g.highScore.toString(),

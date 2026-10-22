@@ -1,9 +1,14 @@
-const ui=window.ClickerOnline||{
+const fallbackUI={
  status:t=>{const el=document.getElementById("status");if(el)el.textContent=t;},
  offline:t=>{const el=document.getElementById("status");if(el)el.textContent=t;},
  render:()=>{},rank:()=>{},getScore:()=>"0",getNickname:()=>"",
  formatScaled:s=>String(s)
 };
+// Online failures must never break Clicker's local game.
+const gameUI=window.ClickerOnline;
+const ui=Object.fromEntries(Object.entries(fallbackUI).map(([name,fn])=>[
+ name,typeof gameUI?.[name]==="function"?gameUI[name].bind(gameUI):fn
+]));
 try{
  const [{initializeApp},{getDatabase,ref,query,orderByChild,limitToLast,startAt,get,runTransaction,onValue,serverTimestamp},{getAuth,signInAnonymously,onAuthStateChanged}]=await Promise.all([
   import("https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js"),

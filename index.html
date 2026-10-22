@@ -47,7 +47,7 @@
 <section class="card panel" id="rapidExchange" aria-label="Rapid 환전소" style="margin:18px 0;border:1px solid #cfc4fa;background:#faf8ff">
 <div class="section-title">🪙 Rapid 환전소 <span style="font-size:13px">Clicker 100점 = 1 R</span></div>
 <div style="display:flex;gap:20px;flex-wrap:wrap"><div>내 Rapid <strong id="rapidBalance">0 R</strong></div><div>환전 가능 <strong id="rapidAvailable">0 R</strong></div></div>
-<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0"><label for="rapidAmount">환전할 R</label><input id="rapidAmount" type="number" min="1" step="1" value="1" style="width:90px;padding:9px"><button type="button" id="rapidExchangeButton">환전하기</button><button type="button" id="rapidExchangeMax">최대</button></div>
+<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0"><label for="rapidAmount">환전할 R</label><input id="rapidAmount" type="text" inputmode="numeric" pattern="[0-9]*" value="1" style="width:90px;padding:9px"><button type="button" id="rapidExchangeButton">환전하기</button><button type="button" id="rapidExchangeMax">최대</button></div>
 <p id="rapidExchangeNote" aria-live="polite">Clicker 점수를 소모해 환전합니다. 자동 클릭으로 번 점수도 사용할 수 있어요.</p>
 <a href="./rapid-shop.html">🛍️ Rapid Shop 열기 →</a>
 </section>
@@ -83,7 +83,7 @@
   }
 })();
 </script>
-<script src="./assets/app.js?v=20261022-upgrade-extended"></script>
+<script src="./assets/app.js?v=20261022-bigint-wallet"></script>
 
 <script type="module" src="./assets/app-2.js?v=20261022-online-ui-guard2"></script>
 <script type="module" src="https://semicolonxss.github.io/Formwheel/assets/live-presence.js?v=20261017-duration"></script>

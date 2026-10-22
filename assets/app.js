@@ -150,11 +150,13 @@ function update(){
  if(typeof renderThemes==="function" && document.getElementById("themeList")){document.querySelectorAll(".theme-action[data-theme-id]").forEach(b=>{const t=THEMES.find(x=>x.id===b.dataset.themeId);if(t&&cosmetics.active!==t.id)b.disabled=!cosmetics.owned.includes(t.id)&&g.score<t.price;});}
  checkMissionReset();
  updateAchievements();
- $("score").textContent=compact(g.score);$("power").textContent=fmt(g.power);$("auto").textContent=fmt(g.auto)+" /초";$("totalClicks").textContent=g.totalClicks.toLocaleString("ko-KR");$("highScore").textContent=compact(g.highScore);$("clickPowerText").textContent="+"+fmt(gain(g.power));$("multi").textContent="x"+(1+g.prestige*.25).toFixed(2);
+ $("score").textContent=compact(g.score);$("power").textContent=compact(g.power);$("auto").textContent=compact(g.auto)+" /초";$("totalClicks").textContent=g.totalClicks.toLocaleString("ko-KR");$("highScore").textContent=compact(g.highScore);$("clickPowerText").textContent="+"+compact(gain(g.power));$("multi").textContent="x"+(1+g.prestige*.25).toFixed(2);
  const np=next(P,g.power),na=next(A,g.auto),pi=Math.max(0,powerIndex()),ai=Math.max(0,autoIndex()),pp=price(10,pi),ap=price(50,ai);
- $("powerPrice").textContent=np===null?"MAX":fmt(pp);$("autoPrice").textContent=na===null?"MAX":fmt(ap);
- $("powerDesc").textContent=np===null?"최대 클릭 파워입니다.":`클릭 파워를 ${fmt(g.power)} → ${fmt(np)}로 증가`;
- $("autoDesc").textContent=na===null?"최대 자동 클릭입니다.":`자동 클릭을 ${fmt(g.auto)} → ${fmt(na)} /초로 증가`;
+ $("powerPrice").textContent=np===null?"MAX":compact(pp);$("autoPrice").textContent=na===null?"MAX":compact(ap);
+ $("powerPrice").title=np===null?"최대 단계":fmt(pp);
+ $("autoPrice").title=na===null?"최대 단계":fmt(ap);
+ $("powerDesc").textContent=np===null?"최대 클릭 파워입니다.":`클릭 파워를 ${compact(g.power)} → ${compact(np)}로 증가`;
+ $("autoDesc").textContent=na===null?"최대 자동 클릭입니다.":`자동 클릭을 ${compact(g.auto)} → ${compact(na)} /초로 증가`;
  $("powerUpgrade").disabled=np===null||g.score<pp;$("autoUpgrade").disabled=na===null||g.score<ap;$("prestigeButton").disabled=g.score<PRESTIGE_REQ;
  renderAchievements();renderMissions();renderRapidPanel();
 }
@@ -245,6 +247,7 @@ function buyUpgrade(kind){
  const arr=kind==="power"?P:A,base=kind==="power"?10:50;
  let index=arr.indexOf(g[kind]),purchased=0;
  if(index<0)return;
+ if(index+1>=arr.length){flash("이미 최대 단계예요. 추가 단계는 아직 없어요.");return;}
  const limit=buyCount==="max"?arr.length:Number(buyCount);
  while(purchased<limit&&index+1<arr.length){
   const cost=price(base,index);
@@ -252,6 +255,7 @@ function buyUpgrade(kind){
   g.score-=cost;index++;purchased++;g[kind]=arr[index];
  }
  if(purchased){g.upgrades+=purchased;flash("✅ "+(kind==="power"?"클릭 파워":"자동 클릭")+" "+purchased+"단계 구매!");}
+ if(!purchased)flash("점수가 부족하거나 더 구매할 단계가 없어요.");
  update();save();
 }
 function updateBuyMode(){

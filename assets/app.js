@@ -259,7 +259,19 @@ function loadCosmetics(){
  applyTheme();
 }
 function saveCosmetics(){try{localStorage.setItem(THEME_SAVE_KEY,JSON.stringify(cosmetics));}catch(e){console.warn("theme save",e);}}
-function applyTheme(){document.body.dataset.clickerTheme=cosmetics.active;}
+const RAPID_SHOP_THEME_KEY="formwheel_rapid_shop_beta_v1";
+function rapidShopTheme(){
+  try{
+    const shop=JSON.parse(localStorage.getItem(RAPID_SHOP_THEME_KEY)||"null");
+    if(!shop||!Array.isArray(shop.purchases))return null;
+    const id=shop.equipped;
+    if(!["sunset","forest","neon","galaxy"].includes(id))return null;
+    return shop.purchases.some(p=>p.theme===id&&!p.refunded)?id:null;
+  }catch(e){console.warn("rapid shop theme load",e);return null;}
+}
+function applyTheme(){document.body.dataset.clickerTheme=rapidShopTheme()||cosmetics.active;}
+addEventListener("pageshow",applyTheme);
+addEventListener("storage",e=>{if(e.key===RAPID_SHOP_THEME_KEY||e.key===THEME_SAVE_KEY)applyTheme();});
 function renderThemes(){
  const root=$("themeList");if(!root)return;
  root.innerHTML=THEMES.map(t=>{

@@ -181,7 +181,7 @@ function renderRapidPanel(){
  el.textContent=w?w.balance.toLocaleString("ko-KR")+" R":"지갑 확인 필요";
  document.getElementById("rapidAvailable").textContent=available.toLocaleString("ko-KR")+" R";
  document.getElementById("rapidExchangeButton").disabled=!w||available<1n;
- document.getElementById("rapidExchangeMax").disabled=available<1n;
+ document.getElementById("rapidExchangeMax").disabled=!w||available<1n||w.balance>=Number.MAX_SAFE_INTEGER;
 }
 function exchangeRapid(){
  collectAuto();
@@ -203,7 +203,15 @@ function exchangeRapid(){
 document.getElementById("rapidExchangeButton")?.addEventListener("click",exchangeRapid);
 document.getElementById("rapidExchangeMax")?.addEventListener("click",()=>{
  const available=g.score/RAPID_PRICE;
- document.getElementById("rapidAmount").value=String(available>BigInt(Number.MAX_SAFE_INTEGER)?Number.MAX_SAFE_INTEGER:available);
+ const wallet=getRapidWallet();
+ const remaining=wallet?BigInt(Number.MAX_SAFE_INTEGER-wallet.balance):0n;
+ const limit=available<remaining?available:remaining;
+ const input=document.getElementById("rapidAmount");
+ input.value=String(limit>0n?limit:0n);
+ const note=document.getElementById("rapidExchangeNote");
+ if(note && available>limit)note.textContent=remaining<=0n
+  ?"지갑의 안전한 저장 한도에 도달했어요. 기존 잔액을 보호하기 위해 추가 환전을 막았어요."
+  :"환전 가능 금액이 너무 커서 지갑에 정확하게 저장할 수 있는 최대 수량만 입력했어요.";
 });
 function awardClick(){addScore(gain(g.power));g.totalClicks++;maybeBonus();update();save();if(g.totalClicks>=100 && window.opener && !window.opener.closed)window.opener.postMessage({type:"formwheel-spotlight-result-v1",project:"Clicker",value:g.totalClicks},"https://semicolonxss.github.io");}
 clickControl.addEventListener("click",e=>{

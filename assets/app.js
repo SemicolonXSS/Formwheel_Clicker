@@ -234,8 +234,33 @@ clickControl.addEventListener("keyup",e=>{
 });
 clickControl.addEventListener("blur",()=>{clickKeyHeld=false;});
 window.addEventListener("blur",()=>{clickKeyHeld=false;});
-$("powerUpgrade").onclick=()=>{const n=next(P,g.power),p=price(10,Math.max(0,powerIndex()));if(n===null||g.score<p)return;g.score-=p;g.power=n;g.upgrades++;update();save();};
-$("autoUpgrade").onclick=()=>{collectAuto();const n=next(A,g.auto),p=price(50,Math.max(0,autoIndex()));if(n===null||g.score<p)return;g.score-=p;g.auto=n;g.upgrades++;update();save();};
+let buyCount="max";
+function buyUpgrade(kind){
+ collectAuto();
+ const arr=kind==="power"?P:A,base=kind==="power"?10:50;
+ let index=arr.indexOf(g[kind]),purchased=0;
+ if(index<0)return;
+ const limit=buyCount==="max"?arr.length:Number(buyCount);
+ while(purchased<limit&&index+1<arr.length){
+  const cost=price(base,index);
+  if(g.score<cost)break;
+  g.score-=cost;index++;purchased++;g[kind]=arr[index];
+ }
+ if(purchased){g.upgrades+=purchased;flash("✅ "+(kind==="power"?"클릭 파워":"자동 클릭")+" "+purchased+"단계 구매!");}
+ update();save();
+}
+function updateBuyMode(){
+ document.querySelectorAll("[data-buy-count]").forEach(b=>{
+  const selected=b.dataset.buyCount===buyCount;
+  b.setAttribute("aria-pressed",String(selected));
+  b.style.outline=selected?"2px solid currentColor":"";
+  b.style.fontWeight=selected?"900":"";
+ });
+}
+document.querySelectorAll("[data-buy-count]").forEach(b=>b.addEventListener("click",()=>{buyCount=b.dataset.buyCount;updateBuyMode();}));
+updateBuyMode();
+$("powerUpgrade").onclick=()=>buyUpgrade("power");
+$("autoUpgrade").onclick=()=>buyUpgrade("auto");
 function claimMission(id){const m=MISS.find(x=>x[0]===id);if(!m||g.claimed[id]||!m[3](g))return;g.claimed[id]=true;addScore(m[4]);flash("🎁 미션 보상 +"+fmt(m[4]));update();save();}
 $("prestigeButton").onclick=()=>{collectAuto();if(g.score<PRESTIGE_REQ)return;if(!confirm("현재 점수와 업그레이드를 초기화하고 Prestige할까요?"))return;collectAuto();if(g.score<PRESTIGE_REQ)return;g.prestige++;g.score=0n;g.power=P[0];g.auto=A[0];g.upgrades=0;autoRemainder=0n;lastAutoAt=Date.now();flash("✨ Prestige "+g.prestige+"회!");update();save();};
 let lastAutoAt=Date.now(),autoRemainder=0n;

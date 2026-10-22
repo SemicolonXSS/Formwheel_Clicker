@@ -176,7 +176,7 @@ function getRapidWallet(){
   const w=JSON.parse(localStorage.getItem(RAPID_WALLET_KEY)||"null");
   if(!w)return null;
   const v=typeof w.balance==="string"?w.balance:(Number.isSafeInteger(w.balance)?String(w.balance):"");
-  return /^\\d+$/.test(v)?{...w,balance:v}:null;
+  return /^\d+$/.test(v)?{...w,balance:v}:null;
  }catch{return null}
 }
 function renderRapidPanel(){
@@ -193,7 +193,7 @@ function exchangeRapid(){
  const note=document.getElementById("rapidExchangeNote");
  const raw=input.value.trim(),w=getRapidWallet();
  if(!w)return note.textContent="지갑을 확인해 주세요.";
- if(!/^\\d+$/.test(raw)||BigInt(raw)<1n)return note.textContent="올바른 환전 수량을 입력해 주세요.";
+ if(!/^\d+$/.test(raw)||BigInt(raw)<1n)return note.textContent="올바른 환전 수량을 입력해 주세요.";
  const amount=BigInt(raw),cost=amount*RAPID_PRICE;
  if(g.score<cost)return note.textContent="Clicker 점수가 부족해요.";
  if(!confirm(fmt(cost)+"점을 "+amount.toLocaleString("ko-KR")+" R로 환전할까요?"))return;

@@ -110,7 +110,8 @@ function load(){
   let raw=localStorage.getItem(SAVE_KEY),data=raw?JSON.parse(raw):null;
   if(data){g={...g,...data,score:BigInt(data.score||0),power:normalizeLevel(BigInt(data.power||1),P),auto:normalizeLevel(BigInt(data.auto||0),A),highScore:BigInt(data.highScore||0),lifetime:BigInt(data.lifetime||data.highScore||0),totalClicks:Number(data.totalClicks)||0,upgrades:Number(data.upgrades)||0,prestige:Number(data.prestige)||0,achievements:data.achievements||{},claimed:data.claimed||{},missionResetAt:Number(data.missionResetAt)||Date.now()+MISSION_PERIOD,missionBase:data.missionBase||{clicks:Number(data.totalClicks)||0,upgrades:Number(data.upgrades)||0,lifetime:String(data.lifetime||data.highScore||0),prestige:Number(data.prestige)||0},lastSaved:Number(data.lastSaved)||Date.now(),lastBonus:Number(data.lastBonus)||0};}
   const elapsed=Math.min(28800,Math.max(0,Math.floor((Date.now()-g.lastSaved)/1000)));
-  if(elapsed>0&&g.auto>0n){const offline=gain(g.auto)*BigInt(elapsed)/10n; // 10% of normal auto earnings while awayg.score+=offline;g.lifetime+=offline;if(g.score>g.highScore)g.highScore=g.score;setTimeout(()=>flash("💤 오프라인 보너스 +"+compact(offline)),50);}
+  if(elapsed>0&&g.auto>0n){const offline=gain(g.auto)*BigInt(elapsed)/10n; // 10% of normal auto earnings while away
+    g.score+=offline;g.lifetime+=offline;if(g.score>g.highScore)g.highScore=g.score;setTimeout(()=>flash("💤 오프라인 보너스 +"+compact(offline)),50);}
  }catch(e){console.warn("load",e)}
 }
 const $=id=>document.getElementById(id);

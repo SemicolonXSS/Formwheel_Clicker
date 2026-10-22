@@ -14,19 +14,25 @@ const $=id=>document.getElementById(id);let chosen=THEMES[0].id;
 function load(k,fallback){try{return JSON.parse(localStorage.getItem(k))||fallback}catch{return fallback}}
 let state=load(SHOP_KEY,{purchases:[],equipped:null});if(!Array.isArray(state.purchases))state={purchases:[],equipped:null};
 function wallet(){
-  let w=load(WALLET_KEY,null);
-  if(w&&Number.isSafeInteger(w.balance)&&w.balance>=0)return w;
-  if(localStorage.getItem(WALLET_KEY)!==null)return null; // 기존 지갑 오류 시 덮어쓰지 않음
-  w={balance:0};
-  try{localStorage.setItem(WALLET_KEY,JSON.stringify(w));return w}
-  catch{return null}
+ let w=load(WALLET_KEY,null);
+ if(w){
+  const v=typeof w.balance==="string"?w.balance:(Number.isSafeInteger(w.balance)?String(w.balance):"");
+  if(/^\\d+$/.test(v))return {...w,balance:v};
+  return null;
+ }
+ if(localStorage.getItem(WALLET_KEY)!==null)return null;
+ w={balance:"0"};
+ try{localStorage.setItem(WALLET_KEY,JSON.stringify(w));return w}catch{return null}
 }
-function save(w){localStorage.setItem(WALLET_KEY,JSON.stringify(w));localStorage.setItem(SHOP_KEY,JSON.stringify(state))}
+function save(w){
+ localStorage.setItem(WALLET_KEY,JSON.stringify(w));
+ localStorage.setItem(SHOP_KEY,JSON.stringify(state));
+}
 function owned(id){return state.purchases.some(x=>x.theme===id&&!x.refunded)}
 function message(t){$("status").textContent=t}
-function render(){const theme=state.equipped&&owned(state.equipped)?state.equipped:"classic";$("hubLink").href="https://semicolonxss.github.io/"+$("targetProject").value+"/?fwTheme="+encodeURIComponent(theme);$("clickerLink").href="./?fwTheme="+encodeURIComponent(theme);const w=wallet();$("balance").textContent=w?w.balance.toLocaleString("ko-KR")+" R":"Clicker에서 지갑을 먼저 생성해 주세요";$("items").replaceChildren(...THEMES.map(t=>{const d=document.createElement("div");d.className="item"+(t.id===chosen?" selected":"");const sw=document.createElement("div");sw.className="color";sw.style.background=t.bg;const title=document.createElement("b");title.textContent=t.name;const info=document.createElement("div");info.className="muted";info.textContent=t.price.toLocaleString("ko-KR")+" R"+(owned(t.id)?" · 보유중":"");const btn=document.createElement("button");btn.textContent="미리보기";btn.onclick=()=>{chosen=t.id;render()};d.append(sw,title,info,btn);return d}));const t=THEMES.find(x=>x.id===chosen),p=$("preview");p.style.background=t.bg;p.style.color=t.fg;p.dataset.premium=String(t.price>=2500000);$("buy").disabled=!w||owned(t.id)||w.balance<t.price;$("equip").disabled=!owned(t.id);$("unequip").disabled=!state.equipped;$("equip").textContent=state.equipped===t.id?"장착 중":"장착";$("history").replaceChildren(...(state.purchases.length?state.purchases.map(x=>{const d=document.createElement("div");d.className="receipt";const t=THEMES.find(t=>t.id===x.theme);d.append(document.createTextNode((t?.name||x.theme)+" · "+x.price+" R · "+(x.refunded?"환불 완료":"구매 완료")+" "));if(!x.refunded&&Date.now()-x.at<=86400000){const b=document.createElement("button");b.textContent="100% 환불";b.onclick=()=>refund(x.id);d.append(b)}return d}):[document.createTextNode("아직 구매 기록이 없습니다.")]))}
-function refund(id){const w=wallet(),x=state.purchases.find(p=>p.id===id&&!p.refunded);if(!w||!x||Date.now()<x.at||Date.now()-x.at>86400000||!Number.isSafeInteger(w.balance+x.price))return message("환불 가능 여부를 확인해 주세요.");if(!confirm(x.price+" R 전액 환불하고 테마를 회수할까요?"))return;x.refunded=true;w.balance+=x.price;if(state.equipped===x.theme)state.equipped=null;save(w);render();message("환불 완료: +"+x.price+" R")}
-$("buy").onclick=()=>{const w=wallet(),t=THEMES.find(t=>t.id===chosen);if(!w||!t||owned(t.id)||w.balance<t.price)return;if(!confirm(t.name+" 테마를 "+t.price+" R에 구매할까요? 24시간 이내 전액 환불 가능합니다."))return;w.balance-=t.price;state.purchases.push({id:"p"+Date.now()+"_"+Math.random().toString(36).slice(2),theme:t.id,price:t.price,at:Date.now(),refunded:false});save(w);render();message("구매 완료! 이제 장착할 수 있어요.")};
+function render(){const theme=state.equipped&&owned(state.equipped)?state.equipped:"classic";$("hubLink").href="https://semicolonxss.github.io/"+$("targetProject").value+"/?fwTheme="+encodeURIComponent(theme);$("clickerLink").href="./?fwTheme="+encodeURIComponent(theme);const w=wallet();$("balance").textContent=w?BigInt(w.balance).toLocaleString("ko-KR")+" R":"Clicker에서 지갑을 먼저 생성해 주세요";$("items").replaceChildren(...THEMES.map(t=>{const d=document.createElement("div");d.className="item"+(t.id===chosen?" selected":"");const sw=document.createElement("div");sw.className="color";sw.style.background=t.bg;const title=document.createElement("b");title.textContent=t.name;const info=document.createElement("div");info.className="muted";info.textContent=t.price.toLocaleString("ko-KR")+" R"+(owned(t.id)?" · 보유중":"");const btn=document.createElement("button");btn.textContent="미리보기";btn.onclick=()=>{chosen=t.id;render()};d.append(sw,title,info,btn);return d}));const t=THEMES.find(x=>x.id===chosen),p=$("preview");p.style.background=t.bg;p.style.color=t.fg;p.dataset.premium=String(t.price>=2500000);$("buy").disabled=!w||owned(t.id)||BigInt(w.balance)<BigInt(t.price);$("equip").disabled=!owned(t.id);$("unequip").disabled=!state.equipped;$("equip").textContent=state.equipped===t.id?"장착 중":"장착";$("history").replaceChildren(...(state.purchases.length?state.purchases.map(x=>{const d=document.createElement("div");d.className="receipt";const t=THEMES.find(t=>t.id===x.theme);d.append(document.createTextNode((t?.name||x.theme)+" · "+x.price+" R · "+(x.refunded?"환불 완료":"구매 완료")+" "));if(!x.refunded&&Date.now()-x.at<=86400000){const b=document.createElement("button");b.textContent="100% 환불";b.onclick=()=>refund(x.id);d.append(b)}return d}):[document.createTextNode("아직 구매 기록이 없습니다.")]))}
+function refund(id){const w=wallet(),x=state.purchases.find(p=>p.id===id&&!p.refunded);if(!w||!x||Date.now()<x.at||Date.now()-x.at>86400000||false)return message("환불 가능 여부를 확인해 주세요.");if(!confirm(x.price+" R 전액 환불하고 테마를 회수할까요?"))return;x.refunded=true;w.balance=(BigInt(w.balance)+BigInt(x.price)).toString();if(state.equipped===x.theme)state.equipped=null;save(w);render();message("환불 완료: +"+x.price+" R")}
+$("buy").onclick=()=>{const w=wallet(),t=THEMES.find(t=>t.id===chosen);if(!w||!t||owned(t.id)||BigInt(w.balance)<BigInt(t.price))return;if(!confirm(t.name+" 테마를 "+t.price+" R에 구매할까요? 24시간 이내 전액 환불 가능합니다."))return;w.balance=(BigInt(w.balance)-BigInt(t.price)).toString();state.purchases.push({id:"p"+Date.now()+"_"+Math.random().toString(36).slice(2),theme:t.id,price:t.price,at:Date.now(),refunded:false});save(w);render();message("구매 완료! 이제 장착할 수 있어요.")};
 $("equip").onclick=()=>{if(!owned(chosen))return;state.equipped=chosen;const w=wallet();if(w)save(w);else localStorage.setItem(SHOP_KEY,JSON.stringify(state));render();message("장착 완료! 테마 장착 완료! 선택한 프로젝트로 이동해 적용 상태를 확인하세요.")};
 $("unequip").onclick=()=>{state.equipped=null;const w=wallet();if(w)save(w);else localStorage.setItem(SHOP_KEY,JSON.stringify(state));render();message("테마 장착 해제! 다른 프로젝트에서도 기본 테마로 바꾸려면 선택한 프로젝트로 이동하세요.")};
 $("targetProject").onchange=render;

@@ -1,4 +1,9 @@
-const ui=window.ClickerOnline;
+const ui=window.ClickerOnline||{
+ status:t=>{const el=document.getElementById("status");if(el)el.textContent=t;},
+ offline:t=>{const el=document.getElementById("status");if(el)el.textContent=t;},
+ render:()=>{},rank:()=>{},getScore:()=>"0",getNickname:()=>"",
+ formatScaled:s=>String(s)
+};
 try{
  const [{initializeApp},{getDatabase,ref,query,orderByChild,limitToLast,startAt,get,runTransaction,onValue,serverTimestamp},{getAuth,signInAnonymously,onAuthStateChanged}]=await Promise.all([
   import("https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js"),
@@ -17,7 +22,14 @@ try{
 
  async function loadTop(){
   // Fetch only the visible page; scoreKey has a matching database index.
-  const snap=await get(query(ref(db,"clickerLeaderboardSeason3"),orderByChild("scoreKey"),limitToLast(20)));
+  let snap;
+  try{
+   snap=await get(query(ref(db,"clickerLeaderboardSeason3"),orderByChild("scoreKey"),limitToLast(20)));
+  }catch(error){
+   if(!/Index not defined|indexOn/i.test(String(error?.message||error)))throw error;
+   console.warn("Leaderboard scoreKey index missing; using unindexed read fallback.",error);
+   snap=await get(ref(db,"clickerLeaderboardSeason3"));
+  }
   const data=snap.exists()?snap.val():{};
   const list=Object.values(data).filter(r=>r&&/^\d{1,140}$/.test(String(r.score))&&/^\d{140}$/.test(String(r.scoreKey))).sort((a,b)=>String(b.scoreKey||"").localeCompare(String(a.scoreKey||""))).slice(0,20);
   topRecords=list;ui.render(list);

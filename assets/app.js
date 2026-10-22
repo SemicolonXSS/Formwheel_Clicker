@@ -184,8 +184,13 @@ function renderRapidPanel(){
  const w=getRapidWallet(),available=g.score/RAPID_PRICE;
  el.textContent=w?BigInt(w.balance).toLocaleString("ko-KR")+" R":"지갑 확인 필요";
  document.getElementById("rapidAvailable").textContent=available.toLocaleString("ko-KR")+" R";
- document.getElementById("rapidExchangeButton").disabled=!w||available<1n;
- document.getElementById("rapidExchangeMax").disabled=!w||available<1n;
+ // Keep the actions clickable so that users can see the precise problem.
+ // Validation happens on click; never silently lock both buttons due to wallet parsing.
+ document.getElementById("rapidExchangeButton").disabled=false;
+ document.getElementById("rapidExchangeMax").disabled=false;
+ const note=document.getElementById("rapidExchangeNote");
+ if(!w && note)note.textContent="지갑 데이터를 읽지 못했어요. 기존 잔액은 변경하지 않았습니다. 지갑 저장 형식을 확인해 주세요.";
+ else if(available<1n && note)note.textContent="환전할 Clicker 점수가 부족해요. 100점을 모으면 1 R을 환전할 수 있어요.";
 }
 function exchangeRapid(){
  collectAuto();
@@ -212,7 +217,7 @@ document.getElementById("rapidExchangeMax")?.addEventListener("click",()=>{
  const available=g.score/RAPID_PRICE;
  document.getElementById("rapidAmount").value=available.toString();
  const note=document.getElementById("rapidExchangeNote");
- if(note)note.textContent="최대 환전 수량을 정확하게 입력했어요.";
+ if(note)note.textContent=available>0n?"최대 환전 수량을 정확하게 입력했어요.":"현재 환전할 수 있는 점수가 없어요.";
 });
 function awardClick(){addScore(gain(g.power));g.totalClicks++;maybeBonus();update();save();if(g.totalClicks>=100 && window.opener && !window.opener.closed)window.opener.postMessage({type:"formwheel-spotlight-result-v1",project:"Clicker",value:g.totalClicks},"https://semicolonxss.github.io");}
 clickControl.addEventListener("click",e=>{

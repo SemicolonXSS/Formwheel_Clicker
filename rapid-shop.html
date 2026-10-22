@@ -17,7 +17,7 @@ function wallet(){
  let w=load(WALLET_KEY,null);
  if(w){
   const v=typeof w.balance==="string"?w.balance:(Number.isSafeInteger(w.balance)?String(w.balance):"");
-  if(/^\\d+$/.test(v))return {...w,balance:v};
+  if(/^\d+$/.test(v))return {...w,balance:v};
   return null;
  }
  if(localStorage.getItem(WALLET_KEY)!==null)return null;

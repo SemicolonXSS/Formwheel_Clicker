@@ -172,29 +172,35 @@ function initRapid(){
  catch(e){console.warn("wallet unavailable",e)}
 }
 function getRapidWallet(){
- try{const w=JSON.parse(localStorage.getItem(RAPID_WALLET_KEY)||"null");return w&&Number.isSafeInteger(w.balance)&&w.balance>=0?w:null;}
- catch{return null}
+ try{
+  const w=JSON.parse(localStorage.getItem(RAPID_WALLET_KEY)||"null");
+  if(!w)return null;
+  const v=typeof w.balance==="string"?w.balance:(Number.isSafeInteger(w.balance)?String(w.balance):"");
+  return /^\\d+$/.test(v)?{...w,balance:v}:null;
+ }catch{return null}
 }
 function renderRapidPanel(){
  const el=document.getElementById("rapidBalance");if(!el)return;
  const w=getRapidWallet(),available=g.score/RAPID_PRICE;
- el.textContent=w?w.balance.toLocaleString("ko-KR")+" R":"지갑 확인 필요";
+ el.textContent=w?BigInt(w.balance).toLocaleString("ko-KR")+" R":"지갑 확인 필요";
  document.getElementById("rapidAvailable").textContent=available.toLocaleString("ko-KR")+" R";
  document.getElementById("rapidExchangeButton").disabled=!w||available<1n;
- document.getElementById("rapidExchangeMax").disabled=!w||available<1n||w.balance>=Number.MAX_SAFE_INTEGER;
+ document.getElementById("rapidExchangeMax").disabled=!w||available<1n;
 }
 function exchangeRapid(){
  collectAuto();
- const amount=Number(document.getElementById("rapidAmount").value),w=getRapidWallet(),note=document.getElementById("rapidExchangeNote");
+ const input=document.getElementById("rapidAmount");
+ const note=document.getElementById("rapidExchangeNote");
+ const raw=input.value.trim(),w=getRapidWallet();
  if(!w)return note.textContent="지갑을 확인해 주세요.";
- if(!Number.isSafeInteger(amount)||amount<1||!Number.isSafeInteger(w.balance+amount))return note.textContent="올바른 환전 수량을 입력해 주세요.";
- const cost=BigInt(amount)*RAPID_PRICE;
+ if(!/^\\d+$/.test(raw)||BigInt(raw)<1n)return note.textContent="올바른 환전 수량을 입력해 주세요.";
+ const amount=BigInt(raw),cost=amount*RAPID_PRICE;
  if(g.score<cost)return note.textContent="Clicker 점수가 부족해요.";
  if(!confirm(fmt(cost)+"점을 "+amount.toLocaleString("ko-KR")+" R로 환전할까요?"))return;
  try{
-  const latest=getRapidWallet();if(!latest||!Number.isSafeInteger(latest.balance+amount))return;
-  latest.balance+=amount;
-  localStorage.setItem(RAPID_WALLET_KEY,JSON.stringify(latest));
+  const latest=getRapidWallet();if(!latest)return note.textContent="지갑을 다시 확인해 주세요.";
+  const next={...latest,balance:(BigInt(latest.balance)+amount).toString()};
+  localStorage.setItem(RAPID_WALLET_KEY,JSON.stringify(next));
   g.score-=cost;save();update();
   note.textContent="환전 완료! +"+amount.toLocaleString("ko-KR")+" R";
   flash("🪙 +"+amount.toLocaleString("ko-KR")+" R");
@@ -202,16 +208,11 @@ function exchangeRapid(){
 }
 document.getElementById("rapidExchangeButton")?.addEventListener("click",exchangeRapid);
 document.getElementById("rapidExchangeMax")?.addEventListener("click",()=>{
+ collectAuto();update();
  const available=g.score/RAPID_PRICE;
- const wallet=getRapidWallet();
- const remaining=wallet?BigInt(Number.MAX_SAFE_INTEGER-wallet.balance):0n;
- const limit=available<remaining?available:remaining;
- const input=document.getElementById("rapidAmount");
- input.value=String(limit>0n?limit:0n);
+ document.getElementById("rapidAmount").value=available.toString();
  const note=document.getElementById("rapidExchangeNote");
- if(note && available>limit)note.textContent=remaining<=0n
-  ?"지갑의 안전한 저장 한도에 도달했어요. 기존 잔액을 보호하기 위해 추가 환전을 막았어요."
-  :"환전 가능 금액이 너무 커서 지갑에 정확하게 저장할 수 있는 최대 수량만 입력했어요.";
+ if(note)note.textContent="최대 환전 수량을 정확하게 입력했어요.";
 });
 function awardClick(){addScore(gain(g.power));g.totalClicks++;maybeBonus();update();save();if(g.totalClicks>=100 && window.opener && !window.opener.closed)window.opener.postMessage({type:"formwheel-spotlight-result-v1",project:"Clicker",value:g.totalClicks},"https://semicolonxss.github.io");}
 clickControl.addEventListener("click",e=>{

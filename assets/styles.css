@@ -19,3 +19,18 @@ body[data-clicker-theme="royal"]{background:#fff8df}body[data-clicker-theme="roy
 
 /* Keep rapid tapping on CLICK from triggering mobile double-tap page zoom. */
 #clickButton{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+
+/* Large-number layout safety */
+.layout,.grid2{min-width:0}
+.layout{grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr)}
+.card,.upgrades,.game,.upgrade,.upgrade-top,.stats,.stat,.panel{min-width:0}
+.score{font-size:clamp(23px,4.7vw,56px);letter-spacing:-.035em;line-height:1.15;overflow-wrap:anywhere}
+.upgrade-top{align-items:flex-start;flex-wrap:wrap}
+.upgrade-name{flex:1 1 110px;min-width:0}
+.upgrade-price{flex:0 1 auto;max-width:100%;text-align:right;overflow-wrap:anywhere}
+.upgrade-desc,.stat strong,.stat span,.click-info,.bonus,#rapidBalance,#rapidAvailable,#rapidExchangeNote,.points,.my-rank{overflow-wrap:anywhere;word-break:break-word}
+.stat{gap:12px;align-items:flex-start}.stat strong{text-align:right;min-width:0;max-width:65%}
+#rapidExchange{min-width:0;overflow-wrap:anywhere}
+#rapidAmount{max-width:100%;min-width:0}
+.bulk-options button{flex:1 1 auto;min-width:54px}
+@media(max-width:760px){.layout{grid-template-columns:minmax(0,1fr)}}

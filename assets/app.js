@@ -178,13 +178,16 @@ function renderPhase(){
  if(!title||!button)return;
  title.textContent="PHASE "+level+" · 획득량 x"+level;
  priceLabel.textContent=compact(cost)+" 점수";priceLabel.title=fmt(cost);
- note.textContent=ready?"두 업그레이드 MAX 달성! 다음 페이즈에서 각 업그레이드에 10단계씩 추가돼요. 기존 단계는 유지됩니다.":"현재 페이즈의 클릭 파워와 자동 클릭을 모두 MAX로 올려야 합니다.";
- button.disabled=!ready||g.score<cost;
+ const powerDone=g.power===P[P.length-1],autoDone=g.auto===A[A.length-1];
+ const missing=cost>g.score?cost-g.score:0n;
+ note.textContent=!powerDone||!autoDone?"해금 조건: 클릭 파워 "+(powerDone?"✅ MAX":"❌ MAX 필요")+" · 자동 클릭 "+(autoDone?"✅ MAX":"❌ MAX 필요"):(missing>0n?"두 업그레이드 MAX 달성! 부족한 점수: "+compact(missing):"✅ 전환 가능! 업그레이드는 유지되고 각 10단계 추가됩니다.");
+ button.disabled=false;
+ button.textContent=ready&&g.score>=cost?"🌌 다음 페이즈 해금하기 →":"🔒 다음 페이즈 조건 확인";
 }
 function advancePhase(){
  collectAuto();
- if(g.power!==P[P.length-1]||g.auto!==A[A.length-1])return flash("두 업그레이드를 모두 MAX로 올려주세요.");
- const cost=phasePrice();if(g.score<cost)return flash("점수가 부족해요.");
+ if(g.power!==P[P.length-1]||g.auto!==A[A.length-1]){renderPhase();return flash("현재 페이즈의 클릭 파워와 자동 클릭 MAX가 필요해요.");}
+ const cost=phasePrice();if(g.score<cost){renderPhase();return flash("다음 페이즈까지 "+compact(cost-g.score)+"점 부족해요.");}
  if(!confirm("다음 페이즈로 넘어갈까요? 비용을 소모하고 기존 업그레이드 뒤에 10단계씩 추가됩니다. 보유 업그레이드는 유지됩니다."))return;
  g.score-=cost;g.phase=Math.max(1,g.phase||1)+1;ensurePhaseLevels(g.phase);
  lastAutoAt=Date.now();

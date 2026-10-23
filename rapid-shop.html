@@ -61,7 +61,8 @@ $("reset").onclick=()=>{chosen=THEMES[0].id;render();message("미리보기 초�
 // Premium cosmetics: separate product purchases from theme ownership.
 const LUXURY=[
  {id:"quantum-frame",name:"💠 QUANTUM FRAME",price:"10000000000000000000000000000000000000000000000000000000000000000000",desc:"움직이는 프로필 프레임",visual:"frame"},
- {id:"my-space",name:"🏠 MY SPACE",price:"100000000000000000000000000000000000000000000000000000000000000000000",desc:"개인 공간 꾸미기 키트",visual:"space"}
+ {id:"my-space",name:"🏠 MY SPACE",price:"100000000000000000000000000000000000000000000000000000000000000000000",desc:"개인 공간 꾸미기 키트",visual:"space"},
+ {id:"secol-crown",name:"👑 SECOL CROWN",price:"1000000000000000000000000000000000000000000000000000000000000000000000000",desc:"세콜 픽 · 황금 왕관과 빛나는 별 전시",visual:"crown"}
 ];
 LUXURY.sort((a,b)=>BigInt(a.price)<BigInt(b.price)?-1:BigInt(a.price)>BigInt(b.price)?1:0);
 let luxurySelected=LUXURY[0].id;
@@ -79,7 +80,13 @@ function luxuryRender(){
  }));
  const p=$("luxuryPreview");p.replaceChildren();
  const item=LUXURY.find(t=>t.id===luxurySelected);
- if(item.visual==="frame"){
+ if(item.visual==="crown"){
+  p.style.background="radial-gradient(circle at 50% 35%,#6a3a92,#1b1c48 70%)";
+  const crown=document.createElement("div");crown.textContent="👑";crown.style.cssText="font-size:76px;text-align:center;filter:drop-shadow(0 0 18px #ffdf77);animation:twinkle 2.6s ease-in-out infinite";
+  const stars=document.createElement("div");stars.textContent="✦  SECOL CROWN  ✦";stars.style.cssText="font-weight:900;letter-spacing:2px;text-align:center;color:#ffe6a1";
+  const state=document.createElement("p");state.textContent=luxuryOwned(item.id)?"영구 소유 중 · 왕관 전시 해금":"구매하면 이 왕관 전시가 해금됩니다";state.style.textAlign="center";
+  p.append(crown,stars,state);
+ }else if(item.visual==="frame"){
   p.style.background="linear-gradient(135deg,#081c36,#513b80)";
   const frame=document.createElement("div");frame.textContent="👤";frame.style.cssText="display:grid;place-items:center;width:90px;height:90px;border-radius:50%;margin:auto;background:#18243f;border:7px solid #88daec;box-shadow:0 0 18px #88daec;animation:twinkle 2.6s infinite";
   p.append(frame,document.createTextNode(" QUANTUM FRAME · "+(luxuryOwned(item.id)?"소유 중":"미리보기")));

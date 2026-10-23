@@ -40,6 +40,13 @@
 </aside>
 </div>
 
+<section class="card panel" id="phasePanel" style="margin:18px 0;border:1px solid #a59af0">
+<div class="section-title">🌌 페이즈 시스템 <span id="phaseLevel">PHASE 1</span></div>
+<p id="phaseNote">클릭 파워와 자동 클릭을 모두 MAX로 올리면 다음 페이즈가 열립니다.</p>
+<div class="stat"><span>다음 페이즈 비용 (MAX 업그레이드 비용 × 100,000,000)</span><strong id="phasePrice">계산 중</strong></div>
+<button type="button" id="phaseAdvance" disabled>다음 페이즈로 이동 →</button>
+<p class="muted">전환하면 클릭 파워·자동 클릭을 다시 성장시키며 페이즈에 비례한 획득 배수를 받습니다. Rapid 지갑과 업적·Prestige는 유지됩니다.</p>
+</section>
 <div class="grid2">
 <section class="card panel"><div class="section-title">🏅 업적</div><div id="achievements"></div></section>
 <section class="card panel"><div class="section-title">🎯 보상 미션 <span id="missionTimer" style="float:right;font-size:13px;color:#777b84"></span></div><div id="missions"></div></section>
@@ -84,7 +91,7 @@
   }
 })();
 </script>
-<script src="./assets/app.js?v=20261023-rapid-eformat1"></script>
+<script src="./assets/app.js?v=20261023-clicker-phases1"></script>
 
 <script type="module" src="./assets/app-2.js?v=20261022-online-ui-guard2"></script>
 <script type="module" src="https://semicolonxss.github.io/Formwheel/assets/live-presence.js?v=20261017-duration"></script>

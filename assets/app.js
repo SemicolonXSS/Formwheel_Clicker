@@ -167,6 +167,7 @@ function maybeBonus(){if(Date.now()-g.lastBonus<10000||Math.random()>=.01)return
 const clickControl=$("clickButton");
 let clickKeyHeld=false;
 // Exchange current Clicker score for Rapid manually.
+function formatRapidNumber(value){const n=BigInt(value);const negative=n<0n;const digits=(negative?-n:n).toString();if(digits.length<=12)return n.toLocaleString("ko-KR");const exponent=digits.length-1;const mantissa=digits[0]+(digits.slice(1,3).replace(/0+$/,"")?"."+digits.slice(1,3).replace(/0+$/,""):"");return (negative?"-":"")+mantissa+"e"+exponent;}
 const RAPID_WALLET_KEY="formwheel_clicker_rapid_beta_v1";
 const RAPID_PRICE=1000n; // 100 points, scaled x10
 function initRapid(){
@@ -184,8 +185,8 @@ function getRapidWallet(){
 function renderRapidPanel(){
  const el=document.getElementById("rapidBalance");if(!el)return;
  const w=getRapidWallet(),available=g.score/RAPID_PRICE;
- el.textContent=w?BigInt(w.balance).toLocaleString("ko-KR")+" R":"지갑 확인 필요";
- document.getElementById("rapidAvailable").textContent=available.toLocaleString("ko-KR")+" R";
+ el.textContent=w?formatRapidNumber(w.balance)+" R":"지갑 확인 필요";
+ document.getElementById("rapidAvailable").textContent=formatRapidNumber(available)+" R";
  // Keep the actions clickable so that users can see the precise problem.
  // Validation happens on click; never silently lock both buttons due to wallet parsing.
  document.getElementById("rapidExchangeButton").disabled=false;
@@ -203,14 +204,14 @@ function exchangeRapid(){
  if(!/^\d+$/.test(raw)||BigInt(raw)<1n)return note.textContent="올바른 환전 수량을 입력해 주세요.";
  const amount=BigInt(raw),cost=amount*RAPID_PRICE;
  if(g.score<cost)return note.textContent="Clicker 점수가 부족해요.";
- if(!confirm(fmt(cost)+"점을 "+amount.toLocaleString("ko-KR")+" R로 환전할까요?"))return;
+ if(!confirm(fmt(cost)+"점을 "+formatRapidNumber(amount)+" R로 환전할까요?"))return;
  try{
   const latest=getRapidWallet();if(!latest)return note.textContent="지갑을 다시 확인해 주세요.";
   const next={...latest,balance:(BigInt(latest.balance)+amount).toString()};
   localStorage.setItem(RAPID_WALLET_KEY,JSON.stringify(next));
   g.score-=cost;save();update();
-  note.textContent="환전 완료! +"+amount.toLocaleString("ko-KR")+" R";
-  flash("🪙 +"+amount.toLocaleString("ko-KR")+" R");
+  note.textContent="환전 완료! +"+formatRapidNumber(amount)+" R";
+  flash("🪙 +"+formatRapidNumber(amount)+" R");
  }catch(e){note.textContent="환전 저장에 실패했어요.";console.warn(e)}
 }
 document.getElementById("rapidExchangeButton")?.addEventListener("click",exchangeRapid);

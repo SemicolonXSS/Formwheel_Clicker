@@ -100,15 +100,15 @@ function fmt(x){
  return (neg?"-":"")+grouped+(d? "."+d:"");
 }
 function compact(x){x=BigInt(x);const i=x/10n;if(i<1000000000000000n)return fmt(x);const s=i.toString();return s[0]+"."+s.slice(1,3)+"e"+(s.length-1);}
-function gain(base){return BigInt(base)*BigInt(4+g.prestige)/4n;}
+function gain(base){return BigInt(base)*BigInt(4+g.prestige)*BigInt(Math.max(1,g.phase||1))/4n;}
 function price(base,index){let p=BigInt(base);for(let i=0;i<index;i++)p=(p*175n+99n)/100n;return p*SCALE;}
 function normalizeLevel(value,arr){let v=BigInt(value);for(const n of arr)if(n>=v)return n;return arr[arr.length-1];}
-function serialize(){return {version:3,score:g.score.toString(),power:g.power.toString(),auto:g.auto.toString(),totalClicks:g.totalClicks,highScore:g.highScore.toString(),lifetime:g.lifetime.toString(),upgrades:g.upgrades,prestige:g.prestige,achievements:g.achievements,claimed:g.claimed,missionResetAt:g.missionResetAt,missionBase:g.missionBase,lastSaved:Date.now(),lastBonus:g.lastBonus};}
+function serialize(){return {version:3,phase:g.phase||1,score:g.score.toString(),power:g.power.toString(),auto:g.auto.toString(),totalClicks:g.totalClicks,highScore:g.highScore.toString(),lifetime:g.lifetime.toString(),upgrades:g.upgrades,prestige:g.prestige,achievements:g.achievements,claimed:g.claimed,missionResetAt:g.missionResetAt,missionBase:g.missionBase,lastSaved:Date.now(),lastBonus:g.lastBonus};}
 function save(){try{g.lastSaved=Date.now();localStorage.setItem(SAVE_KEY,JSON.stringify(serialize()));}catch(e){console.warn("save",e)}}
 function load(){
  try{
   let raw=localStorage.getItem(SAVE_KEY),data=raw?JSON.parse(raw):null;
-  if(data){g={...g,...data,score:BigInt(data.score||0),power:normalizeLevel(BigInt(data.power||1),P),auto:normalizeLevel(BigInt(data.auto||0),A),highScore:BigInt(data.highScore||0),lifetime:BigInt(data.lifetime||data.highScore||0),totalClicks:Number(data.totalClicks)||0,upgrades:Number(data.upgrades)||0,prestige:Number(data.prestige)||0,achievements:data.achievements||{},claimed:data.claimed||{},missionResetAt:Number(data.missionResetAt)||Date.now()+MISSION_PERIOD,missionBase:data.missionBase||{clicks:Number(data.totalClicks)||0,upgrades:Number(data.upgrades)||0,lifetime:String(data.lifetime||data.highScore||0),prestige:Number(data.prestige)||0},lastSaved:Number(data.lastSaved)||Date.now(),lastBonus:Number(data.lastBonus)||0};}
+  if(data){g={...g,...data,score:BigInt(data.score||0),power:normalizeLevel(BigInt(data.power||1),P),auto:normalizeLevel(BigInt(data.auto||0),A),highScore:BigInt(data.highScore||0),lifetime:BigInt(data.lifetime||data.highScore||0),totalClicks:Number(data.totalClicks)||0,upgrades:Number(data.upgrades)||0,prestige:Number(data.prestige)||0,phase:Math.max(1,Math.min(1000000,Number(data.phase)||1)),achievements:data.achievements||{},claimed:data.claimed||{},missionResetAt:Number(data.missionResetAt)||Date.now()+MISSION_PERIOD,missionBase:data.missionBase||{clicks:Number(data.totalClicks)||0,upgrades:Number(data.upgrades)||0,lifetime:String(data.lifetime||data.highScore||0),prestige:Number(data.prestige)||0},lastSaved:Number(data.lastSaved)||Date.now(),lastBonus:Number(data.lastBonus)||0};}
   const elapsed=Math.min(28800,Math.max(0,Math.floor((Date.now()-g.lastSaved)/1000)));
   if(elapsed>0&&g.auto>0n){const offline=gain(g.auto)*BigInt(elapsed)/10n; // 10% of normal auto earnings while away
     g.score+=offline;g.lifetime+=offline;if(g.score>g.highScore)g.highScore=g.score;setTimeout(()=>flash("💤 오프라인 보너스 +"+compact(offline)),50);}
@@ -158,8 +158,31 @@ function update(){
  $("powerDesc").textContent=np===null?"최대 클릭 파워입니다.":`클릭 파워를 ${compact(g.power)} → ${compact(np)}로 증가`;
  $("autoDesc").textContent=na===null?"최대 자동 클릭입니다.":`자동 클릭을 ${compact(g.auto)} → ${compact(na)} /초로 증가`;
  $("powerUpgrade").disabled=np===null||g.score<pp;$("autoUpgrade").disabled=na===null||g.score<ap;$("prestigeButton").disabled=g.score<PRESTIGE_REQ;
- renderAchievements();renderMissions();renderRapidPanel();
+ renderAchievements();renderMissions();renderRapidPanel();renderPhase();
 }
+// Phase unlock: more expensive than either upgrade's last MAX purchase.
+const PHASE_MULTIPLIER=100000000n;
+function phasePrice(){const p=price(10,P.length-2),a=price(50,A.length-2);return (p>a?p:a)*PHASE_MULTIPLIER;}
+function renderPhase(){
+ const level=Math.max(1,g.phase||1),ready=g.power===P[P.length-1]&&g.auto===A[A.length-1],cost=phasePrice();
+ const title=$("phaseLevel"),priceLabel=$("phasePrice"),note=$("phaseNote"),button=$("phaseAdvance");
+ if(!title||!button)return;
+ title.textContent="PHASE "+level+" · 획득량 x"+level;
+ priceLabel.textContent=compact(cost)+" 점수";priceLabel.title=fmt(cost);
+ note.textContent=ready?"두 업그레이드 MAX 달성! 전환하면 업그레이드가 초기화되고 획득 배수가 증가해요.":"클릭 파워와 자동 클릭을 모두 MAX로 올려야 합니다.";
+ button.disabled=!ready||g.score<cost;
+}
+function advancePhase(){
+ collectAuto();
+ if(g.power!==P[P.length-1]||g.auto!==A[A.length-1])return flash("두 업그레이드를 모두 MAX로 올려주세요.");
+ const cost=phasePrice();if(g.score<cost)return flash("점수가 부족해요.");
+ if(!confirm("다음 페이즈로 넘어갈까요? 비용을 소모하고 업그레이드가 초기화됩니다. Prestige와 Rapid는 유지됩니다."))return;
+ g.score-=cost;g.phase=Math.max(1,g.phase||1)+1;g.power=P[0];g.auto=A[0];g.upgrades=0;
+ autoRemainder=0n;lastAutoAt=Date.now();
+ flash("🌌 PHASE "+g.phase+" 돌입! 획득량 x"+g.phase);
+ update();save();
+}
+if($("phaseAdvance"))$("phaseAdvance").addEventListener("click",advancePhase);
 function addScore(v){const n=BigInt(v);g.score+=n;g.lifetime+=n;if(g.score>g.highScore)g.highScore=g.score;}
 function flash(t){$("bonusText").textContent=t;clearTimeout(flash.t);flash.t=setTimeout(()=>$("bonusText").textContent="",2600);}
 function maybeBonus(){if(Date.now()-g.lastBonus<10000||Math.random()>=.01)return;g.lastBonus=Date.now();const b=gain(g.power)*50n;addScore(b);flash("✨ 랜덤 보너스! +"+compact(b));}

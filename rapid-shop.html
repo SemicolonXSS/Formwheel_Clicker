@@ -62,6 +62,9 @@ $("reset").onclick=()=>{chosen=THEMES[0].id;render();message("미리보기 초�
 const LUXURY=[
  {id:"quantum-frame",name:"💠 QUANTUM FRAME",price:"10000000000000000000000000000000000000000000000000000000000000000000",desc:"움직이는 프로필 프레임",visual:"frame"},
  {id:"my-space",name:"🏠 MY SPACE",price:"100000000000000000000000000000000000000000000000000000000000000000000",desc:"개인 공간 꾸미기 키트",visual:"space"},
+ {"id":"nebula-aura","name":"🌌 NEBULA AURA","price":"1000000000000000000000000000000000000000000000000000000000000000000000000000000","desc":"오로라처럼 움직이는 초월 오라 전시","visual":"aura"},
+ {"id":"time-keeper","name":"⌛ TIME KEEPER","price":"1000000000000000000000000000000000000000000000000000000000000000000000000000000000","desc":"시간을 지키는 신비한 시계 전시","visual":"clock"},
+ {"id":"galaxy-throne","name":"🪐 GALAXY THRONE","price":"1000000000000000000000000000000000000000000000000000000000000000000000000000000000000","desc":"은하의 왕좌와 별빛 전시","visual":"throne"},
  {id:"secol-crown",name:"👑 SECOL CROWN",price:"1000000000000000000000000000000000000000000000000000000000000000000000000",desc:"세콜 픽 · 황금 왕관과 빛나는 별 전시",visual:"crown"}
 ];
 LUXURY.sort((a,b)=>BigInt(a.price)<BigInt(b.price)?-1:BigInt(a.price)>BigInt(b.price)?1:0);
@@ -80,7 +83,18 @@ function luxuryRender(){
  }));
  const p=$("luxuryPreview");p.replaceChildren();
  const item=LUXURY.find(t=>t.id===luxurySelected);
- if(item.visual==="crown"){
+ if(["aura","clock","throne"].includes(item.visual)){
+  const appearance={
+   aura:{background:"radial-gradient(circle,#6646ab,#122f51 65%,#091027)",symbol:"🌌",heading:"NEBULA AURA"},
+   clock:{background:"radial-gradient(circle,#8e6c38,#242044 70%)",symbol:"⌛",heading:"TIME KEEPER"},
+   throne:{background:"radial-gradient(circle,#5f43a2,#10152d 75%)",symbol:"🪐",heading:"GALAXY THRONE"}
+  }[item.visual];
+  p.style.background=appearance.background;
+  const symbol=document.createElement("div");symbol.textContent=appearance.symbol;
+  symbol.style.cssText="font-size:74px;text-align:center;animation:twinkle 2.6s ease-in-out infinite";
+  const label=document.createElement("h3");label.textContent=appearance.heading+" · "+(luxuryOwned(item.id)?"보유 중":"미리보기");label.style.textAlign="center";
+  p.append(symbol,label);
+ }else if(item.visual==="crown"){
   p.style.background="radial-gradient(circle at 50% 35%,#6a3a92,#1b1c48 70%)";
   const crown=document.createElement("div");crown.textContent="👑";crown.style.cssText="font-size:76px;text-align:center;filter:drop-shadow(0 0 18px #ffdf77);animation:twinkle 2.6s ease-in-out infinite";
   const stars=document.createElement("div");stars.textContent="✦  SECOL CROWN  ✦";stars.style.cssText="font-weight:900;letter-spacing:2px;text-align:center;color:#ffe6a1";

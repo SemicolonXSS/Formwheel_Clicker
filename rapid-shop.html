@@ -65,7 +65,15 @@ const LUXURY=[
  {"id":"nebula-aura","name":"🌌 NEBULA AURA","price":"1000000000000000000000000000000000000000000000000000000000000000000000000000000","desc":"오로라처럼 움직이는 초월 오라 전시","visual":"aura"},
  {"id":"time-keeper","name":"⌛ TIME KEEPER","price":"1000000000000000000000000000000000000000000000000000000000000000000000000000000000","desc":"시간을 지키는 신비한 시계 전시","visual":"clock"},
  {"id":"galaxy-throne","name":"🪐 GALAXY THRONE","price":"1000000000000000000000000000000000000000000000000000000000000000000000000000000000000","desc":"은하의 왕좌와 별빛 전시","visual":"throne"},
- {id:"secol-crown",name:"👑 SECOL CROWN",price:"1000000000000000000000000000000000000000000000000000000000000000000000000",desc:"세콜 픽 · 황금 왕관과 빛나는 별 전시",visual:"crown"}
+ {"id":"solar-halo","name":"☀️ SOLAR HALO","price":"1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","desc":"태양의 빛나는 후광","visual":"solar-halo","symbol":"☀️","bg1":"#aa5c13","bg2":"#f2bb5d"},
+ {"id":"void-orb","name":"⚫ VOID ORB","price":"1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","desc":"검은 우주의 신비한 구체","visual":"void-orb","symbol":"⚫","bg1":"#0b0a21","bg2":"#6663ac"},
+ {"id":"star-rain","name":"🌠 STAR RAIN","price":"1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","desc":"별똥별이 흐르는 전시","visual":"star-rain","symbol":"🌠","bg1":"#113c70","bg2":"#7ccdeb"},
+ {"id":"aurora-wings","name":"🪽 AURORA WINGS","price":"1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","desc":"오로라의 날개 전시","visual":"aurora-wings","symbol":"🪽","bg1":"#196b6b","bg2":"#b38ae8"},
+ {"id":"eclipse-core","name":"🌑 ECLIPSE CORE","price":"1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","desc":"일식의 중심 에너지","visual":"eclipse-core","symbol":"🌑","bg1":"#17132f","bg2":"#efb76c"},
+ {"id":"cosmic-dragon","name":"🐉 COSMIC DRAGON","price":"1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","desc":"우주 드래곤의 전설","visual":"cosmic-dragon","symbol":"🐉","bg1":"#251048","bg2":"#a364c2"},
+ {"id":"infinite-gate","name":"🌀 INFINITE GATE","price":"1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","desc":"끝없이 빛나는 차원문","visual":"infinite-gate","symbol":"🌀","bg1":"#124066","bg2":"#67ddc5"},
+ {"id":"origin-star","name":"✨ ORIGIN STAR","price":"1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","desc":"태초의 별 전시","visual":"origin-star","symbol":"✨","bg1":"#3f2360","bg2":"#e7b65f"},
+  {id:"secol-crown",name:"👑 SECOL CROWN",price:"1000000000000000000000000000000000000000000000000000000000000000000000000",desc:"세콜 픽 · 황금 왕관과 빛나는 별 전시",visual:"crown"}
 ];
 LUXURY.sort((a,b)=>BigInt(a.price)<BigInt(b.price)?-1:BigInt(a.price)>BigInt(b.price)?1:0);
 let luxurySelected=LUXURY[0].id;
@@ -83,7 +91,13 @@ function luxuryRender(){
  }));
  const p=$("luxuryPreview");p.replaceChildren();
  const item=LUXURY.find(t=>t.id===luxurySelected);
- if(["aura","clock","throne"].includes(item.visual)){
+ if(item.symbol&&item.bg1&&item.bg2){
+  p.style.background="radial-gradient(circle,"+item.bg2+","+item.bg1+" 70%)";
+  const icon=document.createElement("div");icon.textContent=item.symbol;
+  icon.style.cssText="font-size:76px;text-align:center;filter:drop-shadow(0 0 12px #ffffff66);animation:twinkle 2.6s ease-in-out infinite";
+  const name=document.createElement("h3");name.style.textAlign="center";name.textContent=item.name+" · "+(luxuryOwned(item.id)?"보유 중":"미리보기");
+  p.append(icon,name);
+ }else if(["aura","clock","throne"].includes(item.visual)){
   const appearance={
    aura:{background:"radial-gradient(circle,#6646ab,#122f51 65%,#091027)",symbol:"🌌",heading:"NEBULA AURA"},
    clock:{background:"radial-gradient(circle,#8e6c38,#242044 70%)",symbol:"⌛",heading:"TIME KEEPER"},

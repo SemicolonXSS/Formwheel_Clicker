@@ -18,7 +18,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #0ba7c7;outline-offset:3p
 .item b{display:block;margin:9px 0 0}.item small{display:block;color:#51475e}.item button{width:100%;margin-top:9px}
 #preview{position:relative;isolation:isolate;overflow:hidden;min-height:225px;padding:22px;border-radius:18px;color:#303038;background:#080d22}
 #preview:before{content:"";position:absolute;inset:0;z-index:-1;background:inherit;background-size:180% 180%;animation:fw-level2-flow 7s ease-in-out infinite alternate}
-#preview:after{content:"✦  ✧  ✺  ◇  ✦  ✺  ✧";position:absolute;inset:0;pointer-events:none;color:#bd9bffbb;font-size:clamp(24px,4vw,54px);letter-spacing:clamp(16px,5vw,75px);line-height:3;text-shadow:0 0 14px #8beaff,0 0 30px #b08aff,0 0 50px #fa9bdc;animation:fw-lux-stars 5s linear infinite}
+#preview:after{content:"✦  ✧  ✺  ◇  ✦  ✺  ✧";position:absolute;inset:0;pointer-events:none;color:#bd9bffbb;font-size:clamp(24px,4vw,54px);letter-spacing:clamp(16px,5vw,75px);line-height:3;text-shadow:0 0 14px #8beaff,0 0 30px #b08aff,0 0 50px #fa9bdc;animation:fw-lux-stars var(--reveal-speed,5s) linear infinite}
 #preview .surface{position:relative;z-index:1;background:#fffaf5;border:1px solid #a48be7;border-radius:13px;padding:15px;max-width:430px;box-shadow:0 0 18px #a67cf050,0 0 35px #7dd6ff25}
 .action{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 .notice{font-size:13px;color:#554c66}.danger{background:#fff1e6}
@@ -31,8 +31,8 @@ button:focus-visible,a:focus-visible{outline:3px solid #0ba7c7;outline-offset:3p
 /* Shared cinematic product reveal: same palette as actual equipped theme. */
 dialog#reveal{border:0;border-radius:22px;padding:0;width:min(92vw,650px);max-height:90vh;overflow:auto;color:#303038;background:#fffaf5;box-shadow:0 30px 100px #0009}dialog#reveal::backdrop{background:#04071bcc;backdrop-filter:blur(6px)}
 .reveal-stage{position:relative;min-height:270px;display:grid;place-items:center;text-align:center;overflow:hidden;padding:40px 20px;background:var(--reveal-bg);isolation:isolate}
-.reveal-stage::before{content:"";position:absolute;inset:-50%;background:repeating-radial-gradient(circle at center,transparent 0 35px,#ffffff55 38px 40px,transparent 42px 75px);animation:reveal-rings 5s ease-out infinite;pointer-events:none}
-.reveal-stage::after{content:"✦   ✧   ◇   ✺    ✦";position:absolute;inset:0;color:#fff;font-size:42px;letter-spacing:18px;line-height:3;text-shadow:0 0 22px #fff,0 0 45px #9ee8ff;animation:reveal-spark 6s linear infinite;pointer-events:none}
+.reveal-stage::before{content:"";position:absolute;inset:-50%;background:repeating-radial-gradient(circle at center,transparent 0 35px,#ffffff55 38px 40px,transparent 42px 75px);animation:reveal-rings var(--reveal-speed,5s) ease-out infinite;pointer-events:none}
+.reveal-stage::after{content:"✦   ✧   ◇   ✺    ✦";position:absolute;inset:0;color:#fff;font-size:42px;letter-spacing:18px;line-height:3;text-shadow:0 0 22px #fff,0 0 45px #9ee8ff;animation:reveal-spark var(--reveal-speed,6s) linear infinite;pointer-events:none}
 .reveal-stage h2{position:relative;z-index:1;background:#fffaf5f0;color:#303038;border:1px solid #a48be7;box-shadow:0 0 35px #b895ee;padding:20px;border-radius:18px;font-size:clamp(24px,5vw,42px)}
 .reveal-controls{padding:15px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 @keyframes reveal-rings{from{transform:scale(.35) rotate(0);opacity:.25}70%{opacity:.9}to{transform:scale(1.1) rotate(60deg);opacity:0}}
@@ -54,7 +54,7 @@ function currentWallet(){const w=read(WALLET,null);if(!w)return null;const v=typ
 function shop(){const x=read(SHOP,{purchases:[],equipped:null});return x&&Array.isArray(x.purchases)?x:{purchases:[],equipped:null}}
 function fmt(n){const s=BigInt(n).toString();if(s.length>18)return s[0]+(s.slice(1,3).replace(/0+$/,"")?"."+s.slice(1,3).replace(/0+$/,""):"")+"e"+(s.length-1);return BigInt(n).toLocaleString("ko-KR")}
 let selected=THEMES[0].id;
-function showReveal(id){if(!owned(id))return;const t=THEMES.find(x=>x.id===id);if(!t)return;const d=$("reveal");$("revealTitle").textContent="✦ "+t.name+" ✦";$("revealStage").style.setProperty("--reveal-bg",t.bg);d.dataset.theme=id;if(!d.open)d.showModal();}
+function showReveal(id){if(!owned(id))return;const t=THEMES.find(x=>x.id===id);if(!t)return;const d=$("reveal");$("revealTitle").textContent="✦ "+t.name+" ✦";$("revealStage").style.setProperty("--reveal-bg",t.bg);$("revealStage").style.setProperty("--reveal-speed",Math.max(2,7-Math.log10(t.exp))+"s");d.dataset.theme=id;if(!d.open)d.showModal();}
 $("skipReveal").onclick=()=>$("reveal").close();
 $("replayReveal").onclick=()=>{const node=$("revealStage");node.style.animation="none";void node.offsetWidth;node.style.animation="";const t=THEMES.find(x=>x.id===$("reveal").dataset.theme);if(t){node.style.setProperty("--reveal-bg",t.bg);$("revealTitle").textContent="✦ "+t.name+" ✦";}};
 function hasAccess(){return read(ACCESS,false)===true}
@@ -66,7 +66,7 @@ $("unlock").textContent=active?"✓ 영구 입장권 보유":"1e500 R로 영구 
 if(!active)return;
 const state=shop();
 $("items").replaceChildren(...THEMES.map(t=>{const div=document.createElement("div");div.className="item"+(selected===t.id?" active":"");const img=document.createElement("div");img.className="swatch";img.style.background=t.bg;const title=document.createElement("b");title.textContent=t.name;const sub=document.createElement("small");sub.textContent="1e"+t.exp+" R"+(owned(t.id)?" · 보유 중":"");const btn=document.createElement("button");btn.textContent="미리보기";btn.onclick=()=>{selected=t.id;render()};div.append(img,title,sub,btn);if(owned(t.id)){const replay=document.createElement("button");replay.textContent="🎬 구매 연출 다시보기";replay.onclick=()=>showReveal(t.id);div.append(replay)}return div}));
-const t=THEMES.find(x=>x.id===selected);$("preview").style.background=t.bg;$("previewName").textContent=t.name;
+const t=THEMES.find(x=>x.id===selected);$("preview").style.setProperty("--reveal-speed",Math.max(2,7-Math.log10(t.exp))+"s");$("preview").style.background=t.bg;$("previewName").textContent=t.name;
 $("buy").disabled=owned(t.id)||!w||BigInt(w.balance)<10n**BigInt(t.exp);
 $("equip").disabled=!owned(t.id);$("equip").textContent=state.equipped===t.id?"✓ 장착 중":"장착";$("unequip").disabled=!state.equipped;
 $("viewHub").href="https://semicolonxss.github.io/Formwheel/?fwTheme="+encodeURIComponent(state.equipped||"classic");

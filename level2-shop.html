@@ -44,16 +44,16 @@ dialog#reveal{border:0;border-radius:22px;padding:0;width:min(92vw,650px);max-he
 #gateCeremony::backdrop{background:#040517e0;backdrop-filter:blur(7px)}
 .gate-scene{height:min(65vh,470px);min-height:300px;position:relative;overflow:hidden;perspective:850px;background:radial-gradient(ellipse at 50% 65%,#282c55,#060a21 75%);isolation:isolate}
 .gate-world{position:absolute;inset:0;transform-origin:50% 90%;animation:gate-look-up 5s ease-in-out both}
-.gate-stairs{position:absolute;inset:36% -24% -22%;transform:perspective(380px) rotateX(59deg);transform-origin:center bottom;background:repeating-linear-gradient(to bottom,#777b9a 0 3px,#343c60 5px 26px,#10172e 28px 49px);box-shadow:inset 0 24px 95px #060a23,0 -25px 60px #171d3b;animation:gate-approach 5s ease-in-out both}
-.gate-glow{position:absolute;left:22%;top:9%;width:56%;height:69%;background:radial-gradient(ellipse,#66ffe577,transparent 70%);filter:blur(18px);opacity:0;animation:gate-mint-glow 5s ease-in both}
-.gate-portal{position:absolute;left:30%;top:11%;width:40%;height:61%;border:10px ridge #b9c8d7;border-radius:90px 90px 5px 5px;display:flex;overflow:hidden;box-shadow:0 0 25px #9af9ed55,0 0 90px #4afbd333;background:radial-gradient(circle,#e2fff8,#68fce1 45%,#11bfa8);animation:gate-portal-approach 5s ease-in-out both}
+.gate-stairs{position:absolute;z-index:2;left:3%;right:3%;top:62%;bottom:-4%;clip-path:polygon(36% 0,64% 0,100% 100%,0 100%);background:repeating-linear-gradient(to bottom,#8b92ad 0 4px,#59617f 5px 9px,#27334f 11px 28px,#0a132a 29px 39px);border-top:5px solid #b4bdce;box-shadow:inset 0 16px 22px #080e2799;transform-origin:50% 0;animation:gate-approach 5s ease-in-out both}.gate-stairs:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#02091e99,transparent 25% 75%,#02091e99)}
+.gate-glow{z-index:1;position:absolute;left:22%;top:9%;width:56%;height:69%;background:radial-gradient(ellipse,#66ffe577,transparent 70%);filter:blur(18px);opacity:0;animation:gate-mint-glow 5s ease-in both}
+.gate-portal{z-index:3;position:absolute;left:30%;top:11%;width:40%;height:61%;border:10px ridge #b9c8d7;border-radius:90px 90px 5px 5px;display:flex;overflow:hidden;box-shadow:0 0 25px #9af9ed55,0 0 90px #4afbd333;background:radial-gradient(circle,#e2fff8,#68fce1 45%,#11bfa8);animation:gate-portal-approach 5s ease-in-out both}
 .gate-door{height:100%;width:50%;background:linear-gradient(90deg,#142c40,#527387 70%,#173d48);border:4px solid #a4c9cc;box-shadow:inset 0 0 22px #010928ad;animation:gate-open-left 5s ease-in-out both;transform-origin:left}
 .gate-door.right{background:linear-gradient(-90deg,#142c40,#527387 70%,#173d48);animation-name:gate-open-right;transform-origin:right}
 .gate-hero{position:absolute;top:7%;width:100%;text-align:center;font-weight:800;letter-spacing:.12em;text-shadow:0 0 17px #65ffe4;font-size:clamp(16px,4vw,27px);animation:gate-title 5s both}
 .gate-scene:after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 45%,#b5fff9,#5dffe0 50%,#23bfae);opacity:0;animation:gate-fill 5s both}
 .gate-actions{padding:14px;background:#fffaf5;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
 @keyframes gate-look-up{0%,14%{transform:translateY(-16%) scale(1.65) rotateX(30deg)}49%{transform:translateY(0) scale(1) rotateX(0)}80%{transform:scale(1.06)}100%{transform:scale(1.42)}}
-@keyframes gate-approach{0%,30%{background-position:0 0}80%,100%{background-position:0 260px}}
+@keyframes gate-approach{0%,24%{background-position:0 0;transform:scale(1.1)}55%{background-position:0 40px;transform:scale(1)}100%{background-position:0 160px;transform:scale(1.28)}}
 @keyframes gate-portal-approach{0%,30%{opacity:.1}50%{opacity:1}80%{transform:scale(1)}100%{transform:scale(1.2)}}
 @keyframes gate-mint-glow{0%,52%{opacity:0}70%{opacity:.6}90%,100%{opacity:1}}
 @keyframes gate-open-left{0%,57%{transform:rotateY(0)}86%,100%{transform:perspective(400px) rotateY(-108deg)}}

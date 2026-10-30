@@ -77,12 +77,15 @@ dialog#reveal{border:0;border-radius:22px;padding:0;width:min(92vw,650px);max-he
 @keyframes l2-chroma-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.swatch,.swatch::before,.swatch:after,#preview,#preview::before,#preview::after,.reveal-stage{animation:none!important}}
 
-/* One visual language for tile, full preview and reveal. All use theme.bg. */
-.swatch,#preview,.reveal-stage{background-size:190% 190%!important;background-position:50% 50%;animation:l2-chroma-pan 10s ease-in-out infinite alternate!important;isolation:isolate}
-.swatch::before,#preview::before,.reveal-stage::before{content:"";position:absolute;inset:-45%;z-index:0;pointer-events:none;background:conic-gradient(from 0deg,transparent 0 8%,#ffffff55 15%,transparent 25%,#ffffff33 44%,transparent 55%,#ffffff44 72%,transparent 85%)!important;mix-blend-mode:overlay;animation:l2-chroma-spin 16s linear infinite!important}
-.swatch::after,#preview::after,.reveal-stage::after{content:"✦  ✧  ✺  ◇  ✦  ✺  ✧";position:absolute;inset:0;z-index:1;pointer-events:none;color:#fff!important;text-shadow:0 0 10px #fff,0 0 25px #ff6df1,0 0 45px #45f5ff,0 0 65px #f9d86b!important;letter-spacing:10px;line-height:3;animation:fw-lux-stars 6s linear infinite!important}
-.swatch::after{font-size:18px;letter-spacing:4px;line-height:2.4}
+
+/* Distinct per-theme art, shared across swatches, preview and reveal. */
+.swatch,#preview,.reveal-stage{isolation:isolate;background-size:190% 190%!important;animation:l2-chroma-pan 10s ease-in-out infinite alternate!important;--art-rotation:0deg}
+.swatch::before,#preview::before,.reveal-stage::before{content:"";position:absolute;inset:-35%;z-index:0;pointer-events:none;background:var(--art-pattern,conic-gradient(from 0deg,transparent,#fff7,transparent))!important;mix-blend-mode:screen;animation:art-orbit var(--art-speed,7s) linear infinite!important}
+.swatch::after,#preview::after,.reveal-stage::after{content:var(--art-symbols,"✦ ✧ ✦");position:absolute;inset:0;z-index:1;pointer-events:none;color:#fff!important;text-shadow:0 0 10px #fff,0 0 22px var(--art-glow,#fd75ec),0 0 42px var(--art-glow,#fd75ec)!important;font-size:clamp(18px,3vw,34px);letter-spacing:10px;line-height:2.5;animation:art-drift var(--art-speed,7s) ease-in-out infinite alternate!important}
+.swatch::after{font-size:20px;letter-spacing:4px;line-height:2}
 #preview .surface,.reveal-stage h2{position:relative;z-index:2}
+@keyframes art-orbit{to{transform:rotate(360deg)}}
+@keyframes art-drift{to{transform:translate(8%, -12%) rotate(12deg)}}
 @media(prefers-reduced-motion:reduce){.swatch,#preview,.reveal-stage,.swatch::before,#preview::before,.reveal-stage::before,.swatch::after,#preview::after,.reveal-stage::after{animation:none!important}}
 </style></head><body><main>
 <header><div><h1>✦ RAPID SHOP: LEVEL 2</h1><div class="lead">초월을 넘어선 극한의 테마 컬렉션 · 입장권은 영구 소유</div></div><a href="./rapid-shop.html">← 기본 Rapid Shop</a></header>
@@ -106,6 +109,24 @@ THEMES.forEach((theme,index)=>{
  const original=theme.bg;
  theme.bg=`radial-gradient(ellipse at 16% 18%,${a}d9,transparent 42%),radial-gradient(ellipse at 87% 24%,${b}c9,transparent 47%),radial-gradient(ellipse at 54% 88%,${c}d9,transparent 48%),linear-gradient(135deg,${a}95,${b}99,${c}95),${original}`;
 });
+
+// 36 individualized effect signatures; CSS variables shared with Hub renderer.
+const ART_FAMILIES=[
+ ['"✦ ✧ ✦"','repeating-radial-gradient(circle,#fff8 0 2px,transparent 4px 36px)'],
+ ['"ϟ ϟ ϟ"','repeating-conic-gradient(from 20deg,transparent 0 24deg,#fff9 25deg 27deg,transparent 28deg 56deg)'],
+ ['"◇ ◆ ◇"','repeating-conic-gradient(from 45deg,#fff5 0 12deg,transparent 14deg 45deg)'],
+ ['"☀ ✺ ☀"','repeating-radial-gradient(circle,#fff9 0 3px,transparent 7px 32px)'],
+ ['"◉ ◎ ◉"','repeating-radial-gradient(ellipse,#fff9 0 3px,transparent 6px 25px)'],
+ ['"◌ ⦿ ◌"','repeating-radial-gradient(ellipse,#fff8 0 2px,transparent 4px 42px)'],
+ ['"✧ ◇ ✧"','conic-gradient(from 0deg,transparent 0 20%,#fff9 25%,transparent 32% 70%,#fff8 75%,transparent 82%)'],
+ ['"● ◉ ●"','radial-gradient(circle,transparent 0 24%,#fff9 26% 28%,transparent 32% 100%)'],
+ ['"⌛ ✧ ⌛"','repeating-conic-gradient(from 0deg,transparent 0 35deg,#fff9 36deg 39deg,transparent 40deg 80deg)'],
+ ['"♛ ✦ ♛"','conic-gradient(from 0deg,#fff8,transparent 15% 45%,#fff8 55%,transparent 65%)'],
+ ['"⟡ ⬡ ⟡"','repeating-linear-gradient(35deg,transparent 0 30px,#fff6 32px 34px,transparent 36px 70px)'],
+ ['"✺ ✶ ✺"','repeating-conic-gradient(from 0deg,#fff8 0 5deg,transparent 6deg 40deg)']
+];
+function artFor(t){const n=THEMES.findIndex(x=>x.id===t.id),family=ART_FAMILIES[n%ART_FAMILIES.length];return {'--art-pattern':family[1],'--art-symbols':family[0],'--art-speed':(3.5+(n%9)*.8)+'s','--art-glow':L2_CHROMA_PALETTES[n%L2_CHROMA_PALETTES.length][n%3]};}
+function applyArt(el,t){for(const [k,v] of Object.entries(artFor(t)))el.style.setProperty(k,v);}
 const WALLET="formwheel_clicker_rapid_beta_v1",SHOP="formwheel_rapid_shop_beta_v1",ACCESS="fw-rapid-shop-level2-access-v1",GLOBAL="fw-global-theme-v1",ENTRY=10n**500n;
 const $=id=>document.getElementById(id);
 function read(key,fallback){try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}}
@@ -131,7 +152,7 @@ $("skipGate").onclick=closeGate;
 $("replayGate").onclick=showGate;
 $("gateCeremony").addEventListener("close",()=>{clearTimeout(gateTimer);gateTimer=null});
 
-function showReveal(id){if(!owned(id))return;const t=THEMES.find(x=>x.id===id);if(!t)return;const d=$("reveal");$("revealTitle").textContent="✦ "+t.name+" ✦";$("revealStage").style.setProperty("--reveal-bg",t.bg);$("revealStage").style.setProperty("--reveal-speed",Math.max(2,7-Math.log10(t.exp))+"s");d.dataset.theme=id;if(!d.open)d.showModal();}
+function showReveal(id){if(!owned(id))return;const t=THEMES.find(x=>x.id===id);if(!t)return;const d=$("reveal");$("revealTitle").textContent="✦ "+t.name+" ✦";$("revealStage").style.setProperty("--reveal-bg",t.bg);applyArt($("revealStage"),t);$("revealStage").style.setProperty("--reveal-speed",Math.max(2,7-Math.log10(t.exp))+"s");d.dataset.theme=id;if(!d.open)d.showModal();}
 $("skipReveal").onclick=()=>$("reveal").close();
 $("replayReveal").onclick=()=>{const node=$("revealStage");node.style.animation="none";void node.offsetWidth;node.style.animation="";const t=THEMES.find(x=>x.id===$("reveal").dataset.theme);if(t){node.style.setProperty("--reveal-bg",t.bg);$("revealTitle").textContent="✦ "+t.name+" ✦";}};
 function hasAccess(){return read(ACCESS,false)===true}
@@ -142,8 +163,8 @@ const w=balance(),active=hasAccess();$("watchGate").hidden=!active;$("collection
 $("unlock").textContent=active?"✓ 영구 입장권 보유":"1e500 R로 영구 입장권 구매";
 if(!active)return;
 const state=shop();
-$("items").replaceChildren(...THEMES.map(t=>{const div=document.createElement("div");div.className="item"+(selected===t.id?" active":"");const img=document.createElement("div");img.className="swatch";img.style.background=t.bg;const title=document.createElement("b");title.textContent=t.name;const sub=document.createElement("small");sub.textContent="1e"+t.exp+" R"+(owned(t.id)?" · 보유 중":"");const btn=document.createElement("button");btn.textContent="미리보기";btn.onclick=()=>{selected=t.id;render()};div.append(img,title,sub,btn);if(owned(t.id)){const replay=document.createElement("button");replay.textContent="🎬 구매 연출 다시보기";replay.onclick=()=>showReveal(t.id);div.append(replay)}return div}));
-const t=THEMES.find(x=>x.id===selected);$("preview").style.setProperty("--reveal-speed",Math.max(2,7-Math.log10(t.exp))+"s");$("preview").style.background=t.bg;$("previewName").textContent=t.name;
+$("items").replaceChildren(...THEMES.map(t=>{const div=document.createElement("div");div.className="item"+(selected===t.id?" active":"");const img=document.createElement("div");img.className="swatch";img.style.background=t.bg;applyArt(img,t);const title=document.createElement("b");title.textContent=t.name;const sub=document.createElement("small");sub.textContent="1e"+t.exp+" R"+(owned(t.id)?" · 보유 중":"");const btn=document.createElement("button");btn.textContent="미리보기";btn.onclick=()=>{selected=t.id;render()};div.append(img,title,sub,btn);if(owned(t.id)){const replay=document.createElement("button");replay.textContent="🎬 구매 연출 다시보기";replay.onclick=()=>showReveal(t.id);div.append(replay)}return div}));
+const t=THEMES.find(x=>x.id===selected);$("preview").style.setProperty("--reveal-speed",Math.max(2,7-Math.log10(t.exp))+"s");$("preview").style.background=t.bg;applyArt($("preview"),t);$("previewName").textContent=t.name;
 $("buy").disabled=owned(t.id)||!w||BigInt(w.balance)<10n**BigInt(t.exp);
 $("equip").disabled=!owned(t.id);$("equip").textContent=state.equipped===t.id?"✓ 장착 중":"장착";$("unequip").disabled=!state.equipped;
 $("viewHub").href="https://semicolonxss.github.io/Formwheel/?fwTheme="+encodeURIComponent(state.equipped||"classic");

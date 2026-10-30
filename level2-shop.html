@@ -76,6 +76,14 @@ dialog#reveal{border:0;border-radius:22px;padding:0;width:min(92vw,650px);max-he
 @keyframes l2-chroma-pan{0%{background-position:0 25%}100%{background-position:100% 80%}}
 @keyframes l2-chroma-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.swatch,.swatch::before,.swatch:after,#preview,#preview::before,#preview::after,.reveal-stage{animation:none!important}}
+
+/* One visual language for tile, full preview and reveal. All use theme.bg. */
+.swatch,#preview,.reveal-stage{background-size:190% 190%!important;background-position:50% 50%;animation:l2-chroma-pan 10s ease-in-out infinite alternate!important;isolation:isolate}
+.swatch::before,#preview::before,.reveal-stage::before{content:"";position:absolute;inset:-45%;z-index:0;pointer-events:none;background:conic-gradient(from 0deg,transparent 0 8%,#ffffff55 15%,transparent 25%,#ffffff33 44%,transparent 55%,#ffffff44 72%,transparent 85%)!important;mix-blend-mode:overlay;animation:l2-chroma-spin 16s linear infinite!important}
+.swatch::after,#preview::after,.reveal-stage::after{content:"✦  ✧  ✺  ◇  ✦  ✺  ✧";position:absolute;inset:0;z-index:1;pointer-events:none;color:#fff!important;text-shadow:0 0 10px #fff,0 0 25px #ff6df1,0 0 45px #45f5ff,0 0 65px #f9d86b!important;letter-spacing:10px;line-height:3;animation:fw-lux-stars 6s linear infinite!important}
+.swatch::after{font-size:18px;letter-spacing:4px;line-height:2.4}
+#preview .surface,.reveal-stage h2{position:relative;z-index:2}
+@media(prefers-reduced-motion:reduce){.swatch,#preview,.reveal-stage,.swatch::before,#preview::before,.reveal-stage::before,.swatch::after,#preview::after,.reveal-stage::after{animation:none!important}}
 </style></head><body><main>
 <header><div><h1>✦ RAPID SHOP: LEVEL 2</h1><div class="lead">초월을 넘어선 극한의 테마 컬렉션 · 입장권은 영구 소유</div></div><a href="./rapid-shop.html">← 기본 Rapid Shop</a></header>
 <section class="panel" aria-label="상점 입장"><h2>🔐 초월 상점 입장권</h2><p>입장료 <strong>1e500 R</strong> · 한 번 구매하면 계속 입장할 수 있어요. 실제 현금이 아닌 게임 내 Rapid만 사용합니다.</p><p>현재 잔액: <strong id="balance">확인 중…</strong></p><button id="unlock">1e500 R로 영구 입장권 구매</button><p id="notice" role="status" aria-live="polite"></p><button type="button" id="watchGate" hidden>🎬 LEVEL 2 입장 연출 다시보기</button><p class="notice">기존 Rapid 지갑·테마 구매 기록은 유지됩니다. 이 기능은 브라우저 저장 기반 베타이며 서버 검증 결제 시스템이 아닙니다.</p></section>

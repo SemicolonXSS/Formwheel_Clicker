@@ -230,24 +230,48 @@ function renderRapidPanel(){
  if(!w && note)note.textContent="지갑 데이터를 읽지 못했어요. 기존 잔액은 변경하지 않았습니다. 지갑 저장 형식을 확인해 주세요.";
  else if(available<1n && note)note.textContent="환전할 Clicker 점수가 부족해요. 100점을 모으면 1 R을 환전할 수 있어요.";
 }
-function exchangeRapid(){
+const RAPID_PENDING_EXCHANGE_KEY="formwheel_clicker_pending_exchange_v2";
+let exchangingRapid=false;
+async function exchangeRapid(){
+ if(exchangingRapid)return;
  collectAuto();
- const input=document.getElementById("rapidAmount");
- const note=document.getElementById("rapidExchangeNote");
- const raw=input.value.trim(),w=getRapidWallet();
- if(!w)return note.textContent="지갑을 확인해 주세요.";
- if(!/^\d+$/.test(raw)||BigInt(raw)<1n)return note.textContent="올바른 환전 수량을 입력해 주세요.";
- const amount=BigInt(raw),cost=amount*RAPID_PRICE;
- if(g.score<cost)return note.textContent="Clicker 점수가 부족해요.";
- if(!confirm(fmt(cost)+"점을 "+formatRapidNumber(amount)+" R로 환전할까요?"))return;
+ const input=document.getElementById("rapidAmount"),note=document.getElementById("rapidExchangeNote");
+ const api=window.FormwheelRapidAccount;
+ if(!api?.creditExchange||!api.getStatus()?.connected){
+  note.textContent="서버 지갑 연결 후 환전할 수 있어요. 로그인과 인터넷 연결을 확인해 주세요.";
+  return;
+ }
+ let pending;
+ try{pending=JSON.parse(localStorage.getItem(RAPID_PENDING_EXCHANGE_KEY)||"null");}catch{}
+ const raw=input.value.trim();
+ if(pending?.id&&pending?.amount){
+  note.textContent="중단된 환전을 동일 거래 번호로 재확인합니다.";
+ }else{
+  if(!/^\\d+$/.test(raw)||BigInt(raw)<1n){note.textContent="올바른 환전 수량을 입력해 주세요.";return;}
+  const amount=BigInt(raw),cost=amount*RAPID_PRICE;
+  if(g.score<cost){note.textContent="Clicker 점수가 부족해요.";return;}
+  if(!confirm(fmt(cost)+"점을 "+formatRapidNumber(amount)+" R로 환전할까요?"))return;
+  pending={id:"ex_"+(crypto.randomUUID?crypto.randomUUID().replace(/-/g,""):Date.now()+"_"+Math.random().toString(36).slice(2)),amount:amount.toString()};
+  try{localStorage.setItem(RAPID_PENDING_EXCHANGE_KEY,JSON.stringify(pending));}
+  catch{note.textContent="거래 기록 저장에 실패해 환전을 중단했어요.";return;}
+ }
+ const amount=BigInt(pending.amount),cost=amount*RAPID_PRICE;
+ if(g.score<cost){note.textContent="거래 보류 중: 차감할 Clicker 점수가 부족해요.";return;}
+ exchangingRapid=true;
+ const button=document.getElementById("rapidExchangeButton");
+ if(button)button.disabled=true;
  try{
-  const latest=getRapidWallet();if(!latest)return note.textContent="지갑을 다시 확인해 주세요.";
-  const next={...latest,balance:(BigInt(latest.balance)+amount).toString()};
-  localStorage.setItem(RAPID_WALLET_KEY,JSON.stringify(next));
+  note.textContent="Firebase에 환전 기록 저장 중…";
+  await api.creditExchange(pending.amount,pending.id);
+  // Only debit after the server confirms the unique exchange receipt.
   g.score-=cost;save();update();
-  note.textContent="환전 완료! +"+formatRapidNumber(amount)+" R";
+  localStorage.removeItem(RAPID_PENDING_EXCHANGE_KEY);
+  note.textContent="서버 저장 완료! +"+formatRapidNumber(amount)+" R";
   flash("🪙 +"+formatRapidNumber(amount)+" R");
- }catch(e){note.textContent="환전 저장에 실패했어요.";console.warn(e)}
+ }catch(e){
+  note.textContent="환전 확인 실패: "+(e?.message||"연결 오류")+" · 다음 시도에 같은 거래를 재확인합니다.";
+  console.warn("Rapid exchange pending",e);
+ }finally{exchangingRapid=false;if(button)button.disabled=false;}
 }
 document.getElementById("rapidExchangeButton")?.addEventListener("click",exchangeRapid);
 document.getElementById("rapidExchangeMax")?.addEventListener("click",()=>{

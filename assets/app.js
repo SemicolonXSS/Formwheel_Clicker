@@ -248,7 +248,7 @@ async function exchangeRapid(){
  // An invalid legacy pending record cannot have passed the server's validation.
  const validPending=pending&&typeof pending.id==="string"
   &&/^[a-zA-Z0-9_-]{10,100}$/.test(pending.id)
-  &&typeof pending.amount==="string"&&/^\\d{1,10000}$/.test(pending.amount)
+  &&typeof pending.amount==="string"&&/^\d{1,10000}$/.test(pending.amount)
   &&BigInt(pending.amount)>0n;
  if(pending&&!validPending){
   try{

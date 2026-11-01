@@ -247,7 +247,7 @@ async function exchangeRapid(){
  if(pending?.id&&pending?.amount){
   note.textContent="중단된 환전을 동일 거래 번호로 재확인합니다.";
  }else{
-  if(!/^\\d+$/.test(raw)||BigInt(raw)<1n){note.textContent="올바른 환전 수량을 입력해 주세요.";return;}
+  if(!/^\d+$/.test(raw)||BigInt(raw)<1n){note.textContent="올바른 환전 수량을 입력해 주세요.";return;}
   const amount=BigInt(raw),cost=amount*RAPID_PRICE;
   if(g.score<cost){note.textContent="Clicker 점수가 부족해요.";return;}
   if(!confirm(fmt(cost)+"점을 "+formatRapidNumber(amount)+" R로 환전할까요?"))return;

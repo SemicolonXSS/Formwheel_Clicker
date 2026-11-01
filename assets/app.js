@@ -244,8 +244,23 @@ async function exchangeRapid(){
  let pending;
  try{pending=JSON.parse(localStorage.getItem(RAPID_PENDING_EXCHANGE_KEY)||"null");}catch{}
  const raw=input.value.trim();
- if(pending?.id&&pending?.amount){
-  note.textContent="중단된 환전을 동일 거래 번호로 재확인합니다.";
+ // Never silently exchange a different amount than the amount displayed.
+ // An invalid legacy pending record cannot have passed the server's validation.
+ const validPending=pending&&typeof pending.id==="string"
+  &&/^[a-zA-Z0-9_-]{10,100}$/.test(pending.id)
+  &&typeof pending.amount==="string"&&/^\\d{1,10000}$/.test(pending.amount)
+  &&BigInt(pending.amount)>0n;
+ if(pending&&!validPending){
+  try{
+   const key="formwheel_clicker_invalid_exchange_backup_"+Date.now();
+   localStorage.setItem(key,JSON.stringify(pending));
+   localStorage.removeItem(RAPID_PENDING_EXCHANGE_KEY);
+   pending=null;
+  }catch{note.textContent="이전 보류 거래를 안전하게 보관할 수 없어 환전을 중단했어요.";return;}
+ }
+ if(validPending){
+  input.value=pending.amount;
+  note.textContent="이전에 보류된 "+formatRapidNumber(BigInt(pending.amount))+" R 거래를 먼저 재확인합니다.";
  }else{
   if(!/^\d+$/.test(raw)||BigInt(raw)<1n){note.textContent="올바른 환전 수량을 입력해 주세요.";return;}
   const amount=BigInt(raw),cost=amount*RAPID_PRICE;

@@ -17,7 +17,18 @@ try{
  ]);
  const config={apiKey:"AIzaSyBreTSe1m0-xlbF4aupnU5isRZCihR25IE",authDomain:"formwheel.firebaseapp.com",databaseURL:"https://formwheel-default-rtdb.firebaseio.com",projectId:"formwheel",storageBucket:"formwheel.firebasestorage.app",messagingSenderId:"431583088241",appId:"1:431583088241:web:74e0e34ea1e3e1170c55d0",measurementId:"G-T372YXDF8D"};
  const app=initializeApp(config),db=getDatabase(app),auth=getAuth(app);let uid=null;
- const key=s=>String(s).padStart(140,"0");
+ const key=value=>{
+  const score=String(value).replace(/^0+(?=\d)/,"");
+  if(score.length<=140)return score.padStart(140,"0");
+  const digits=String(score.length);
+  return "z"+"1".repeat(digits.length)+"0"+digits+score;
+ };
+ const validScore=value=>typeof value==="string"&&/^\d+$/.test(value);
+ const compareScores=(a,b)=>{
+  const x=String(a).replace(/^0+(?=\d)/,"");
+  const y=String(b).replace(/^0+(?=\d)/,"");
+  return x.length===y.length?(x===y?0:(x>y?1:-1)):(x.length>y.length?1:-1);
+ };
  let clockOffset=0,clockReady=false,topRecords=[];
  onValue(ref(db,".info/serverTimeOffset"),s=>{clockOffset=Number(s.val())||0;clockReady=true});
  const serverNow=()=>Date.now()+clockOffset;
@@ -36,7 +47,7 @@ try{
    snap=await get(ref(db,"clickerLeaderboardSeason3"));
   }
   const data=snap.exists()?snap.val():{};
-  const list=Object.values(data).filter(r=>r&&/^\d{1,140}$/.test(String(r.score))&&/^\d{140}$/.test(String(r.scoreKey))).sort((a,b)=>String(b.scoreKey||"").localeCompare(String(a.scoreKey||""))).slice(0,20);
+  const list=Object.values(data).filter(r=>r&&validScore(r.score)&&typeof r.scoreKey==="string"&&r.scoreKey===key(r.score)).sort((a,b)=>compareScores(b.score,a.score)).slice(0,20);
   topRecords=list;ui.render(list);
   ui.status(auth.currentUser?"온라인 리더보드 연결됨 · 사용자 인증 완료":"온라인 리더보드 연결됨 · 점수 등록 시 사용자 인증");
   return true;
@@ -55,7 +66,7 @@ try{
 
  async function showRank(finalRecord){
   const index=topRecords.findIndex(r=>r.uid===finalRecord.uid);
-  const rank=index<0?"상위 20위 밖":(1+topRecords.filter(r=>String(r.scoreKey)>String(finalRecord.scoreKey)).length)+"위";
+  const rank=index<0?"상위 20위 밖":(1+topRecords.filter(r=>compareScores(r.score,finalRecord.score)>0).length)+"위";
   ui.rank(`내 최고 기록 · ${ui.formatScaled(finalRecord.score)}점 · ${rank}`);
  }
 
@@ -65,7 +76,7 @@ try{
   const name=ui.getNickname();
   if(!name){alert("닉네임을 입력해주세요.");return;}
   const score=ui.getScore();
-  if(!/^[0-9]{1,140}$/.test(score)){ui.status("점수 형식이 올바르지 않습니다.");return;}
+  if(!validScore(score)){ui.status("점수 형식이 올바르지 않습니다.");return;}
   if(BigInt(score)<=0n){alert("먼저 점수를 만들어주세요!");return;}
   submitting=true;
   const button=document.getElementById("submitButton");
@@ -90,7 +101,7 @@ try{
    ui.status("점수를 등록하는 중...");
    const result=await runTransaction(playerRef,current=>{
     if(submittedToday(current))return;
-    const isBetter=!current||BigInt(score)>BigInt(current.score||0);
+    const isBetter=!current||!validScore(current.score)||compareScores(score,current.score)>0;
     return {
      ...(current||{}),
      uid:userId,

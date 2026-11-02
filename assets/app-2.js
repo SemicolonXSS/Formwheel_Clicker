@@ -124,8 +124,11 @@ try{
    alert(BigInt(finalRecord.score||0)===BigInt(score)?"오늘의 기록을 등록했어요!":"오늘의 등록을 완료했어요. 이전 최고 기록이 더 높아 순위 점수는 유지했어요.");
   }catch(e){
    console.error("Leaderboard write failed",e);
-   ui.status("리더보드 등록 오류 · Firebase 인증 또는 Database Rules 확인");
-   alert("점수 등록에 실패했습니다. Firebase 권한과 연결 상태를 확인해주세요.");
+   const code=String(e?.code||"").replace(/[^a-zA-Z0-9_/-]/g,"").slice(0,80);
+   const message=String(e?.message||"").slice(0,180);
+   const detail=code||message||"알 수 없는 오류";
+   ui.status("리더보드 등록 실패 · "+detail);
+   alert("점수 등록에 실패했습니다. 오류: "+detail+"\\nFirebase Database Rules 또는 연결을 확인해주세요.");
   }finally{
    submitting=false;
    button.disabled=false;

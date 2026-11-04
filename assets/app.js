@@ -6,7 +6,7 @@ const A=["0","0.1","0.5","1","2","3","5","10","15","20","50","100","250","500","
 // Phase upgrades extend the existing progression instead of resetting levels.
 let builtPhase=1;
 function ensurePhaseLevels(phase){
- const target=Math.max(1,Math.min(1000,Math.trunc(Number(phase)||1)));
+ const target=Math.max(1,Math.trunc(Number(phase)||1));
  while(builtPhase<target){
   for(let i=0;i<10;i++){P.push(P[P.length-1]*10n);A.push(A[A.length-1]*10n);}
   builtPhase++;
@@ -129,7 +129,7 @@ function save(){try{g.lastSaved=Date.now();localStorage.setItem(SAVE_KEY,JSON.st
 function load(){
  try{
   let raw=localStorage.getItem(SAVE_KEY),data=raw?JSON.parse(raw):null;
-  if(data){ensurePhaseLevels(data.phase);g={...g,...data,score:BigInt(data.score||0),power:normalizeLevel(BigInt(data.power||1),P),auto:normalizeLevel(BigInt(data.auto||0),A),highScore:BigInt(data.highScore||0),lifetime:BigInt(data.lifetime||data.highScore||0),totalClicks:Number(data.totalClicks)||0,upgrades:Number(data.upgrades)||0,prestige:Number(data.prestige)||0,phase:Math.max(1,Math.min(1000,Number(data.phase)||1)),achievements:data.achievements||{},claimed:data.claimed||{},missionResetAt:Number(data.missionResetAt)||Date.now()+MISSION_PERIOD,missionBase:data.missionBase||{clicks:Number(data.totalClicks)||0,upgrades:Number(data.upgrades)||0,lifetime:String(data.lifetime||data.highScore||0),prestige:Number(data.prestige)||0},lastSaved:Number(data.lastSaved)||Date.now(),lastBonus:Number(data.lastBonus)||0};}
+  if(data){ensurePhaseLevels(data.phase);g={...g,...data,score:BigInt(data.score||0),power:normalizeLevel(BigInt(data.power||1),P),auto:normalizeLevel(BigInt(data.auto||0),A),highScore:BigInt(data.highScore||0),lifetime:BigInt(data.lifetime||data.highScore||0),totalClicks:Number(data.totalClicks)||0,upgrades:Number(data.upgrades)||0,prestige:Number(data.prestige)||0,phase:Math.max(1,Number(data.phase)||1),achievements:data.achievements||{},claimed:data.claimed||{},missionResetAt:Number(data.missionResetAt)||Date.now()+MISSION_PERIOD,missionBase:data.missionBase||{clicks:Number(data.totalClicks)||0,upgrades:Number(data.upgrades)||0,lifetime:String(data.lifetime||data.highScore||0),prestige:Number(data.prestige)||0},lastSaved:Number(data.lastSaved)||Date.now(),lastBonus:Number(data.lastBonus)||0};}
   const elapsed=Math.min(28800,Math.max(0,Math.floor((Date.now()-g.lastSaved)/1000)));
   if(elapsed>0&&g.auto>0n){const offline=gain(g.auto)*BigInt(elapsed)/10n; // 10% of normal auto earnings while away
     g.score+=offline;g.lifetime+=offline;if(g.score>g.highScore)g.highScore=g.score;setTimeout(()=>flash("💤 오프라인 보너스 +"+compact(offline)),50);}
@@ -182,7 +182,7 @@ function update(){
  renderAchievements();renderMissions();renderRapidPanel();renderPhase();
 }
 // Phase unlock: more expensive than either upgrade's last MAX purchase.
-const PHASE_MULTIPLIER=100000000n;
+const PHASE_MULTIPLIER=10000000000n; // phase unlocks now cost 100x more
 function phasePrice(){const p=price(10,P.length-2),a=price(50,A.length-2);return (p>a?p:a)*PHASE_MULTIPLIER;}
 function renderPhase(){
  const level=Math.max(1,g.phase||1),ready=g.power===P[P.length-1]&&g.auto===A[A.length-1],cost=phasePrice();
@@ -201,6 +201,7 @@ function advancePhase(){
  if(g.power!==P[P.length-1]||g.auto!==A[A.length-1]){renderPhase();return flash("현재 페이즈의 클릭 파워와 자동 클릭 MAX가 필요해요.");}
  const cost=phasePrice();if(g.score<cost){renderPhase();return flash("다음 페이즈까지 "+compact(cost-g.score)+"점 부족해요.");}
  if(!confirm("다음 페이즈로 넘어갈까요? 비용을 소모하고 기존 업그레이드 뒤에 10단계씩 추가됩니다. 보유 업그레이드는 유지됩니다."))return;
+ if(!Number.isSafeInteger(g.phase+1))return flash("페이즈 안전 정수 범위에 도달했습니다.");
  g.score-=cost;g.phase=Math.max(1,g.phase||1)+1;ensurePhaseLevels(g.phase);
  lastAutoAt=Date.now();
  flash("🌌 PHASE "+g.phase+" 돌입! 획득량 x"+g.phase);
@@ -210,12 +211,11 @@ if($("phaseAdvance"))$("phaseAdvance").addEventListener("click",advancePhase);
 
 // One-click phase progression. Only complete, affordable phases are purchased;
 // upgrade levels and phase costs follow the same rules as manual purchases.
-function advanceMaxPhases(){
+async function advanceMaxPhases(){
  collectAuto();
- if(g.phase>=1000){flash("🌌 최고 페이즈 1000에 도달했어요!");return;}
- if(!confirm("현재 점수로 가능한 최고 페이즈까지 이동할까요? 필요한 클릭 파워·자동 클릭 업그레이드와 페이즈 비용이 자동 차감됩니다. 구매한 업그레이드는 유지됩니다."))return;
+  if(!confirm("현재 점수로 가능한 최고 페이즈까지 이동할까요? 필요한 클릭 파워·자동 클릭 업그레이드와 페이즈 비용이 자동 차감됩니다. 구매한 업그레이드는 유지됩니다."))return;
  let phases=0,upgrades=0;
- while(g.phase<1000){
+ while(Number.isSafeInteger(g.phase+1)){
   const pi=P.indexOf(g.power),ai=A.indexOf(g.auto);
   if(pi<0||ai<0)break;
   let required=phasePrice();
@@ -230,6 +230,7 @@ function advanceMaxPhases(){
   g.phase++;
   ensurePhaseLevels(g.phase);
   phases++;
+  if(phases%20===0)await new Promise(resolve=>setTimeout(resolve,0));
  }
  lastAutoAt=Date.now();
  if(phases)flash("🌌 PHASE "+g.phase+" 도달! "+phases+"페이즈 · 업그레이드 "+upgrades+"단계 자동 구매");
@@ -458,11 +459,26 @@ loadCosmetics();load();initRapid();update();renderThemes();save();
 
 window.ClickerOnline={
  getScore:()=>g.highScore.toString(),
+ getClicks:()=>String(g.totalClicks),
+ getPhase:()=>String(g.phase),
  formatScaled:s=>compact(BigInt(s)),
  getNickname:()=>$("nickname").value.trim().slice(0,12),
  status:t=>$("status").textContent=t,
  rank:(t)=>{const e=$("myRank");e.style.display=t?"block":"none";e.textContent=t||"";},
  render:list=>{const el=$("leaderboardList");if(!list.length){el.innerHTML='<div class="empty">아직 등록된 점수가 없습니다.</div>';return;}el.innerHTML="";list.forEach((x,i)=>{const r=document.createElement("div");r.className="rank-row";const a=document.createElement("div");a.className="rank";a.textContent=i+1;const b=document.createElement("div");b.className="player";b.textContent=x.name||"Unknown";const c=document.createElement("div");c.className="points";c.textContent=compact(BigInt(x.score||0));r.append(a,b,c);el.appendChild(r);});},
+ renderExtra:(kind,list)=>{
+  const el=$(kind==="phase"?"phaseLeaderboardList":"clickLeaderboardList");
+  if(!el)return;
+  if(!list.length){el.innerHTML='<div class="empty">아직 등록된 기록이 없습니다.</div>';return;}
+  el.textContent="";
+  list.forEach((x,i)=>{
+   const row=document.createElement("div");row.className="rank-row";
+   const rank=document.createElement("div");rank.className="rank";rank.textContent=String(i+1);
+   const player=document.createElement("div");player.className="player";player.textContent=x.name||"Unknown";
+   const score=document.createElement("div");score.className="points";score.textContent=kind==="phase"?"PHASE "+x.score:BigInt(x.score).toLocaleString("ko-KR");
+   row.append(rank,player,score);el.appendChild(row);
+  });
+ },
  offline:msg=>{$("status").textContent=msg;$("leaderboardList").innerHTML='<div class="empty">오프라인 모드 · 게임은 정상 플레이할 수 있습니다.</div>';}
 };
 })();

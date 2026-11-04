@@ -1,7 +1,7 @@
 const fallbackUI={
  status:t=>{const el=document.getElementById("status");if(el)el.textContent=t;},
  offline:t=>{const el=document.getElementById("status");if(el)el.textContent=t;},
- render:()=>{},rank:()=>{},getScore:()=>"0",getNickname:()=>"",
+ render:()=>{},renderExtra:()=>{},rank:()=>{},getScore:()=>"0",getClicks:()=>"0",getPhase:()=>"1",getNickname:()=>"",
  formatScaled:s=>String(s)
 };
 // Online failures must never break Clicker's local game.

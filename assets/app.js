@@ -110,7 +110,19 @@ function fmt(x){
 }
 function compact(x){x=BigInt(x);const i=x/10n;if(i<1000000000000000n)return fmt(x);const s=i.toString();return s[0]+"."+s.slice(1,3)+"e"+(s.length-1);}
 function gain(base){return BigInt(base)*BigInt(4+g.prestige)*BigInt(Math.max(1,g.phase||1))/4n;}
-function price(base,index){let p=BigInt(base);for(let i=0;i<index;i++)p=(p*175n+99n)/100n;return p*SCALE;}
+// Cache upgrade prices: each level is calculated once, instead of recalculating
+// thousands of preceding levels on every phase advance.
+const priceCache=new Map();
+function price(base,index){
+ const key=String(base);
+ let cache=priceCache.get(key);
+ if(!cache){cache=[BigInt(base)];priceCache.set(key,cache);}
+ while(cache.length<=index){
+  const previous=cache[cache.length-1];
+  cache.push((previous*175n+99n)/100n);
+ }
+ return cache[index]*SCALE;
+}
 function normalizeLevel(value,arr){let v=BigInt(value);for(const n of arr)if(n>=v)return n;return arr[arr.length-1];}
 function serialize(){return {version:3,phase:g.phase||1,score:g.score.toString(),power:g.power.toString(),auto:g.auto.toString(),totalClicks:g.totalClicks,highScore:g.highScore.toString(),lifetime:g.lifetime.toString(),upgrades:g.upgrades,prestige:g.prestige,achievements:g.achievements,claimed:g.claimed,missionResetAt:g.missionResetAt,missionBase:g.missionBase,lastSaved:Date.now(),lastBonus:g.lastBonus};}
 function save(){try{g.lastSaved=Date.now();localStorage.setItem(SAVE_KEY,JSON.stringify(serialize()));}catch(e){console.warn("save",e)}}
@@ -207,8 +219,9 @@ function advanceMaxPhases(){
   const pi=P.indexOf(g.power),ai=A.indexOf(g.auto);
   if(pi<0||ai<0)break;
   let required=phasePrice();
-  for(let i=pi;i<P.length-1;i++)required+=price(10,i);
-  for(let i=ai;i<A.length-1;i++)required+=price(50,i);
+  if(g.score<required)break; // Skip huge upgrade-price sums when the phase itself is unaffordable.
+  for(let i=pi;i<P.length-1&&required<=g.score;i++)required+=price(10,i);
+  for(let i=ai;i<A.length-1&&required<=g.score;i++)required+=price(50,i);
   if(g.score<required)break; // Never buy partial upgrades for a phase we cannot unlock.
   const newUpgrades=(P.length-1-pi)+(A.length-1-ai);
   g.score-=required;

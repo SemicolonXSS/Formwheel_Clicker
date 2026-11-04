@@ -195,6 +195,36 @@ function advancePhase(){
  update();save();
 }
 if($("phaseAdvance"))$("phaseAdvance").addEventListener("click",advancePhase);
+
+// One-click phase progression. Only complete, affordable phases are purchased;
+// upgrade levels and phase costs follow the same rules as manual purchases.
+function advanceMaxPhases(){
+ collectAuto();
+ if(g.phase>=1000){flash("🌌 최고 페이즈 1000에 도달했어요!");return;}
+ if(!confirm("현재 점수로 가능한 최고 페이즈까지 이동할까요? 필요한 클릭 파워·자동 클릭 업그레이드와 페이즈 비용이 자동 차감됩니다. 구매한 업그레이드는 유지됩니다."))return;
+ let phases=0,upgrades=0;
+ while(g.phase<1000){
+  const pi=P.indexOf(g.power),ai=A.indexOf(g.auto);
+  if(pi<0||ai<0)break;
+  let required=phasePrice();
+  for(let i=pi;i<P.length-1;i++)required+=price(10,i);
+  for(let i=ai;i<A.length-1;i++)required+=price(50,i);
+  if(g.score<required)break; // Never buy partial upgrades for a phase we cannot unlock.
+  const newUpgrades=(P.length-1-pi)+(A.length-1-ai);
+  g.score-=required;
+  g.power=P[P.length-1];g.auto=A[A.length-1];
+  g.upgrades+=newUpgrades;upgrades+=newUpgrades;
+  g.phase++;
+  ensurePhaseLevels(g.phase);
+  phases++;
+ }
+ lastAutoAt=Date.now();
+ if(phases)flash("🌌 PHASE "+g.phase+" 도달! "+phases+"페이즈 · 업그레이드 "+upgrades+"단계 자동 구매");
+ else flash("다음 페이즈와 필수 업그레이드를 모두 구매하기에는 점수가 부족해요.");
+ update();save();
+}
+if($("phaseAdvanceMax"))$("phaseAdvanceMax").addEventListener("click",advanceMaxPhases);
+
 function addScore(v){const n=BigInt(v);g.score+=n;g.lifetime+=n;if(g.score>g.highScore)g.highScore=g.score;}
 function flash(t){$("bonusText").textContent=t;clearTimeout(flash.t);flash.t=setTimeout(()=>$("bonusText").textContent="",2600);}
 function maybeBonus(){if(Date.now()-g.lastBonus<10000||Math.random()>=.01)return;g.lastBonus=Date.now();const b=gain(g.power)*50n;addScore(b);flash("✨ 랜덤 보너스! +"+compact(b));}

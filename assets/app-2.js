@@ -135,12 +135,72 @@ try{
   }
  }
 
+
+ // Independent, opt-in rankings. Existing score leaderboard data is untouched.
+ const extraRankings={
+  clicks:{path:"clickerClicksLeaderboardSeason3",button:"submitClicks",metric:()=>ui.getClicks?.(),label:"클릭"},
+  phase:{path:"clickerPhaseLeaderboardSeason3",button:"submitPhase",metric:()=>ui.getPhase?.(),label:"페이즈"}
+ };
+ const extraStatus=message=>{
+  const el=document.getElementById("extraLeaderboardStatus");if(el)el.textContent=message;
+ };
+ async function loadExtra(kind){
+  const config=extraRankings[kind];
+  try{
+   const result=await get(query(ref(db,config.path),orderByChild("scoreKey"),limitToLast(20)));
+   const rows=Object.values(result.val()||{}).filter(r=>r&&validScore(r.score)&&r.scoreKey===key(r.score))
+    .sort((a,b)=>compareScores(b.score,a.score)).slice(0,20);
+   ui.renderExtra?.(kind,rows);
+   return true;
+  }catch(e){
+   console.warn(config.label+" 리더보드 읽기 실패",e);
+   const target=document.getElementById(kind==="phase"?"phaseLeaderboardList":"clickLeaderboardList");
+   if(target)target.textContent="랭킹을 불러오지 못했습니다. Firebase Database Rules와 scoreKey 인덱스를 확인해 주세요.";
+   return false;
+  }
+ }
+ const extraSubmitting=new Set();
+ async function submitExtra(kind){
+  const cfg=extraRankings[kind],button=document.getElementById(cfg.button);
+  if(extraSubmitting.has(kind))return;
+  if(!clockReady){extraStatus("서버 시간 확인 중 · 다시 시도해주세요.");return;}
+  const name=ui.getNickname(),score=cfg.metric();
+  if(!name){extraStatus("닉네임을 입력해주세요.");return;}
+  if(!validScore(score)||BigInt(score)<1n){extraStatus("등록할 "+cfg.label+" 기록이 없습니다.");return;}
+  extraSubmitting.add(kind);if(button)button.disabled=true;
+  try{
+   const id=await ensureAuth(),playerRef=ref(db,cfg.path+"/"+id);
+   const before=(await get(playerRef)).val();
+   if(submittedToday(before)){extraStatus(cfg.label+" 리더보드는 오늘 이미 등록했습니다. 내일 00:00(KST)에 다시 등록할 수 있어요.");return;}
+   const result=await runTransaction(playerRef,current=>{
+    if(submittedToday(current))return;
+    const best=!current||!validScore(current.score)||compareScores(score,current.score)>0;
+    return {
+     ...(current||{}),uid:id,name:best?name:(current.name||name),
+     score:best?score:current.score,scoreKey:best?key(score):key(current.score),
+     updatedAt:serverTimestamp(),lastSubmissionDay:koreaDay(serverNow())
+    };
+   });
+   if(!result.committed){extraStatus(cfg.label+" 리더보드는 오늘 이미 등록했습니다.");return;}
+   const ok=await loadExtra(kind);
+   extraStatus(cfg.label+" 기록 등록 완료"+(ok?"":" · 순위 조회는 Firebase 권한을 확인해주세요."));
+  }catch(e){
+   console.error(cfg.label+" 리더보드 등록 오류",e);
+   extraStatus(cfg.label+" 등록 실패: "+String(e?.code||e?.message||e).slice(0,120)+" · Firebase Rules 확인 필요");
+  }finally{extraSubmitting.delete(kind);if(button)button.disabled=false;}
+ }
+ for(const kind of Object.keys(extraRankings)){
+  const el=document.getElementById(extraRankings[kind].button);
+  if(el)el.addEventListener("click",()=>submitExtra(kind));
+ }
+
  document.getElementById("submitButton").addEventListener("click",submit);
  document.getElementById("nickname").addEventListener("keydown",e=>{if(e.key==="Enter")submit();});
  onAuthStateChanged(auth,u=>{uid=u?.uid||null;});
 
  try{
   await loadTop();
+  await Promise.all([loadExtra("clicks"),loadExtra("phase")]);
  }catch(firstError){
   console.warn("Unauthenticated leaderboard read failed",firstError);
   try{

@@ -52,11 +52,27 @@
 <div class="stat"><span>현재 시간별 누적 획득 상한</span><strong id="phasePrice">1e4</strong></div>
 <p class="muted">10시간 기준 상한은 1e100. 상한은 실제 점수를 보장하지 않으며, 누적 플레이 시간은 이 화면이 보이는 동안만 계산돼.</p></section>
 <section class="card panel" style="margin:18px 0"><div class="section-title">🏆 시즌별 기록</div><p>시즌 2 기록은 별도로 저장돼. 기존 시즌 1.02 점수, PHASE, 리더보드는 그대로 남아 있어.</p><p><a href="./season1-02/#leaderboardList">📜 시즌 1.02 리더보드 열기 →</a></p></section>
+<section class="card leaderboard" id="season2Leaderboard" aria-labelledby="season2LeaderboardTitle">
+ <div class="lb-head"><div class="lb-title" id="season2LeaderboardTitle">🏆 시즌 2 온라인 리더보드</div><button type="button" class="small" id="s2Refresh">새로고침</button></div>
+ <p class="muted">시즌 2 전용 점수 순위 · 상위 20명 · 기존 시즌 1.02와 기록 분리</p>
+ <p class="notice">베타 순위입니다. 브라우저에서 제출한 점수로, 서버에서 실제 플레이 기록을 아직 검증하지 않습니다.</p>
+ <div class="name-area" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+  <label for="s2Nickname">닉네임</label>
+  <input class="nickname" id="s2Nickname" maxlength="12" autocomplete="nickname" placeholder="닉네임 (1~12자)">
+  <button type="button" class="small" id="s2Submit">내 최고 점수 등록</button>
+ </div>
+ <div class="status" id="s2Status" aria-live="polite">시즌 2 랭킹 연결 준비 중…</div>
+ <div id="s2MyRank" class="my-rank"></div>
+ <div id="s2List"><div class="empty">시즌 2 순위를 불러오는 중…</div></div>
+ <p class="muted">등록에는 Firebase 로그인이 필요하며, 로그인하지 않은 경우 익명 계정을 사용할 수 있어요. 같은 계정의 최고 기록만 유지합니다.</p>
+ <p><a href="./season1-02/#leaderboardList">📜 시즌 1.02 온라인 순위 보기 →</a></p>
+</section>
 <section class="card panel"><div class="section-title">🪙 Rapid 안내</div><p class="muted">시즌 2의 새 경제는 기존 Rapid 잔액 및 환전과 연결하지 않아. 이전 Rapid 기록은 변경하지 않았어.</p><a href="./season1-02/">시즌 1.02 기록 확인하기 →</a></section>
 </main>
 
 
 <script src="./assets/season2-main.js?v=20261105-season2-classic1"></script>
+<script type="module" src="./assets/season2-leaderboard.js?v=20261105-season2-ranking1"></script>
 
 
 

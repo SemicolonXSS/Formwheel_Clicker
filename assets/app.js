@@ -182,13 +182,58 @@ function update(){
  renderAchievements();renderMissions();renderRapidPanel();renderPhase();
 }
 // Phase unlock: more expensive than either upgrade's last MAX purchase.
-const PHASE_MULTIPLIER=10000000000n; // phase unlocks now cost 100x more
-function phasePrice(){const p=price(10,P.length-2),a=price(50,A.length-2);return (p>a?p:a)*PHASE_MULTIPLIER;}
+const PHASE_MULTIPLIER=10000000000n; // original progression price; unchanged
+// Do not block the first paint by building very large BigInt price tables.
+let cachedPhaseCost=null,cachedPhaseLength=0,phasePriceJob=0;
+function phasePrice(){
+ if(cachedPhaseLength===P.length&&cachedPhaseCost!==null)return cachedPhaseCost;
+ const p=price(10,P.length-2),a=price(50,A.length-2);
+ cachedPhaseLength=P.length;
+ return cachedPhaseCost=(p>a?p:a)*PHASE_MULTIPLIER;
+}
+let pendingPhaseLength=0;
+function schedulePhasePrice(){
+ if(cachedPhaseLength===P.length&&cachedPhaseCost!==null)return;
+ if(pendingPhaseLength===P.length)return;
+ pendingPhaseLength=P.length;
+ const job=++phasePriceJob,target=P.length;
+ function chunk(){
+  if(job!==phasePriceJob)return;
+  // Work in small batches to let the browser paint and accept clicks.
+  for(const base of [10,50]){
+   const key=String(base);
+   let cache=priceCache.get(key);
+   if(!cache){cache=[BigInt(base)];priceCache.set(key,cache);}
+   const goal=Math.min(target-1,cache.length+120);
+   while(cache.length<=goal){
+    const prev=cache[cache.length-1];
+    cache.push((prev*175n+99n)/100n);
+   }
+  }
+  if(priceCache.get("10").length<target||priceCache.get("50").length<target){
+   setTimeout(chunk,0);return;
+  }
+  if(job!==phasePriceJob||target!==P.length){schedulePhasePrice();return;}
+  const p=price(10,target-2),a=price(50,target-2);
+  cachedPhaseCost=(p>a?p:a)*PHASE_MULTIPLIER;
+  cachedPhaseLength=target;
+  pendingPhaseLength=0;
+  renderPhase();
+ }
+ setTimeout(chunk,0);
+}
 function renderPhase(){
- const level=Math.max(1,g.phase||1),ready=g.power===P[P.length-1]&&g.auto===A[A.length-1],cost=phasePrice();
+ const level=Math.max(1,g.phase||1),ready=g.power===P[P.length-1]&&g.auto===A[A.length-1];
+ const cost=cachedPhaseLength===P.length?cachedPhaseCost:null;
  const title=$("phaseLevel"),priceLabel=$("phasePrice"),note=$("phaseNote"),button=$("phaseAdvance");
  if(!title||!button)return;
  title.textContent="PHASE "+level+" · 획득량 x"+level;
+ if(cost===null){
+  priceLabel.textContent="가격 계산 중…";priceLabel.title="";
+  note.textContent="기존 PHASE와 점수를 불러왔어요. 가격을 계산하는 동안에도 클릭할 수 있어요.";
+  button.disabled=true;button.textContent="⏳ 페이즈 가격 계산 중";
+  schedulePhasePrice();return;
+ }
  priceLabel.textContent=compact(cost)+" 점수";priceLabel.title=fmt(cost);
  const powerDone=g.power===P[P.length-1],autoDone=g.auto===A[A.length-1];
  const missing=cost>g.score?cost-g.score:0n;
@@ -197,6 +242,7 @@ function renderPhase(){
  button.textContent=ready&&g.score>=cost?"🌌 다음 페이즈 해금하기 →":"🔒 다음 페이즈 조건 확인";
 }
 function advancePhase(){
+ if(cachedPhaseLength!==P.length||cachedPhaseCost===null){schedulePhasePrice();return flash("페이즈 가격 계산이 끝나면 이동할 수 있어요.");}
  collectAuto();
  if(g.power!==P[P.length-1]||g.auto!==A[A.length-1]){renderPhase();return flash("현재 페이즈의 클릭 파워와 자동 클릭 MAX가 필요해요.");}
  const cost=phasePrice();if(g.score<cost){renderPhase();return flash("다음 페이즈까지 "+compact(cost-g.score)+"점 부족해요.");}
@@ -214,6 +260,7 @@ if($("phaseAdvance"))$("phaseAdvance").addEventListener("click",advancePhase);
 let advancingMaxPhases=false;
 async function advanceMaxPhases(){
  if(advancingMaxPhases)return;
+ if(cachedPhaseLength!==P.length||cachedPhaseCost===null){schedulePhasePrice();return flash("페이즈 가격 계산이 끝나면 이동할 수 있어요.");}
  collectAuto();
   if(!confirm("현재 점수로 가능한 최고 페이즈까지 이동할까요? 필요한 클릭 파워·자동 클릭 업그레이드와 페이즈 비용이 자동 차감됩니다. 구매한 업그레이드는 유지됩니다."))return;
  advancingMaxPhases=true;

@@ -26,10 +26,10 @@ button.primary{font-size:24px;min-height:135px;width:100%;background:linear-grad
 <nav><a href="../">🎡 시즌 선택</a><a href="../season1-02/">📜 시즌 1.02 플레이·리더보드</a></nav>
 <p class="eyebrow">FORMWHEEL CLICKER · NEW SEASON</p>
 <h1>🌌 시즌 2 — SLOW UNIVERSE</h1>
-<p class="subtitle">숫자가 너무 빨리 폭주하지 않도록 성장 곡선을 다시 설계했어. 기록은 시즌별로 분리되며, 시즌 1.02 점수는 그대로 보존돼.</p>
+<p class="subtitle">난이도 극악 업데이트! 클릭 수익은 천천히 증가하고 업그레이드 가격은 빠르게 상승해. 시즌 1.02 기록은 그대로 보존돼.</p>
 <section class="card"><div class="row"><strong>⏳ 10시간 성장 챌린지</strong><span id="time">0시간 0분 0초</span></div>
 <div class="progress" aria-label="성장 시간 진행"><span id="progress"></span></div>
-<p class="muted">게임 화면이 보이는 동안 누적되는 플레이 시간에 따라 성장 가능한 최대 점수가 늘어나. 10시간이 되어도 최대 <b>1e100</b>이야. 오프라인 방치 시간은 합산하지 않아.</p>
+<p class="muted">게임 화면이 보이는 동안 누적되는 플레이 시간에 따라 획득 상한이 늘어나지만, 실제 점수는 직접 어렵게 벌어야 해. 10시간이 되어도 최대 <b>1e100</b>이고, 이를 달성한다는 보장은 없어. 오프라인 방치 시간은 합산하지 않아.</p>
 </section>
 <section class="card">
 <div class="grid">
@@ -41,12 +41,12 @@ button.primary{font-size:24px;min-height:135px;width:100%;background:linear-grad
 <button class="primary" id="click">✨ 클릭하여 성장하기</button><p id="notice" aria-live="polite"></p>
 </section>
 <section class="grid">
-<div class="card"><h2>👆 클릭 파워</h2><p class="muted">현재 한 번에 <b id="clickPower">1</b>점 · 레벨 <b id="clickLevel">0</b></p><p>다음 비용: <b id="clickPrice">100</b></p><button id="buyClick">클릭 강화 구매</button></div>
-<div class="card"><h2>🤖 자동 생산</h2><p class="muted">초당 <b id="autoPower">0</b>점 · 레벨 <b id="autoLevel">0</b></p><p>다음 비용: <b id="autoPrice">1,000</b></p><button id="buyAuto">자동 생산 구매</button></div>
+<div class="card"><h2>👆 클릭 파워 · 극악 난이도</h2><p class="muted">현재 한 번에 <b id="clickPower">1</b>점 · 레벨 <b id="clickLevel">0</b></p><p>다음 비용: <b id="clickPrice">100</b></p><p class="muted">수익 ×2씩, 비용 ×5씩 증가 + 고레벨 추가 페널티</p><button id="buyClick">클릭 강화 구매</button></div>
+<div class="card"><h2>🤖 자동 생산 · 극악 난이도</h2><p class="muted">초당 <b id="autoPower">0</b>점 · 레벨 <b id="autoLevel">0</b></p><p>다음 비용: <b id="autoPrice">10,000</b></p><p class="muted">수익 ×2씩, 비용 ×15씩 증가 + 고레벨 추가 페널티</p><button id="buyAuto">자동 생산 구매</button></div>
 </section>
-<section class="card"><h2>🏆 시즌별 기록</h2><p>시즌 2 최고 점수: <b id="best">0</b></p><p class="muted">시즌 2는 독립 로컬 기록으로 먼저 시작해. Firebase에 새로운 리더보드를 공개하려면 별도의 검증된 서버 규칙이 필요해.</p>
+<section class="card"><h2>🏆 시즌별 기록</h2><p>시즌 2 최고 점수: <b id="best">0</b></p><p class="muted">1e30 이후 누적 획득량이 커질수록 수익 효율이 감소해. 시즌 2는 독립 로컬 기록으로 먼저 시작해. Firebase에 새로운 리더보드를 공개하려면 별도의 검증된 서버 규칙이 필요해.</p>
 <a href="../season1-02/#leaderboardList">📜 시즌 1.02 기존 온라인 리더보드 보기</a>
 </section>
 <footer class="muted">기존 시즌 1.02 저장 데이터, Firebase 리더보드, Rapid 잔액은 수정하지 않아.</footer>
-</main><script src="./app.js?v=20261105-season2-1"></script></body>
+</main><script src="./app.js?v=20261105-season2-nightmare2"></script></body>
 </html>

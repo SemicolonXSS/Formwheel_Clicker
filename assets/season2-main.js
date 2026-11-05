@@ -58,7 +58,6 @@ function save(){
  catch(e){console.warn("Season 2 save failed",e)}
 }
 let lastFrame=performance.now(),elapsedSave=0;
-function setMessage(t){message=t;$("notice").textContent=t}
 let buyCount="1";
 function render(){
  $("score").textContent=fmt(points);

@@ -1,0 +1,547 @@
+(()=>{
+"use strict";
+const SCALE=10n,SAVE_KEY="formwheel_clicker_season3_save_v1";
+const P=["0.1","0.5","1","2","3","5","10","15","30","50","100","200","300","500","1000","2500","5000","10000","25000","50000","100000","250000","500000","1000000","2500000","5000000","10000000","25000000","50000000","100000000","1000000000","10000000000","25000000000","50000000000","100000000000","250000000000","500000000000","1000000000000","2500000000000","5000000000000","10000000000000","25000000000000","50000000000000","100000000000000","250000000000000","500000000000000","1000000000000000","2500000000000000","5000000000000000","10000000000000000","25000000000000000","50000000000000000","100000000000000000","250000000000000000","500000000000000000","1000000000000000000","2500000000000000000","5000000000000000000","10000000000000000000","25000000000000000000","50000000000000000000","100000000000000000000","250000000000000000000","500000000000000000000","1000000000000000000000","10000000000000000000000","100000000000000000000000","1000000000000000000000000","10000000000000000000000000","100000000000000000000000000","1000000000000000000000000000","10000000000000000000000000000","100000000000000000000000000000","1000000000000000000000000000000","10000000000000000000000000000000","100000000000000000000000000000000","1000000000000000000000000000000000","10000000000000000000000000000000000","100000000000000000000000000000000000","1000000000000000000000000000000000000","10000000000000000000000000000000000000","100000000000000000000000000000000000000","1000000000000000000000000000000000000000","10000000000000000000000000000000000000000","100000000000000000000000000000000000000000","1000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000","250000000000000000000000000000000000000000000","500000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000","2500000000000000000000000000000000000000000000","5000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000000","250000000000000000000000000000000000000000000000","500000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000000","2500000000000000000000000000000000000000000000000","5000000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000000000","250000000000000000000000000000000000000000000000000","500000000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000000000","2500000000000000000000000000000000000000000000000000","5000000000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000000000000","250000000000000000000000000000000000000000000000000000","500000000000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000000000000","2500000000000000000000000000000000000000000000000000000","5000000000000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000000000000000","250000000000000000000000000000000000000000000000000000000","500000000000000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000000000000000","2500000000000000000000000000000000000000000000000000000000","5000000000000000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000000000000000000","250000000000000000000000000000000000000000000000000000000000","500000000000000000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000000000000000000","2500000000000000000000000000000000000000000000000000000000000","5000000000000000000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000000000000000000000","250000000000000000000000000000000000000000000000000000000000000","500000000000000000000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000000000000000000000","2500000000000000000000000000000000000000000000000000000000000000","5000000000000000000000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000000000000000000000000","250000000000000000000000000000000000000000000000000000000000000000","500000000000000000000000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000000000000000000000000","2500000000000000000000000000000000000000000000000000000000000000000","5000000000000000000000000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000000000000000000000000000","250000000000000000000000000000000000000000000000000000000000000000000","500000000000000000000000000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000000000000000000000000000","2500000000000000000000000000000000000000000000000000000000000000000000","5000000000000000000000000000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000000000000000000000000000000"].map(toScaled);
+const A=["0","0.1","0.5","1","2","3","5","10","15","20","50","100","250","500","1000","2500","5000","10000","25000","50000","100000","250000","500000","1000000","2500000","5000000","10000000","25000000","50000000","100000000","1000000000","10000000000","100000000000","1000000000000","10000000000000","100000000000000","1000000000000000","10000000000000000","100000000000000000","1000000000000000000","10000000000000000000","100000000000000000000","1000000000000000000000","10000000000000000000000","100000000000000000000000","1000000000000000000000000","10000000000000000000000000","100000000000000000000000000","1000000000000000000000000000","10000000000000000000000000000","100000000000000000000000000000","1000000000000000000000000000000","10000000000000000000000000000000","100000000000000000000000000000000","1000000000000000000000000000000000","10000000000000000000000000000000000","100000000000000000000000000000000000","1000000000000000000000000000000000000","10000000000000000000000000000000000000","100000000000000000000000000000000000000","1000000000000000000000000000000000000000","10000000000000000000000000000000000000000","100000000000000000000000000000000000000000","250000000000000000000000000000000000000000","500000000000000000000000000000000000000000","1000000000000000000000000000000000000000000","2500000000000000000000000000000000000000000","5000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000","250000000000000000000000000000000000000000000","500000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000","2500000000000000000000000000000000000000000000","5000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000000","250000000000000000000000000000000000000000000000","500000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000000","2500000000000000000000000000000000000000000000000","5000000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000000000","250000000000000000000000000000000000000000000000000","500000000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000000000","2500000000000000000000000000000000000000000000000000","5000000000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000000000000","250000000000000000000000000000000000000000000000000000","500000000000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000000000000","2500000000000000000000000000000000000000000000000000000","5000000000000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000000000000000","250000000000000000000000000000000000000000000000000000000","500000000000000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000000000000000","2500000000000000000000000000000000000000000000000000000000","5000000000000000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000000000000000000","250000000000000000000000000000000000000000000000000000000000","500000000000000000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000000000000000000","2500000000000000000000000000000000000000000000000000000000000","5000000000000000000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000000000000000000000","250000000000000000000000000000000000000000000000000000000000000","500000000000000000000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000000000000000000000","2500000000000000000000000000000000000000000000000000000000000000","5000000000000000000000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000000000000000000000000","250000000000000000000000000000000000000000000000000000000000000000","500000000000000000000000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000000000000000000000000","2500000000000000000000000000000000000000000000000000000000000000000","5000000000000000000000000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000000000000000000000000000","250000000000000000000000000000000000000000000000000000000000000000000","500000000000000000000000000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000000000000000000000000000","2500000000000000000000000000000000000000000000000000000000000000000000","5000000000000000000000000000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000000000000000000000000000","25000000000000000000000000000000000000000000000000000000000000000000000","50000000000000000000000000000000000000000000000000000000000000000000000"].map(toScaled);
+// Phase upgrades extend the existing progression instead of resetting levels.
+let builtPhase=1;
+function ensurePhaseLevels(phase){
+ const target=Math.max(1,Math.trunc(Number(phase)||1));
+ while(builtPhase<target){
+  for(let i=0;i<10;i++){P.push(P[P.length-1]*10n);A.push(A[A.length-1]*10n);}
+  builtPhase++;
+ }
+}
+const PRESTIGE_REQ=toScaled("1000000");
+const ACH=[
+["first","첫 클릭","한 번 클릭하기",g=>g.totalClicks>=1],
+["hundred","손가락 워밍업","100번 클릭하기",g=>g.totalClicks>=100],
+["thousand","천점 돌파","최고 점수 1,000점 달성",g=>g.highScore>=toScaled("1000")],
+["auto","자동화 시작","자동 클릭 1 이상 달성",g=>g.auto>=toScaled("1")],
+["power","파워 유저","클릭 파워 100 이상 달성",g=>g.power>=toScaled("100")],
+["prestige","새로운 시작","Prestige 1회 달성",g=>g.prestige>=1]
+,
+["click10","클릭 견습생","10번 클릭하기",g=>g.totalClicks>=10],
+["click500","손가락 단련","500번 클릭하기",g=>g.totalClicks>=500],
+["click1000","클릭 장인","1,000번 클릭하기",g=>g.totalClicks>=1000],
+["click10000","만 번의 노력","10,000번 클릭하기",g=>g.totalClicks>=10000],
+["click100000","전설의 손가락","100,000번 클릭하기",g=>g.totalClicks>=100000],
+["score10","첫 수익","최고 점수 10점 달성",g=>g.highScore>=toScaled('10')],
+["score100","백점 돌파","최고 점수 100점 달성",g=>g.highScore>=toScaled('100')],
+["score10000","만점의 기쁨","최고 점수 10,000점 달성",g=>g.highScore>=toScaled('10000')],
+["score100000","십만장자","최고 점수 100,000점 달성",g=>g.highScore>=toScaled('100000')],
+["scoreMillion","백만장자","최고 점수 1,000,000점 달성",g=>g.highScore>=toScaled('1000000')],
+["scoreBillion","십억장자","최고 점수 1,000,000,000점 달성",g=>g.highScore>=toScaled('1000000000')],
+["lifetime10000","차곡차곡","누적 획득 10,000점 달성",g=>g.lifetime>=toScaled('10000')],
+["lifetimeMillion","누적의 힘","누적 획득 1,000,000점 달성",g=>g.lifetime>=toScaled('1000000')],
+["lifetimeBillion","끝없는 수익","누적 획득 1,000,000,000점 달성",g=>g.lifetime>=toScaled('1000000000')],
+["power1","제법 강한 클릭","클릭 파워 1 이상 달성",g=>g.power>=toScaled('1')],
+["power10","클릭 강화","클릭 파워 10 이상 달성",g=>g.power>=toScaled('10')],
+["power1000","강력한 손끝","클릭 파워 1,000 이상 달성",g=>g.power>=toScaled('1000')],
+["powerMillion","초월한 클릭","클릭 파워 1,000,000 이상 달성",g=>g.power>=toScaled('1000000')],
+["auto10","작은 공장","초당 자동 생산 10 이상 달성",g=>g.auto>=toScaled('10')],
+["auto100","자동화 전문가","초당 자동 생산 100 이상 달성",g=>g.auto>=toScaled('100')],
+["auto1000","클릭 공장장","초당 자동 생산 1,000 이상 달성",g=>g.auto>=toScaled('1000')],
+["autoMillion","무한 생산 라인","초당 자동 생산 1,000,000 이상 달성",g=>g.auto>=toScaled('1000000')],
+["upgrade1","첫 투자","업그레이드 1회 구매하기",g=>g.upgrades>=1],
+["upgrade10","꾸준한 투자자","한 Prestige 주기에서 업그레이드 10회 구매",g=>g.upgrades>=10],
+["upgrade30","업그레이드 수집가","한 Prestige 주기에서 업그레이드 30회 구매",g=>g.upgrades>=30],
+["prestige3","새 출발 전문가","Prestige 3회 달성",g=>g.prestige>=3],
+["prestige5","환생의 달인","Prestige 5회 달성",g=>g.prestige>=5],
+["prestige10","열 번의 시작","Prestige 10회 달성",g=>g.prestige>=10],
+["prestige25","불멸의 클릭러","Prestige 25회 달성",g=>g.prestige>=25],
+["click50","손풀기 완료","50번 클릭하기",g=>g.totalClicks>=50],
+["click250","반복의 힘","250번 클릭하기",g=>g.totalClicks>=250],
+["click2500","클릭 고수","2,500번 클릭하기",g=>g.totalClicks>=2500],
+["click5000","쉬지 않는 손","5,000번 클릭하기",g=>g.totalClicks>=5000],
+["click25000","끈기의 증명","25,000번 클릭하기",g=>g.totalClicks>=25000],
+["click50000","초인적인 클릭","50,000번 클릭하기",g=>g.totalClicks>=50000],
+["click250000","클릭 전설 II","250,000번 클릭하기",g=>g.totalClicks>=250000],
+["clickMillion","백만 번의 클릭","1,000,000번 클릭하기",g=>g.totalClicks>=1000000],
+["score500","다섯 배의 성장","최고 점수 500점 달성",g=>g.highScore>=toScaled('500')],
+["score5000","오천점 정복","최고 점수 5,000점 달성",g=>g.highScore>=toScaled('5000')],
+["score50000","오만점 정복","최고 점수 50,000점 달성",g=>g.highScore>=toScaled('50000')],
+["score500000","오십만점 정복","최고 점수 500,000점 달성",g=>g.highScore>=toScaled('500000')],
+["scoreTenMillion","천만장자","최고 점수 10,000,000점 달성",g=>g.highScore>=toScaled('10000000')],
+["scoreHundredMillion","억만장자","최고 점수 100,000,000점 달성",g=>g.highScore>=toScaled('100000000')],
+["scoreTrillion","조 단위의 세계","최고 점수 1,000,000,000,000점 달성",g=>g.highScore>=toScaled('1000000000000')],
+["lifetime100","첫 저축","누적 획득 100점 달성",g=>g.lifetime>=toScaled('100')],
+["lifetime1000","천천히 부자되기","누적 획득 1,000점 달성",g=>g.lifetime>=toScaled('1000')],
+["lifetime100000","꾸준한 수입","누적 획득 100,000점 달성",g=>g.lifetime>=toScaled('100000')],
+["lifetimeTenMillion","천만의 발자취","누적 획득 10,000,000점 달성",g=>g.lifetime>=toScaled('10000000')],
+["lifetimeTrillion","평생의 기록","누적 획득 1,000,000,000,000점 달성",g=>g.lifetime>=toScaled('1000000000000')],
+["power5","단단한 손가락","클릭 파워 5 이상 달성",g=>g.power>=toScaled('5')],
+["power50","손끝의 힘","클릭 파워 50 이상 달성",g=>g.power>=toScaled('50')],
+["power500","파워 상승","클릭 파워 500 이상 달성",g=>g.power>=toScaled('500')],
+["power10000","거대한 한 방","클릭 파워 10,000 이상 달성",g=>g.power>=toScaled('10000')],
+["auto5","작은 로봇","초당 자동 생산 5 이상 달성",g=>g.auto>=toScaled('5')],
+["auto50","자동화 작업장","초당 자동 생산 50 이상 달성",g=>g.auto>=toScaled('50')],
+["auto500","생산 라인 확장","초당 자동 생산 500 이상 달성",g=>g.auto>=toScaled('500')],
+["auto10000","대형 자동 공장","초당 자동 생산 10,000 이상 달성",g=>g.auto>=toScaled('10000')],
+["upgrade5","기술 도입","한 Prestige 주기에서 업그레이드 5회 구매",g=>g.upgrades>=5],
+["upgrade20","투자의 달인","한 Prestige 주기에서 업그레이드 20회 구매",g=>g.upgrades>=20],
+["upgrade50","업그레이드 전문가","한 Prestige 주기에서 업그레이드 50회 구매",g=>g.upgrades>=50],
+["upgrade100","완벽한 설비","한 Prestige 주기에서 업그레이드 100회 구매",g=>g.upgrades>=100],
+["prestige2","다시 시작","Prestige 2회 달성",g=>g.prestige>=2],
+["prestige15","열다섯 번의 도전","Prestige 15회 달성",g=>g.prestige>=15],
+["prestige50","반복의 제왕","Prestige 50회 달성",g=>g.prestige>=50]
+];
+const MISSION_PERIOD=60*60*1000;
+const MISS=[
+["m1","1시간 동안 클릭 100회","25점",g=>g.totalClicks-(g.missionBase?.clicks||0)>=100,toScaled("25")],
+["m2","1시간 동안 업그레이드 3회","100점",g=>g.upgrades-(g.missionBase?.upgrades||0)>=3,toScaled("100")],
+["m3","1시간 동안 1,000점 획득","250점",g=>g.lifetime-BigInt(g.missionBase?.lifetime||"0")>=toScaled("1000"),toScaled("250")],
+["m4","1시간 동안 Prestige 1회","500점",g=>g.prestige-(g.missionBase?.prestige||0)>=1,toScaled("500")]
+];
+let g={score:0n,power:toScaled("0.1"),auto:0n,totalClicks:0,highScore:0n,lifetime:0n,upgrades:0,prestige:0,achievements:{},claimed:{},missionResetAt:Date.now()+MISSION_PERIOD,missionBase:{clicks:0,upgrades:0,lifetime:"0",prestige:0},lastSaved:Date.now(),lastBonus:0};
+
+function toScaled(v){
+ const s=String(v??"0").trim(); if(!s||s==="NaN") return 0n;
+ if(/e/i.test(s)){ const n=Number(s); return BigInt(Math.round(n*10)); }
+ const neg=s.startsWith("-"); const t=neg?s.slice(1):s; const [i="0",d=""]=t.split(".");
+ const r=BigInt((i||"0").replace(/\D/g,"")||"0")*10n+BigInt((d[0]||"0").replace(/\D/g,"")||"0");
+ return neg?-r:r;
+}
+function fromLegacy(v){ return toScaled(typeof v==="number" ? String(v) : (v??0)); }
+function fmt(x){
+ x=BigInt(x); const neg=x<0n;if(neg)x=-x; const i=x/10n,d=x%10n;
+ const raw=i.toString(); const grouped=raw.replace(/\B(?=(\d{3})+(?!\d))/g,",");
+ return (neg?"-":"")+grouped+(d? "."+d:"");
+}
+function compact(x){x=BigInt(x);const i=x/10n;if(i<1000000000000000n)return fmt(x);const s=i.toString();return s[0]+"."+s.slice(1,3)+"e"+(s.length-1);}
+function gain(base){return BigInt(base)*BigInt(4+g.prestige)*BigInt(Math.max(1,g.phase||1))/4n;}
+// Cache upgrade prices: each level is calculated once, instead of recalculating
+// thousands of preceding levels on every phase advance.
+const priceCache=new Map();
+function price(base,index){
+ const key=String(base);
+ let cache=priceCache.get(key);
+ if(!cache){cache=[BigInt(base)];priceCache.set(key,cache);}
+ while(cache.length<=index){
+  const previous=cache[cache.length-1];
+  cache.push((previous*175n+99n)/100n);
+ }
+ return cache[index]*SCALE;
+}
+function normalizeLevel(value,arr){let v=BigInt(value);for(const n of arr)if(n>=v)return n;return arr[arr.length-1];}
+function serialize(){return {version:3,phase:g.phase||1,score:g.score.toString(),power:g.power.toString(),auto:g.auto.toString(),totalClicks:g.totalClicks,highScore:g.highScore.toString(),lifetime:g.lifetime.toString(),upgrades:g.upgrades,prestige:g.prestige,achievements:g.achievements,claimed:g.claimed,missionResetAt:g.missionResetAt,missionBase:g.missionBase,lastSaved:Date.now(),lastBonus:g.lastBonus};}
+function save(){try{g.lastSaved=Date.now();localStorage.setItem(SAVE_KEY,JSON.stringify(serialize()));}catch(e){console.warn("save",e)}}
+function load(){
+ try{
+  let raw=localStorage.getItem(SAVE_KEY),data=raw?JSON.parse(raw):null;
+  if(data){ensurePhaseLevels(data.phase);g={...g,...data,score:BigInt(data.score||0),power:normalizeLevel(BigInt(data.power||1),P),auto:normalizeLevel(BigInt(data.auto||0),A),highScore:BigInt(data.highScore||0),lifetime:BigInt(data.lifetime||data.highScore||0),totalClicks:Number(data.totalClicks)||0,upgrades:Number(data.upgrades)||0,prestige:Number(data.prestige)||0,phase:Math.max(1,Number(data.phase)||1),achievements:data.achievements||{},claimed:data.claimed||{},missionResetAt:Number(data.missionResetAt)||Date.now()+MISSION_PERIOD,missionBase:data.missionBase||{clicks:Number(data.totalClicks)||0,upgrades:Number(data.upgrades)||0,lifetime:String(data.lifetime||data.highScore||0),prestige:Number(data.prestige)||0},lastSaved:Number(data.lastSaved)||Date.now(),lastBonus:Number(data.lastBonus)||0};}
+  const elapsed=Math.min(28800,Math.max(0,Math.floor((Date.now()-g.lastSaved)/1000)));
+  if(elapsed>0&&g.auto>0n){const offline=gain(g.auto)*BigInt(elapsed)/10n; // 10% of normal auto earnings while away
+    g.score+=offline;g.lifetime+=offline;if(g.score>g.highScore)g.highScore=g.score;setTimeout(()=>flash("💤 오프라인 보너스 +"+compact(offline)),50);}
+ }catch(e){console.warn("load",e)}
+}
+const $=id=>document.getElementById(id);
+function powerIndex(){return P.indexOf(g.power)} function autoIndex(){return A.indexOf(g.auto)}
+function next(arr,val){const i=arr.indexOf(val);return i>=0?(arr[i+1]??null):(arr.find(x=>x>val)??null)}
+function resetMissions(now=Date.now()){
+ g.claimed={};
+ g.missionBase={clicks:g.totalClicks,upgrades:g.upgrades,lifetime:g.lifetime.toString(),prestige:g.prestige};
+ g.missionResetAt=now+MISSION_PERIOD;
+ flash("🎯 새로운 1시간 미션이 시작됐어요!");
+}
+function checkMissionReset(){
+ const now=Date.now();
+ if(!g.missionResetAt||now>=g.missionResetAt){
+  const periods=Math.max(1,Math.floor((now-(g.missionResetAt||now))/MISSION_PERIOD)+1);
+  resetMissions((g.missionResetAt||now)+(periods-1)*MISSION_PERIOD);
+  save();
+ }
+ const left=Math.max(0,g.missionResetAt-now),m=Math.floor(left/60000),s=Math.floor((left%60000)/1000);
+ const timer=$("missionTimer"); if(timer)timer.textContent=`다음 초기화 ${m}:${String(s).padStart(2,"0")}`;
+}
+function updateAchievements(){for(const [id,,,test] of ACH)if(!g.achievements[id]&&test(g))g.achievements[id]=true;}
+let achievementsExpanded=false;
+function renderAchievements(){
+ const visible=achievementsExpanded?ACH:ACH.slice(0,3);
+ $("achievements").innerHTML=`<div class="item-desc" style="margin-bottom:12px">달성 ${ACH.filter(([id])=>g.achievements[id]).length} / ${ACH.length}개 · Prestige 후에도 유지</div>`+
+ visible.map(([id,title,desc])=>`<div class="achievement ${g.achievements[id]?"done":""}"><div class="item-title">${g.achievements[id]?"✅":"⬜"} ${title}</div><div class="item-desc">${desc}</div></div>`).join("")+
+ `<button type="button" id="toggleAchievements" class="small" style="margin-top:12px;width:100%" aria-expanded="${achievementsExpanded}">${achievementsExpanded?"업적 접기 ▲":"업적 더보기 ("+(ACH.length-3)+"개) ▼"}</button>`;
+ $("toggleAchievements").onclick=()=>{achievementsExpanded=!achievementsExpanded;renderAchievements();};
+}
+function renderMissions(){
+ $("missions").innerHTML=MISS.map(([id,title,reward,test])=>{const ready=test(g),claimed=!!g.claimed[id];return `<div class="mission ${claimed?"done":""}"><div class="mission-row"><div><div class="item-title">${claimed?"✅":"🎯"} ${title}</div><div class="item-desc">보상 ${reward}</div></div><button class="claim" data-mission="${id}" ${!ready||claimed?"disabled":""}>${claimed?"완료":"받기"}</button></div></div>`;}).join("");
+ document.querySelectorAll("[data-mission]").forEach(b=>b.onclick=()=>claimMission(b.dataset.mission));
+}
+function update(){
+ if(typeof renderThemes==="function" && document.getElementById("themeList")){document.querySelectorAll(".theme-action[data-theme-id]").forEach(b=>{const t=THEMES.find(x=>x.id===b.dataset.themeId);if(t&&cosmetics.active!==t.id)b.disabled=!cosmetics.owned.includes(t.id)&&g.score<t.price;});}
+ checkMissionReset();
+ updateAchievements();
+ $("score").textContent=compact(g.score);$("power").textContent=compact(g.power);$("auto").textContent=compact(g.auto)+" /초";$("totalClicks").textContent=g.totalClicks.toLocaleString("ko-KR");$("highScore").textContent=compact(g.highScore);$("clickPowerText").textContent="+"+compact(gain(g.power));$("multi").textContent="x"+(1+g.prestige*.25).toFixed(2);
+ const np=next(P,g.power),na=next(A,g.auto),pi=Math.max(0,powerIndex()),ai=Math.max(0,autoIndex()),pp=price(10,pi),ap=price(50,ai);
+ $("powerPrice").textContent=np===null?"MAX":compact(pp);$("autoPrice").textContent=na===null?"MAX":compact(ap);
+ $("powerPrice").title=np===null?"최대 단계":fmt(pp);
+ $("autoPrice").title=na===null?"최대 단계":fmt(ap);
+ $("powerDesc").textContent=np===null?"최대 클릭 파워입니다.":`클릭 파워를 ${compact(g.power)} → ${compact(np)}로 증가`;
+ $("autoDesc").textContent=na===null?"최대 자동 클릭입니다.":`자동 클릭을 ${compact(g.auto)} → ${compact(na)} /초로 증가`;
+ $("powerUpgrade").disabled=np===null||g.score<pp;$("autoUpgrade").disabled=na===null||g.score<ap;$("prestigeButton").disabled=g.score<PRESTIGE_REQ;
+ renderAchievements();renderMissions();renderRapidPanel();renderPhase();
+}
+// Phase unlock: more expensive than either upgrade's last MAX purchase.
+const PHASE_MULTIPLIER=10000000000n; // original progression price; unchanged
+// Do not block the first paint by building very large BigInt price tables.
+let cachedPhaseCost=null,cachedPhaseLength=0,phasePriceJob=0;
+function phasePrice(){
+ if(cachedPhaseLength===P.length&&cachedPhaseCost!==null)return cachedPhaseCost;
+ const p=price(10,P.length-2),a=price(50,A.length-2);
+ cachedPhaseLength=P.length;
+ return cachedPhaseCost=(p>a?p:a)*PHASE_MULTIPLIER;
+}
+let pendingPhaseLength=0;
+function schedulePhasePrice(){
+ if(cachedPhaseLength===P.length&&cachedPhaseCost!==null)return;
+ if(pendingPhaseLength===P.length)return;
+ pendingPhaseLength=P.length;
+ const job=++phasePriceJob,target=P.length;
+ function chunk(){
+  if(job!==phasePriceJob)return;
+  // Work in small batches to let the browser paint and accept clicks.
+  for(const base of [10,50]){
+   const key=String(base);
+   let cache=priceCache.get(key);
+   if(!cache){cache=[BigInt(base)];priceCache.set(key,cache);}
+   const goal=Math.min(target-1,cache.length+120);
+   while(cache.length<=goal){
+    const prev=cache[cache.length-1];
+    cache.push((prev*175n+99n)/100n);
+   }
+  }
+  if(priceCache.get("10").length<target||priceCache.get("50").length<target){
+   setTimeout(chunk,0);return;
+  }
+  if(job!==phasePriceJob||target!==P.length){schedulePhasePrice();return;}
+  const p=price(10,target-2),a=price(50,target-2);
+  cachedPhaseCost=(p>a?p:a)*PHASE_MULTIPLIER;
+  cachedPhaseLength=target;
+  pendingPhaseLength=0;
+  renderPhase();
+ }
+ setTimeout(chunk,0);
+}
+function renderPhase(){
+ const level=Math.max(1,g.phase||1),ready=g.power===P[P.length-1]&&g.auto===A[A.length-1];
+ const cost=cachedPhaseLength===P.length?cachedPhaseCost:null;
+ const title=$("phaseLevel"),priceLabel=$("phasePrice"),note=$("phaseNote"),button=$("phaseAdvance");
+ if(!title||!button)return;
+ title.textContent="PHASE "+level+" · 획득량 x"+level;
+ if(cost===null){
+  priceLabel.textContent="가격 계산 중…";priceLabel.title="";
+  note.textContent="기존 PHASE와 점수를 불러왔어요. 가격을 계산하는 동안에도 클릭할 수 있어요.";
+  button.disabled=true;button.textContent="⏳ 페이즈 가격 계산 중";
+  schedulePhasePrice();return;
+ }
+ priceLabel.textContent=compact(cost)+" 점수";priceLabel.title=fmt(cost);
+ const powerDone=g.power===P[P.length-1],autoDone=g.auto===A[A.length-1];
+ const missing=cost>g.score?cost-g.score:0n;
+ note.textContent=!powerDone||!autoDone?"해금 조건: 클릭 파워 "+(powerDone?"✅ MAX":"❌ MAX 필요")+" · 자동 클릭 "+(autoDone?"✅ MAX":"❌ MAX 필요"):(missing>0n?"두 업그레이드 MAX 달성! 부족한 점수: "+compact(missing):"✅ 전환 가능! 업그레이드는 유지되고 각 10단계 추가됩니다.");
+ button.disabled=false;
+ button.textContent=ready&&g.score>=cost?"🌌 다음 페이즈 해금하기 →":"🔒 다음 페이즈 조건 확인";
+}
+function advancePhase(){
+ if(cachedPhaseLength!==P.length||cachedPhaseCost===null){schedulePhasePrice();return flash("페이즈 가격 계산이 끝나면 이동할 수 있어요.");}
+ collectAuto();
+ if(g.power!==P[P.length-1]||g.auto!==A[A.length-1]){renderPhase();return flash("현재 페이즈의 클릭 파워와 자동 클릭 MAX가 필요해요.");}
+ const cost=phasePrice();if(g.score<cost){renderPhase();return flash("다음 페이즈까지 "+compact(cost-g.score)+"점 부족해요.");}
+ if(!confirm("다음 페이즈로 넘어갈까요? 비용을 소모하고 기존 업그레이드 뒤에 10단계씩 추가됩니다. 보유 업그레이드는 유지됩니다."))return;
+ if(!Number.isSafeInteger(g.phase+1))return flash("페이즈 안전 정수 범위에 도달했습니다.");
+ g.score-=cost;g.phase=Math.max(1,g.phase||1)+1;ensurePhaseLevels(g.phase);
+ lastAutoAt=Date.now();
+ flash("🌌 PHASE "+g.phase+" 돌입! 획득량 x"+g.phase);
+ update();save();
+}
+if($("phaseAdvance"))$("phaseAdvance").addEventListener("click",advancePhase);
+
+// One-click phase progression. Only complete, affordable phases are purchased;
+// upgrade levels and phase costs follow the same rules as manual purchases.
+let advancingMaxPhases=false;
+async function advanceMaxPhases(){
+ if(advancingMaxPhases)return;
+ if(cachedPhaseLength!==P.length||cachedPhaseCost===null){schedulePhasePrice();return flash("페이즈 가격 계산이 끝나면 이동할 수 있어요.");}
+ collectAuto();
+  if(!confirm("현재 점수로 가능한 최고 페이즈까지 이동할까요? 필요한 클릭 파워·자동 클릭 업그레이드와 페이즈 비용이 자동 차감됩니다. 구매한 업그레이드는 유지됩니다."))return;
+ advancingMaxPhases=true;
+ const phaseButton=$("phaseAdvanceMax");
+ if(phaseButton)phaseButton.disabled=true;
+ try{
+ let phases=0,upgrades=0;
+ while(Number.isSafeInteger(g.phase+1)){
+  const pi=P.indexOf(g.power),ai=A.indexOf(g.auto);
+  if(pi<0||ai<0)break;
+  let required=phasePrice();
+  if(g.score<required)break; // Skip huge upgrade-price sums when the phase itself is unaffordable.
+  for(let i=pi;i<P.length-1&&required<=g.score;i++)required+=price(10,i);
+  for(let i=ai;i<A.length-1&&required<=g.score;i++)required+=price(50,i);
+  if(g.score<required)break; // Never buy partial upgrades for a phase we cannot unlock.
+  const newUpgrades=(P.length-1-pi)+(A.length-1-ai);
+  g.score-=required;
+  g.power=P[P.length-1];g.auto=A[A.length-1];
+  g.upgrades+=newUpgrades;upgrades+=newUpgrades;
+  g.phase++;
+  ensurePhaseLevels(g.phase);
+  phases++;
+  // Save each milestone before yielding so the player does not lose long MAX progress.
+  if(phases%10===0){
+   lastAutoAt=Date.now();save();update();
+   if(phaseButton)phaseButton.textContent="🚀 진행 중: PHASE "+g.phase+" ("+phases+"단계)";
+   await new Promise(resolve=>setTimeout(resolve,0));
+  }
+ }
+ lastAutoAt=Date.now();
+ if(phases)flash("🌌 PHASE "+g.phase+" 도달! "+phases+"페이즈 · 업그레이드 "+upgrades+"단계 자동 구매");
+ else flash("다음 페이즈와 필수 업그레이드를 모두 구매하기에는 점수가 부족해요.");
+ update();save();
+ }finally{
+  advancingMaxPhases=false;
+  if(phaseButton){phaseButton.disabled=false;phaseButton.textContent="🚀 가능한 최고 페이즈까지 한 번에 올리기";}
+ }
+}
+if($("phaseAdvanceMax"))$("phaseAdvanceMax").addEventListener("click",advanceMaxPhases);
+
+function addScore(v){const n=BigInt(v);g.score+=n;g.lifetime+=n;if(g.score>g.highScore)g.highScore=g.score;}
+function flash(t){$("bonusText").textContent=t;clearTimeout(flash.t);flash.t=setTimeout(()=>$("bonusText").textContent="",2600);}
+function maybeBonus(){if(Date.now()-g.lastBonus<10000||Math.random()>=.01)return;g.lastBonus=Date.now();const b=gain(g.power)*50n;addScore(b);flash("✨ 랜덤 보너스! +"+compact(b));}
+// Physical pointer clicks work normally; held Enter/Space cannot farm repeat clicks.
+const clickControl=$("clickButton");
+let clickKeyHeld=false;
+// Exchange current Clicker score for Rapid manually.
+function formatRapidNumber(value){const n=BigInt(value);const negative=n<0n;const digits=(negative?-n:n).toString();if(digits.length<=12)return n.toLocaleString("ko-KR");const exponent=digits.length-1;const mantissa=digits[0]+(digits.slice(1,3).replace(/0+$/,"")?"."+digits.slice(1,3).replace(/0+$/,""):"");return (negative?"-":"")+mantissa+"e"+exponent;}
+const RAPID_WALLET_KEY="formwheel_clicker_rapid_beta_v1";
+const RAPID_PRICE=1000n; // 100 points, scaled x10
+function initRapid(){
+ try{if(localStorage.getItem(RAPID_WALLET_KEY)===null)localStorage.setItem(RAPID_WALLET_KEY,JSON.stringify({balance:0}));}
+ catch(e){console.warn("wallet unavailable",e)}
+}
+function getRapidWallet(){
+ try{
+  const w=JSON.parse(localStorage.getItem(RAPID_WALLET_KEY)||"null");
+  if(!w)return null;
+  const v=typeof w.balance==="string"?w.balance:(Number.isSafeInteger(w.balance)?String(w.balance):"");
+  return /^\d+$/.test(v)?{...w,balance:v}:null;
+ }catch{return null}
+}
+function renderRapidPanel(){
+ const el=document.getElementById("rapidBalance");if(!el)return;
+ const w=getRapidWallet(),available=g.score/RAPID_PRICE;
+ el.textContent=w?formatRapidNumber(w.balance)+" R":"지갑 확인 필요";
+ document.getElementById("rapidAvailable").textContent=formatRapidNumber(available)+" R";
+ // Do not advertise exchanges while the protected server wallet has no transaction API.
+ const connected=window.FormwheelRapidAccount?.getStatus?.()?.connected===true;
+ document.getElementById("rapidExchangeButton").disabled=!connected || !w || available<1n;
+ document.getElementById("rapidExchangeMax").disabled=!connected || available<1n;
+ const note=document.getElementById("rapidExchangeNote");
+ if(!w && note)note.textContent="지갑 데이터를 읽지 못했어요. 기존 잔액은 변경하지 않았습니다.";
+ else if(!connected && note)note.textContent="🚧 Rapid 서버 환전 점검 중 · Clicker 점수와 기존 Rapid 잔액은 유지됩니다.";
+ else if(available<1n && note)note.textContent="환전할 Clicker 점수가 부족해요. 100점을 모으면 1 R을 환전할 수 있어요.";
+}
+const RAPID_PENDING_EXCHANGE_KEY="formwheel_clicker_pending_exchange_v2";
+let exchangingRapid=false;
+async function exchangeRapid(){
+ if(exchangingRapid)return;
+ collectAuto();
+ const input=document.getElementById("rapidAmount"),note=document.getElementById("rapidExchangeNote");
+ const api=window.FormwheelRapidAccount;
+ if(!api?.creditExchange||!api.getStatus()?.connected){
+  note.textContent="서버 지갑 연결 후 환전할 수 있어요. 로그인과 인터넷 연결을 확인해 주세요.";
+  return;
+ }
+ let pending;
+ try{pending=JSON.parse(localStorage.getItem(RAPID_PENDING_EXCHANGE_KEY)||"null");}catch{}
+ const raw=input.value.trim();
+ // Never silently exchange a different amount than the amount displayed.
+ // An invalid legacy pending record cannot have passed the server's validation.
+ const validPending=pending&&typeof pending.id==="string"
+  &&/^[a-zA-Z0-9_-]{10,100}$/.test(pending.id)
+  &&typeof pending.amount==="string"&&/^\d{1,10000}$/.test(pending.amount)
+  &&BigInt(pending.amount)>0n;
+ if(pending&&!validPending){
+  try{
+   const key="formwheel_clicker_invalid_exchange_backup_"+Date.now();
+   localStorage.setItem(key,JSON.stringify(pending));
+   localStorage.removeItem(RAPID_PENDING_EXCHANGE_KEY);
+   pending=null;
+  }catch{note.textContent="이전 보류 거래를 안전하게 보관할 수 없어 환전을 중단했어요.";return;}
+ }
+ if(validPending){
+  input.value=pending.amount;
+  note.textContent="이전에 보류된 "+formatRapidNumber(BigInt(pending.amount))+" R 거래를 먼저 재확인합니다.";
+ }else{
+  if(!/^\d+$/.test(raw)||BigInt(raw)<1n){note.textContent="올바른 환전 수량을 입력해 주세요.";return;}
+  const amount=BigInt(raw),cost=amount*RAPID_PRICE;
+  if(g.score<cost){note.textContent="Clicker 점수가 부족해요.";return;}
+  if(!confirm(fmt(cost)+"점을 "+formatRapidNumber(amount)+" R로 환전할까요?"))return;
+  pending={id:"ex_"+(crypto.randomUUID?crypto.randomUUID().replace(/-/g,""):Date.now()+"_"+Math.random().toString(36).slice(2)),amount:amount.toString()};
+  try{localStorage.setItem(RAPID_PENDING_EXCHANGE_KEY,JSON.stringify(pending));}
+  catch{note.textContent="거래 기록 저장에 실패해 환전을 중단했어요.";return;}
+ }
+ const amount=BigInt(pending.amount),cost=amount*RAPID_PRICE;
+ if(g.score<cost){note.textContent="거래 보류 중: 차감할 Clicker 점수가 부족해요.";return;}
+ exchangingRapid=true;
+ const button=document.getElementById("rapidExchangeButton");
+ if(button)button.disabled=true;
+ try{
+  note.textContent="Firebase에 환전 기록 저장 중…";
+  await api.creditExchange(pending.amount,pending.id);
+  // Only debit after the server confirms the unique exchange receipt.
+  g.score-=cost;save();update();
+  localStorage.removeItem(RAPID_PENDING_EXCHANGE_KEY);
+  note.textContent="서버 저장 완료! +"+formatRapidNumber(amount)+" R";
+  flash("🪙 +"+formatRapidNumber(amount)+" R");
+ }catch(e){
+  note.textContent="환전 확인 실패: "+(e?.message||"연결 오류")+" · 다음 시도에 같은 거래를 재확인합니다.";
+  console.warn("Rapid exchange pending",e);
+ }finally{exchangingRapid=false;if(button)button.disabled=false;}
+}
+document.getElementById("rapidExchangeButton")?.addEventListener("click",exchangeRapid);
+document.getElementById("rapidExchangeMax")?.addEventListener("click",()=>{
+ collectAuto();update();
+ const available=g.score/RAPID_PRICE;
+ document.getElementById("rapidAmount").value=available.toString();
+ const note=document.getElementById("rapidExchangeNote");
+ if(note)note.textContent=available>0n?"최대 환전 수량을 정확하게 입력했어요.":"현재 환전할 수 있는 점수가 없어요.";
+});
+function awardClick(){addScore(gain(g.power));g.totalClicks++;maybeBonus();update();save();if(g.totalClicks>=100 && window.opener && !window.opener.closed)window.opener.postMessage({type:"formwheel-spotlight-result-v1",project:"Clicker",value:g.totalClicks},"https://semicolonxss.github.io");}
+clickControl.addEventListener("click",e=>{
+ // A keyboard-generated native click has detail=0. Keyboard input is handled below.
+ if(e.detail===0 && e.isTrusted)return;
+ awardClick();
+});
+clickControl.addEventListener("keydown",e=>{
+ if(e.key!=="Enter"&&e.key!==" ")return;
+ e.preventDefault();
+ if(e.repeat||clickKeyHeld)return;
+ clickKeyHeld=true;
+ awardClick();
+});
+clickControl.addEventListener("keyup",e=>{
+ if(e.key!=="Enter"&&e.key!==" ")return;
+ e.preventDefault();
+ clickKeyHeld=false;
+});
+clickControl.addEventListener("blur",()=>{clickKeyHeld=false;});
+window.addEventListener("blur",()=>{clickKeyHeld=false;});
+let buyCount="max";
+function buyUpgrade(kind){
+ collectAuto();
+ const arr=kind==="power"?P:A,base=kind==="power"?10:50;
+ let index=arr.indexOf(g[kind]),purchased=0;
+ if(index<0)return;
+ if(index+1>=arr.length){flash("이미 최대 단계예요. 추가 단계는 아직 없어요.");return;}
+ const limit=buyCount==="max"?arr.length:Number(buyCount);
+ while(purchased<limit&&index+1<arr.length){
+  const cost=price(base,index);
+  if(g.score<cost)break;
+  g.score-=cost;index++;purchased++;g[kind]=arr[index];
+ }
+ if(purchased){g.upgrades+=purchased;flash("✅ "+(kind==="power"?"클릭 파워":"자동 클릭")+" "+purchased+"단계 구매!");}
+ if(!purchased)flash("점수가 부족하거나 더 구매할 단계가 없어요.");
+ update();save();
+}
+function updateBuyMode(){
+ document.querySelectorAll("[data-buy-count]").forEach(b=>{
+  const selected=b.dataset.buyCount===buyCount;
+  b.setAttribute("aria-pressed",String(selected));
+  b.style.outline=selected?"2px solid currentColor":"";
+  b.style.fontWeight=selected?"900":"";
+ });
+}
+document.querySelectorAll("[data-buy-count]").forEach(b=>b.addEventListener("click",()=>{buyCount=b.dataset.buyCount;updateBuyMode();}));
+updateBuyMode();
+$("powerUpgrade").onclick=()=>buyUpgrade("power");
+$("autoUpgrade").onclick=()=>buyUpgrade("auto");
+function claimMission(id){const m=MISS.find(x=>x[0]===id);if(!m||g.claimed[id]||!m[3](g))return;g.claimed[id]=true;addScore(m[4]);flash("🎁 미션 보상 +"+fmt(m[4]));update();save();}
+$("prestigeButton").onclick=()=>{collectAuto();if(g.score<PRESTIGE_REQ)return;if(!confirm("현재 점수와 업그레이드를 초기화하고 Prestige할까요?"))return;collectAuto();if(g.score<PRESTIGE_REQ)return;g.prestige++;g.score=0n;g.power=P[0];g.auto=A[0];g.upgrades=0;autoRemainder=0n;lastAutoAt=Date.now();flash("✨ Prestige "+g.prestige+"회!");update();save();};
+let lastAutoAt=Date.now(),autoRemainder=0n;
+function collectAuto(at=Date.now()){
+ const elapsed=Math.min(28800000,Math.max(0,at-lastAutoAt));lastAutoAt=at;
+ if(g.auto>0n&&elapsed>0){const scaled=gain(g.auto)*BigInt(Math.floor(elapsed))+autoRemainder;autoRemainder=scaled%1000n;addScore(scaled/1000n);}else checkMissionReset();
+}
+setInterval(()=>{collectAuto();update();save();},1000);
+setInterval(save,5000);addEventListener("beforeunload",save);addEventListener("visibilitychange",()=>{collectAuto();update();save();});
+
+
+const THEME_SAVE_KEY="formwheel_clicker_cosmetics_v1";
+const THEMES=[
+ {id:"classic",name:"클래식",emoji:"⚫",price:0n,desc:"익숙한 기본 디자인"},
+ {id:"ocean",name:"오션",emoji:"🌊",price:toScaled("5000"),desc:"시원한 파란 바다"},
+ {id:"forest",name:"포레스트",emoji:"🌿",price:toScaled("25000"),desc:"차분한 숲속 분위기"},
+ {id:"sunset",name:"선셋",emoji:"🌇",price:toScaled("100000"),desc:"따뜻한 노을빛"},
+ {id:"neon",name:"네온",emoji:"💜",price:toScaled("500000"),desc:"빛나는 사이버 공간"},
+ {id:"galaxy",name:"갤럭시",emoji:"🌌",price:toScaled("2000000"),desc:"우주를 담은 클릭"},
+ {id:"royal",name:"로열 골드",emoji:"👑",price:toScaled("10000000"),desc:"최고급 황금 테마"}
+];
+let cosmetics={owned:["classic"],active:"classic"};
+function loadCosmetics(){
+ try{
+  const d=JSON.parse(localStorage.getItem(THEME_SAVE_KEY)||"null");
+  if(d&&Array.isArray(d.owned)){
+   cosmetics.owned=[...new Set(["classic",...d.owned.filter(id=>THEMES.some(t=>t.id===id))])];
+   cosmetics.active=cosmetics.owned.includes(d.active)?d.active:"classic";
+  }
+ }catch(e){console.warn("theme load",e);}
+ applyTheme();
+}
+function saveCosmetics(){try{localStorage.setItem(THEME_SAVE_KEY,JSON.stringify(cosmetics));}catch(e){console.warn("theme save",e);}}
+const RAPID_SHOP_THEME_KEY="formwheel_rapid_shop_beta_v1";
+function rapidShopTheme(){
+  try{
+    const shop=JSON.parse(localStorage.getItem(RAPID_SHOP_THEME_KEY)||"null");
+    if(!shop||!Array.isArray(shop.purchases))return null;
+    const id=shop.equipped;
+    if(!["sunset","forest","neon","galaxy"].includes(id))return null;
+    return shop.purchases.some(p=>p.theme===id&&!p.refunded)?id:null;
+  }catch(e){console.warn("rapid shop theme load",e);return null;}
+}
+function applyTheme(){document.body.dataset.clickerTheme=rapidShopTheme()||cosmetics.active;}
+addEventListener("pageshow",applyTheme);
+addEventListener("storage",e=>{if(e.key===RAPID_SHOP_THEME_KEY||e.key===THEME_SAVE_KEY)applyTheme();});
+function renderThemes(){
+ const root=$("themeList");if(!root)return;
+ root.innerHTML=THEMES.map(t=>{
+  const owned=cosmetics.owned.includes(t.id),active=cosmetics.active===t.id;
+  return `<div class="theme-item" data-theme-preview="${t.id}"><div class="theme-swatch theme-swatch-${t.id}" aria-hidden="true">${t.emoji}</div><div class="theme-copy"><strong>${t.name}</strong><span>${t.desc}</span><small>${owned?"영구 소장":fmt(t.price)+"점"}</small></div><button class="small theme-action" data-theme-id="${t.id}" ${active?'disabled':''} ${!owned&&g.score<t.price?'disabled':''}>${active?"적용 중":owned?"장착":"구매"}</button></div>`;
+ }).join("");
+ root.querySelectorAll("[data-theme-id]").forEach(b=>b.onclick=()=>{
+  const t=THEMES.find(x=>x.id===b.dataset.themeId);if(!t)return;
+  if(!cosmetics.owned.includes(t.id)){
+   collectAuto();
+   if(g.score<t.price){flash("점수가 부족해요!");update();return;}
+   if(!confirm(t.name+" 테마를 "+fmt(t.price)+"점에 영구 구매할까요?"))return;
+   if(g.score<t.price)return;
+   g.score-=t.price;cosmetics.owned.push(t.id);
+  }
+  cosmetics.active=t.id;saveCosmetics();applyTheme();save();update();renderThemes();
+  flash("🎨 "+t.name+" 테마 적용!");
+ });
+}
+
+loadCosmetics();load();initRapid();update();renderThemes();save();
+
+window.ClickerOnline={
+ getScore:()=>g.highScore.toString(),
+ getClicks:()=>String(g.totalClicks),
+ getPhase:()=>String(g.phase),
+ formatScaled:s=>compact(BigInt(s)),
+ getNickname:()=>$("nickname").value.trim().slice(0,12),
+ status:t=>$("status").textContent=t,
+ rank:(t)=>{const e=$("myRank");e.style.display=t?"block":"none";e.textContent=t||"";},
+ render:list=>{const el=$("leaderboardList");if(!list.length){el.innerHTML='<div class="empty">아직 등록된 점수가 없습니다.</div>';return;}el.innerHTML="";list.forEach((x,i)=>{const r=document.createElement("div");r.className="rank-row";const a=document.createElement("div");a.className="rank";a.textContent=i+1;const b=document.createElement("div");b.className="player";b.textContent=x.name||"Unknown";const c=document.createElement("div");c.className="points";c.textContent=compact(BigInt(x.score||0));r.append(a,b,c);el.appendChild(r);});},
+ renderExtra:(kind,list)=>{
+  const el=$(kind==="phase"?"phaseLeaderboardList":"clickLeaderboardList");
+  if(!el)return;
+  if(!list.length){el.innerHTML='<div class="empty">아직 등록된 기록이 없습니다.</div>';return;}
+  el.textContent="";
+  list.forEach((x,i)=>{
+   const row=document.createElement("div");row.className="rank-row";
+   const rank=document.createElement("div");rank.className="rank";rank.textContent=String(i+1);
+   const player=document.createElement("div");player.className="player";player.textContent=x.name||"Unknown";
+   const score=document.createElement("div");score.className="points";score.textContent=kind==="phase"?"PHASE "+x.score:BigInt(x.score).toLocaleString("ko-KR");
+   row.append(rank,player,score);el.appendChild(row);
+  });
+ },
+ offline:msg=>{$("status").textContent=msg;$("leaderboardList").innerHTML='<div class="empty">오프라인 모드 · 게임은 정상 플레이할 수 있습니다.</div>';}
+};
+})();

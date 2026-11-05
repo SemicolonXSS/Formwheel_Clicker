@@ -23,7 +23,7 @@
 <div style="position:sticky;top:0;z-index:999;background:#271b52;color:#fff;padding:9px 14px;text-align:center;font:600 14px system-ui">🌌 클릭커 시즌 2 · 극악 난이도 · <a style="color:#fff;text-decoration:underline" href="./season1-02/">📜 시즌 1.02 플레이·리더보드</a></div><div role="status" style="margin:14px auto;padding:15px;border:2px dashed #d89b25;border-radius:14px;background:#fff4cf;color:#604513;max-width:820px;font:15px/1.5 system-ui"><strong>🚧 Rapid 환전·구매 공사 중</strong><div>Firebase 잔액 동기화 점검 중입니다. 거래를 잠시 중단해 주세요. 기존 Rapid 기록은 보존됩니다.</div></div>
 <header><a class="logo fw-hub-logo" href="https://semicolonxss.github.io/Formwheel/" aria-label="FormWheel 메인으로 이동"><span class="fw-hub-form">Form</span><span class="fw-hub-icon" aria-hidden="true"></span><span class="fw-hub-wheel">Wheel</span></a><button class="home" onclick="location.href='https://semicolonxss.github.io/Formwheel/'">Home</button></header>
 <main><nav aria-label="시즌 탐색" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0 20px;padding:12px;background:#eef2ff;border:2px solid #9aacf9;border-radius:14px"><strong style="color:#263b70">🎮 시즌 2</strong><a href="./season1-02/" style="background:#435bd0;color:white;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:800">📜 시즌 1.02 및 옛 리더보드 보기 →</a></nav>
-<section class="hero"><h1>Clicker</h1><p>시즌 1 디자인 그대로! 시즌 2에서는 성장하기 훨씬 어려워졌어.</p><div class="notice">시즌 2 · NIGHTMARE · 10시간 성장 상한 1e100</div></section>
+<section class="hero"><h1>Clicker</h1><p>시즌 1 디자인 그대로, 접속하면 바로 시즌 2! 클릭 수익은 느리게 오르고 강화 비용은 엄청 비싸졌어.</p><div class="notice">시즌 2 · NIGHTMARE+ · 10시간 성장 상한 1e100</div></section>
 <div class="layout">
 <section class="card game">
 <div class="score-label">현재 점수</div><div class="score" id="score">0</div>
@@ -32,7 +32,7 @@
 <div class="bonus" id="bonusText"></div>
 </section>
 <aside class="card upgrades">
-<div class="section-title">업그레이드</div>
+<div class="section-title">업그레이드 · NIGHTMARE+</div><p class="muted">⚠️ 극악 난이도: 첫 클릭 강화 2,500점, 첫 자동 강화 250,000점. 수익은 아주 천천히 상승해.</p>
 <p id="bulkHelp" style="font-size:13px;line-height:1.6;margin:8px 0;color:#586079"><strong>🛒 업그레이드 구매 방법</strong> · 아래에서 수량을 선택한 다음 <b>클릭 파워</b> 또는 <b>자동 클릭</b>을 누르세요.</p><div class="bulk-options" role="group" aria-label="업그레이드 구매 수량" style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 7px"><button type="button" class="small" data-buy-count="1" title="한 단계 구매">×1</button><button type="button" class="small" data-buy-count="10" title="최대 열 단계 구매">×10</button><button type="button" class="small" data-buy-count="100" title="최대 백 단계 구매">×100</button><button type="button" class="small" data-buy-count="max" title="보유 점수로 가능한 단계까지 구매">MAX 구매</button></div><p style="font-size:12px;line-height:1.6;margin:0 0 14px;color:#586079">×1 = 1단계 · ×10 = 최대 10단계 · ×100 = 최대 100단계 · MAX = 보유 점수로 가능한 만큼 구매 (점수가 부족하면 가능한 단계까지만)</p>
 <button class="upgrade" id="powerUpgrade"><div class="upgrade-top"><div class="upgrade-name">⚡ 클릭 파워</div><div class="upgrade-price" id="powerPrice">10</div></div><div class="upgrade-desc" id="powerDesc"></div></button>
 <button class="upgrade" id="autoUpgrade"><div class="upgrade-top"><div class="upgrade-name">🤖 자동 클릭</div><div class="upgrade-price" id="autoPrice">50</div></div><div class="upgrade-desc" id="autoDesc"></div></button>
@@ -71,7 +71,7 @@
 </main>
 
 
-<script src="./assets/season2-main.js?v=20261105-season2-classic1"></script>
+<script src="./assets/season2-main.js?v=20261105-nightmare-plus2"></script>
 <script type="module" src="./assets/season2-leaderboard.js?v=20261105-season2-ranking1"></script>
 
 

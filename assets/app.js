@@ -211,9 +211,15 @@ if($("phaseAdvance"))$("phaseAdvance").addEventListener("click",advancePhase);
 
 // One-click phase progression. Only complete, affordable phases are purchased;
 // upgrade levels and phase costs follow the same rules as manual purchases.
+let advancingMaxPhases=false;
 async function advanceMaxPhases(){
+ if(advancingMaxPhases)return;
  collectAuto();
   if(!confirm("현재 점수로 가능한 최고 페이즈까지 이동할까요? 필요한 클릭 파워·자동 클릭 업그레이드와 페이즈 비용이 자동 차감됩니다. 구매한 업그레이드는 유지됩니다."))return;
+ advancingMaxPhases=true;
+ const phaseButton=$("phaseAdvanceMax");
+ if(phaseButton)phaseButton.disabled=true;
+ try{
  let phases=0,upgrades=0;
  while(Number.isSafeInteger(g.phase+1)){
   const pi=P.indexOf(g.power),ai=A.indexOf(g.auto);
@@ -230,12 +236,21 @@ async function advanceMaxPhases(){
   g.phase++;
   ensurePhaseLevels(g.phase);
   phases++;
-  if(phases%20===0)await new Promise(resolve=>setTimeout(resolve,0));
+  // Save each milestone before yielding so the player does not lose long MAX progress.
+  if(phases%10===0){
+   lastAutoAt=Date.now();save();update();
+   if(phaseButton)phaseButton.textContent="🚀 진행 중: PHASE "+g.phase+" ("+phases+"단계)";
+   await new Promise(resolve=>setTimeout(resolve,0));
+  }
  }
  lastAutoAt=Date.now();
  if(phases)flash("🌌 PHASE "+g.phase+" 도달! "+phases+"페이즈 · 업그레이드 "+upgrades+"단계 자동 구매");
  else flash("다음 페이즈와 필수 업그레이드를 모두 구매하기에는 점수가 부족해요.");
  update();save();
+ }finally{
+  advancingMaxPhases=false;
+  if(phaseButton){phaseButton.disabled=false;phaseButton.textContent="🚀 가능한 최고 페이즈까지 한 번에 올리기";}
+ }
 }
 if($("phaseAdvanceMax"))$("phaseAdvanceMax").addEventListener("click",advanceMaxPhases);
 
@@ -266,12 +281,13 @@ function renderRapidPanel(){
  const w=getRapidWallet(),available=g.score/RAPID_PRICE;
  el.textContent=w?formatRapidNumber(w.balance)+" R":"지갑 확인 필요";
  document.getElementById("rapidAvailable").textContent=formatRapidNumber(available)+" R";
- // Keep the actions clickable so that users can see the precise problem.
- // Validation happens on click; never silently lock both buttons due to wallet parsing.
- document.getElementById("rapidExchangeButton").disabled=false;
- document.getElementById("rapidExchangeMax").disabled=false;
+ // Do not advertise exchanges while the protected server wallet has no transaction API.
+ const connected=window.FormwheelRapidAccount?.getStatus?.()?.connected===true;
+ document.getElementById("rapidExchangeButton").disabled=!connected || !w || available<1n;
+ document.getElementById("rapidExchangeMax").disabled=!connected || available<1n;
  const note=document.getElementById("rapidExchangeNote");
- if(!w && note)note.textContent="지갑 데이터를 읽지 못했어요. 기존 잔액은 변경하지 않았습니다. 지갑 저장 형식을 확인해 주세요.";
+ if(!w && note)note.textContent="지갑 데이터를 읽지 못했어요. 기존 잔액은 변경하지 않았습니다.";
+ else if(!connected && note)note.textContent="🚧 Rapid 서버 환전 점검 중 · Clicker 점수와 기존 Rapid 잔액은 유지됩니다.";
  else if(available<1n && note)note.textContent="환전할 Clicker 점수가 부족해요. 100점을 모으면 1 R을 환전할 수 있어요.";
 }
 const RAPID_PENDING_EXCHANGE_KEY="formwheel_clicker_pending_exchange_v2";

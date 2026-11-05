@@ -1,52 +1,6 @@
 <!doctype html>
-<html lang="ko">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Formwheel Clicker · 시즌 2</title>
-<meta name="theme-color" content="#18142e">
-<style>
-:root{color-scheme:dark;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 0,#413575 0,#171329 43%,#100e1c 100%);color:#f5f3ff}
-main{max-width:940px;margin:auto;padding:26px 16px 64px}a{color:#d6bdff}h1{font-size:clamp(28px,5vw,44px);margin:10px 0}
-.subtitle{color:#c7bcdd;margin:0 0 20px;line-height:1.6}
-nav{display:flex;gap:10px;flex-wrap:wrap}nav a{padding:10px 13px;border:1px solid #7366aa;border-radius:12px;text-decoration:none}
-.card{background:#25203cdd;border:1px solid #534878;border-radius:20px;padding:20px;margin:14px 0;box-shadow:0 12px 28px #0003}
-.eyebrow{font-size:13px;letter-spacing:2px;color:#b99cff;font-weight:750}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px}
-.stat{background:#17132e;border:1px solid #484066;border-radius:15px;padding:15px;min-width:0}.stat small{display:block;color:#bdb2d9}.stat strong{font-size:clamp(19px,3vw,25px);overflow-wrap:anywhere;display:block;margin-top:7px}
-button{cursor:pointer;font:inherit;border:1px solid #8a79c8;background:#6550a5;color:white;padding:12px 16px;border-radius:14px;font-weight:700}button:hover:not(:disabled){filter:brightness(1.14)}button:disabled{opacity:.43;cursor:not-allowed}
-button.primary{font-size:24px;min-height:135px;width:100%;background:linear-gradient(135deg,#a665fa,#6b57ce);border-color:#d7b4ff;margin:10px 0;touch-action:manipulation}
-.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;justify-content:space-between}
-.progress{height:12px;background:#151125;border-radius:100px;overflow:hidden;border:1px solid #554879}.progress>span{height:100%;display:block;background:linear-gradient(90deg,#a568f4,#ffbf76);width:0%}
-.muted{color:#c7bcdd;font-size:14px;line-height:1.55}#notice{min-height:24px;color:#ffd79e}
-@media(max-width:530px){.card{padding:15px}nav a{flex:1;text-align:center}}
-</style>
-</head>
-<body><main>
-<nav><a href="../">🎮 시즌 2 기본 디자인</a><a href="../season1-02/">📜 시즌 1.02 플레이·리더보드</a></nav>
-<p class="eyebrow">FORMWHEEL CLICKER · NEW SEASON</p>
-<h1>🌌 시즌 2 — SLOW UNIVERSE</h1>
-<p class="subtitle">난이도 극악 업데이트! 클릭 수익은 천천히 증가하고 업그레이드 가격은 빠르게 상승해. 시즌 1.02 기록은 그대로 보존돼.</p>
-<section class="card"><div class="row"><strong>⏳ 10시간 성장 챌린지</strong><span id="time">0시간 0분 0초</span></div>
-<div class="progress" aria-label="성장 시간 진행"><span id="progress"></span></div>
-<p class="muted">게임 화면이 보이는 동안 누적되는 플레이 시간에 따라 획득 상한이 늘어나지만, 실제 점수는 직접 어렵게 벌어야 해. 10시간이 되어도 최대 <b>1e100</b>이고, 이를 달성한다는 보장은 없어. 오프라인 방치 시간은 합산하지 않아.</p>
-</section>
-<section class="card">
-<div class="grid">
-<div class="stat"><small>현재 점수</small><strong id="score">0</strong></div>
-<div class="stat"><small>누적 획득</small><strong id="total">0</strong></div>
-<div class="stat"><small>시간별 성장 상한</small><strong id="cap">1e4</strong></div>
-<div class="stat"><small>총 클릭</small><strong id="clicks">0</strong></div>
-</div>
-<button class="primary" id="click">✨ 클릭하여 성장하기</button><p id="notice" aria-live="polite"></p>
-</section>
-<section class="grid">
-<div class="card"><h2>👆 클릭 파워 · 극악 난이도</h2><p class="muted">현재 한 번에 <b id="clickPower">1</b>점 · 레벨 <b id="clickLevel">0</b></p><p>다음 비용: <b id="clickPrice">100</b></p><p class="muted">수익 ×2씩, 비용 ×5씩 증가 + 고레벨 추가 페널티</p><button id="buyClick">클릭 강화 구매</button></div>
-<div class="card"><h2>🤖 자동 생산 · 극악 난이도</h2><p class="muted">초당 <b id="autoPower">0</b>점 · 레벨 <b id="autoLevel">0</b></p><p>다음 비용: <b id="autoPrice">10,000</b></p><p class="muted">수익 ×2씩, 비용 ×15씩 증가 + 고레벨 추가 페널티</p><button id="buyAuto">자동 생산 구매</button></div>
-</section>
-<section class="card"><h2>🏆 시즌별 기록</h2><p>시즌 2 최고 점수: <b id="best">0</b></p><p class="muted">1e30 이후 누적 획득량이 커질수록 수익 효율이 감소해. 시즌 2는 독립 로컬 기록으로 먼저 시작해. Firebase에 새로운 리더보드를 공개하려면 별도의 검증된 서버 규칙이 필요해.</p>
-<a href="../season1-02/#leaderboardList">📜 시즌 1.02 기존 온라인 리더보드 보기</a>
-</section>
-<footer class="muted">기존 시즌 1.02 저장 데이터, Firebase 리더보드, Rapid 잔액은 수정하지 않아.</footer>
-</main><script src="./app.js?v=20261105-season2-nightmare2"></script></body>
-</html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clicker 시즌 2 · Formwheel</title><meta http-equiv="refresh" content="0;url=../">
+<link rel="canonical" href="https://semicolonxss.github.io/Formwheel_Clicker/"></head>
+<body><p>시즌 2는 기존 클릭커 디자인으로 통합됐어. <a href="../">시즌 2 플레이와 리더보드 열기</a></p>
+<script>location.replace("../");</script></body></html>

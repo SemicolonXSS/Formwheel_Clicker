@@ -26,14 +26,29 @@ let points=BigInt(game.points),earned=BigInt(game.earned),best=BigInt(game.best)
 const capped=()=>earned>=MAX_SCORE;
 const exponent=()=>Math.min(100,4+Math.floor(96*Math.min(TEN_HOURS,game.activeMs)/TEN_HOURS));
 const ceiling=()=>10n**BigInt(exponent());
-const power=level=>10n**BigInt(Math.floor(level*0.85));
+// Nightmare difficulty: gains rise slowly, while costs grow increasingly steep.
+// No existing season-2 save keys, levels, points, or historic records are rewritten.
+const power=level=>2n**BigInt(level);
 const clickGain=()=>power(game.clickLevel);
 const autoGain=()=>game.autoLevel?power(game.autoLevel-1):0n;
-const upgradeCost=(level,kind)=>10n**BigInt(Math.min(101,(kind==="click"?2:3)+level));
+const upgradeCost=(level,kind)=>{
+ const base=kind==="click"?100n:10000n;
+ const factor=kind==="click"?5n:15n;
+ const fatigue=10n**BigInt(Math.floor(level*level/36));
+ return base*factor**BigInt(level)*fatigue;
+};
+// Beyond very high total earnings, additional gains are progressively reduced.
+// The minimum 1 point lets players progress without becoming mathematically stuck.
+const softcapDivisor=()=>{
+ const digits=earned===0n?1:earned.toString().length;
+ return digits<=30?1n:10n**BigInt(Math.floor((digits-30)/4));
+};
 function grant(value){
  const allowance=ceiling()-earned;
  if(allowance<=0n)return 0n;
- const add=value<allowance?value:allowance;
+ const nerfed=value/softcapDivisor();
+ const usable=value>0n&&nerfed===0n?1n:nerfed;
+ const add=usable<allowance?usable:allowance;
  points+=add;earned+=add;if(points>best)best=points;
  return add;
 }
@@ -62,7 +77,7 @@ function render(){
  $("time").textContent=Math.floor(seconds/3600)+"시간 "+Math.floor(seconds%3600/60)+"분 "+seconds%60+"초";
  $("progress").style.width=Math.min(100,100*game.activeMs/TEN_HOURS)+"%";
  $("click").disabled=capped();
- if(capped())$("notice").textContent="🌌 시즌 2 최종 목표 1e100 달성! 기존 기록은 유지돼.";
+ if(capped())$("notice").textContent="🌌 시즌 2 최종 상한 1e100에 도달했어! 기존 기록은 유지돼.";
 }
 $("click").addEventListener("click",()=>{
  if(capped())return;

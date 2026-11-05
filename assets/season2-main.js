@@ -29,13 +29,15 @@ const exponent=()=>Math.min(100,4+Math.floor(96*Math.min(TEN_HOURS,game.activeMs
 const ceiling=()=>10n**BigInt(exponent());
 // Nightmare difficulty: gains rise slowly, while costs grow increasingly steep.
 // No existing season-2 save keys, levels, points, or historic records are rewritten.
-const power=level=>2n**BigInt(level);
-const clickGain=()=>power(game.clickLevel);
-const autoGain=()=>game.autoLevel?power(game.autoLevel-1):0n;
+// Season 2 NIGHTMARE+: the elapsed-time ceiling is NOT a reward curve.
+// Advancement must be earned through slow income and sharply increasing prices.
+// Existing saves are preserved; only future earnings and purchases use these rules.
+const clickGain=()=>2n**BigInt(Math.floor(game.clickLevel/3));
+const autoGain=()=>game.autoLevel?2n**BigInt(Math.floor((game.autoLevel-1)/4)):0n;
 const upgradeCost=(level,kind)=>{
- const base=kind==="click"?100n:10000n;
- const factor=kind==="click"?5n:15n;
- const fatigue=10n**BigInt(Math.floor(level*level/36));
+ const base=kind==="click"?2500n:250000n;
+ const factor=kind==="click"?8n:20n;
+ const fatigue=10n**BigInt(Math.floor(level*level/25));
  return base*factor**BigInt(level)*fatigue;
 };
 // Beyond very high total earnings, additional gains are progressively reduced.

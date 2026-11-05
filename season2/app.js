@@ -88,7 +88,7 @@ function tick(){
  const elapsed=Math.max(0,Math.min(2000,now-lastFrame));
  lastFrame=now;
  if(document.visibilityState!=="visible")return;
- game.activeMs=Math.min(TEN_HOURS,game.activeMs+elapsed);
+ game.activeMs=Math.min(TEN_HOURS,Math.floor(game.activeMs+elapsed));
  if(game.autoLevel>0&&!capped())grant(autoGain()*BigInt(Math.floor(elapsed))/1000n);
  elapsedSave+=elapsed;
  render();

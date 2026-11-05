@@ -87,7 +87,7 @@ function render(){
 function setMessage(t){$("bonusText").textContent=t}
 function buy(kind){
  const k=kind==="click"?"clickLevel":"autoLevel";
- let amount=buyCount==="max"?110:Number(buyCount),bought=0;
+ let amount=Number(buyCount),bought=0;
  while(game[k]<110 && bought<amount){
   const cost=upgradeCost(game[k],kind);
   if(points<cost)break;

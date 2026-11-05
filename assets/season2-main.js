@@ -60,7 +60,6 @@ function save(){
  catch(e){console.warn("Season 2 save failed",e)}
 }
 let lastFrame=performance.now(),elapsedSave=0;
-let buyCount="1";
 function render(){
  $("score").textContent=fmt(points);
  $("score").title=points.toString();
@@ -87,13 +86,12 @@ function render(){
 function setMessage(t){$("bonusText").textContent=t}
 function buy(kind){
  const k=kind==="click"?"clickLevel":"autoLevel";
- let amount=Number(buyCount),bought=0;
- while(game[k]<110 && bought<amount){
-  const cost=upgradeCost(game[k],kind);
-  if(points<cost)break;
-  points-=cost;game[k]++;bought++;
- }
- setMessage(bought?(kind==="click"?"클릭 파워":"자동 클릭")+" "+bought+"레벨 강화!":"점수가 부족하거나 최대 레벨이야.");
+ if(game[k]>=110){setMessage("최대 강화 레벨이야.");return;}
+ const cost=upgradeCost(game[k],kind);
+ if(points<cost){setMessage("점수가 부족해!");return;}
+ points-=cost;
+ game[k]++;
+ setMessage((kind==="click"?"클릭 파워":"자동 클릭")+" 1레벨 강화!");
  render();save();
 }
 $("clickButton").addEventListener("click",()=>{
@@ -105,10 +103,6 @@ $("clickButton").addEventListener("click",()=>{
 });
 $("powerUpgrade").addEventListener("click",()=>buy("click"));
 $("autoUpgrade").addEventListener("click",()=>buy("auto"));
-document.querySelectorAll("[data-buy-count]").forEach(button=>button.addEventListener("click",()=>{
- buyCount=button.dataset.buyCount;
- document.querySelectorAll("[data-buy-count]").forEach(item=>item.setAttribute("aria-pressed",String(item.dataset.buyCount===buyCount)));
-}));
 function tick(){
  const now=performance.now();
  const elapsed=Math.max(0,Math.min(2000,now-lastFrame));

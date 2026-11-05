@@ -117,6 +117,14 @@ function tick(){
  elapsedSave+=elapsed;render();
  if(elapsedSave>=5000){elapsedSave=0;save()}
 }
+// Season 2 community leaderboard only reads the local game state.
+// It cannot change the score, game save, upgrades, or legacy leaderboard.
+window.ClickerSeason2={
+ getBest:()=>best.toString(),
+ getClicks:()=>String(game.clicks),
+ getActiveMs:()=>Math.floor(game.activeMs),
+ format:fmt
+};
 document.addEventListener("visibilitychange",()=>{lastFrame=performance.now();save()});
 window.addEventListener("pagehide",save);
 setInterval(tick,1000);

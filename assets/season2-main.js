@@ -35,7 +35,7 @@ const ceiling=()=>10n**BigInt(exponent());
 const clickGain=()=>2n**BigInt(Math.floor(game.clickLevel/3));
 const autoGain=()=>game.autoLevel?2n**BigInt(Math.floor((game.autoLevel-1)/4)):0n;
 const upgradeCost=(level,kind)=>{
- const base=kind==="click"?2500n:250000n;
+ const base=kind==="click"?1000n:250000n;
  const factor=kind==="click"?8n:20n;
  const fatigue=10n**BigInt(Math.floor(level*level/25));
  return base*factor**BigInt(level)*fatigue;

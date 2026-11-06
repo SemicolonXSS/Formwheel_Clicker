@@ -32,11 +32,13 @@ const ceiling=()=>10n**BigInt(exponent());
 // Season 2 NIGHTMARE+: the elapsed-time ceiling is NOT a reward curve.
 // Advancement must be earned through slow income and sharply increasing prices.
 // Existing saves are preserved; only future earnings and purchases use these rules.
-const clickGain=()=>2n**BigInt(Math.floor(game.clickLevel/3));
+// Each click upgrade doubles click power; each next upgrade costs 1000 base clicks.
+const clickGain=()=>2n**BigInt(game.clickLevel);
 const autoGain=()=>game.autoLevel?2n**BigInt(Math.floor((game.autoLevel-1)/4)):0n;
 const upgradeCost=(level,kind)=>{
- const base=kind==="click"?1000n:250000n;
- const factor=kind==="click"?8n:20n;
+ if(kind==="click")return 1000n*2n**BigInt(level);
+ const base=250000n;
+ const factor=20n;
  const fatigue=10n**BigInt(Math.floor(level*level/25));
  return base*factor**BigInt(level)*fatigue;
 };

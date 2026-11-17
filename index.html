@@ -50,7 +50,7 @@
 <p id="phaseNote">시간이 지날수록 획득 상한이 증가해. 하지만 점수는 직접 어렵게 벌어야 해.</p>
 <div style="height:12px;border-radius:20px;background:#eee8ff;overflow:hidden;margin:15px 0"><div id="phaseProgress" style="width:0%;height:100%;background:linear-gradient(90deg,#7953c9,#e5a54c)"></div></div>
 <div class="stat"><span>현재 시간별 누적 획득 상한</span><strong id="phasePrice">1e4</strong></div>
-<p class="muted">10시간 기준 상한은 1e100. 상한은 실제 점수를 보장하지 않으며, 누적 플레이 시간은 이 화면이 보이는 동안만 계산돼.</p></section>
+<p class="muted">10시간 기준 상한은 1e100. 상한은 실제 점수를 보장하지 않으며, 성장 상한 시간은 게임을 닫아도 계속 흐르고, 다음 접속 때 반영돼. 자동 점수 지급은 아니야.</p></section>
 <section class="card panel" style="margin:18px 0"><div class="section-title">🏆 시즌별 기록</div><p>시즌 2 기록은 별도로 저장돼. 기존 시즌 1.02 점수, PHASE, 리더보드는 그대로 남아 있어.</p><p><a href="./season1-02/#leaderboardList">📜 시즌 1.02 리더보드 열기 →</a></p></section>
 <section class="card leaderboard" id="season2Leaderboard" aria-labelledby="season2LeaderboardTitle">
  <div class="lb-head"><div class="lb-title" id="season2LeaderboardTitle">🏆 시즌 2 온라인 리더보드</div><button type="button" class="small" id="s2Refresh">새로고침</button></div>
@@ -71,7 +71,7 @@
 </main>
 
 
-<script src="./assets/season2-main.js?v=20261117-anti-cheat-beta1"></script>
+<script src="./assets/season2-main.js?v=20261117-offline-growth1"></script>
 <script type="module" src="./assets/season2-leaderboard.js?v=20261117-anti-cheat-beta1"></script>
 
 

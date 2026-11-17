@@ -59,6 +59,7 @@ try{
  }
  async function submit(){
   if(busy)return;
+  if(window.ClickerSeason2?.getAntiCheatStatus?.().review){status("🛡️ 비정상 입력 패턴이 감지되어 이번 세션의 순위 등록이 보류됐어요. 게임 기록은 그대로 유지됩니다. 새 세션에서 다시 플레이하거나 관리자에게 검토를 요청할 수 있어요.");return;}
   const name=cleanName(el("s2Nickname").value);
   if(!name){status("닉네임을 입력해 주세요.");return}
   const raw=window.ClickerSeason2?.getBest?.();

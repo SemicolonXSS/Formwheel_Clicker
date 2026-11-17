@@ -6,7 +6,7 @@ const MAX_SCORE=10n**100n;
 const $=id=>document.getElementById(id);
 const $first=(...ids)=>ids.map($).find(Boolean);
 const fmt=n=>{n=BigInt(n);if(n<1000000000000000n)return n.toLocaleString("ko-KR");const z=n.toString();return z[0]+(z.slice(1,3)!=="00"?"."+z.slice(1,3):"")+"e"+(z.length-1)};
-const fallback={version:2,points:"0",earned:"0",best:"0",clicks:0,activeMs:0,clickLevel:0,autoLevel:0};
+const fallback={version:2,points:"0",earned:"0",best:"0",clicks:0,activeMs:0,clickLevel:0,autoLevel:0,lastGrowthAt:0};
 function load(){
  try{
   const value=JSON.parse(localStorage.getItem(KEY)||"null");
@@ -15,7 +15,7 @@ function load(){
   for(const key of ["points","earned","best"]){
    if(typeof value[key]==="string"&&/^\d{1,120}$/.test(value[key]))result[key]=value[key];
   }
-  for(const key of ["clicks","activeMs","clickLevel","autoLevel"]){
+  for(const key of ["clicks","activeMs","clickLevel","autoLevel","lastGrowthAt"]){
    const n=Number(value[key]);
    if(Number.isSafeInteger(n)&&n>=0)result[key]=Math.min(n,key.endsWith("Level")?110:Number.MAX_SAFE_INTEGER);
   }
@@ -23,6 +23,18 @@ function load(){
  }catch(e){console.warn("Season 2 save could not be read; original save was not changed",e);return {...fallback}}
 }
 let game=load();
+// Time-based growth cap progresses while the page is closed or hidden.
+// Legacy saves begin offline tracking now, without inventing past progress.
+function advanceGrowthClock(){
+ const now=Date.now();
+ if(!Number.isSafeInteger(now)||now<0)return;
+ const previous=game.lastGrowthAt;
+ if(previous>0&&now>previous){
+  game.activeMs=Math.min(TEN_HOURS,game.activeMs+Math.min(TEN_HOURS,now-previous));
+ }
+ game.lastGrowthAt=Math.max(previous,now);
+}
+advanceGrowthClock();
 let points=BigInt(game.points),earned=BigInt(game.earned),best=BigInt(game.best);
 const capped=()=>earned>=MAX_SCORE;
 const exponent=()=>Math.min(100,4+Math.floor(96*Math.min(TEN_HOURS,game.activeMs)/TEN_HOURS));
@@ -142,9 +154,10 @@ function tick(){
  const now=performance.now();
  const elapsed=Math.max(0,Math.min(2000,now-lastFrame));
  lastFrame=now;
- if(document.visibilityState!=="visible")return;
- game.activeMs=Math.min(TEN_HOURS,Math.floor(game.activeMs+elapsed));
- if(game.autoLevel>0&&!capped())grant(autoGain()*BigInt(Math.floor(elapsed))/1000n);
+ advanceGrowthClock();
+ if(document.visibilityState==="visible"&&game.autoLevel>0&&!capped()){
+  grant(autoGain()*BigInt(Math.floor(elapsed))/1000n);
+ }
  elapsedSave+=elapsed;render();
  if(elapsedSave>=5000){elapsedSave=0;save()}
 }
@@ -157,8 +170,9 @@ window.ClickerSeason2={
  getAntiCheatStatus:antiCheatStatus,
  format:fmt
 };
-document.addEventListener("visibilitychange",()=>{lastFrame=performance.now();save()});
-window.addEventListener("pagehide",save);
+document.addEventListener("visibilitychange",()=>{advanceGrowthClock();lastFrame=performance.now();render();save()});
+window.addEventListener("pagehide",()=>{advanceGrowthClock();save()});
 setInterval(tick,1000);
 render();
+save();
 })();

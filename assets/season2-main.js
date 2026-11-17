@@ -63,6 +63,35 @@ function save(){
  try{localStorage.setItem(KEY,JSON.stringify({...game,points:points.toString(),earned:earned.toString(),best:best.toString()}))}
  catch(e){console.warn("Season 2 save failed",e)}
 }
+// Session-only heuristic: never deletes points, achievements, or saved progress.
+// This is advisory client-side detection, NOT proof of a human or server verification.
+const antiCheat={times:[],intervals:[],suspicion:0,held:false,lastWarning:0};
+function inspectClick(event){
+ const now=performance.now();
+ if(event.isTrusted===false){antiCheat.suspicion=Math.min(100,antiCheat.suspicion+50);return false;}
+ if(document.visibilityState==="hidden"){antiCheat.suspicion=Math.min(100,antiCheat.suspicion+30);return false;}
+ const recent=antiCheat.times;
+ const previous=recent.length?recent[recent.length-1]:null;
+ recent.push(now);
+ while(recent.length&&recent[0]<now-4000)recent.shift();
+ if(previous!==null){
+  const interval=now-previous;
+  antiCheat.intervals.push(interval);
+  if(antiCheat.intervals.length>40)antiCheat.intervals.shift();
+ }
+ // Click rates alone are not evidence of automation; use multiple signals.
+ if(recent.length>=120&&now-recent[0]<4000)antiCheat.suspicion+=8;
+ if(antiCheat.intervals.length>=30){
+  const samples=antiCheat.intervals.slice(-30);
+  const mean=samples.reduce((a,b)=>a+b,0)/samples.length;
+  const variance=samples.reduce((a,b)=>a+(b-mean)**2,0)/samples.length;
+  if(mean>=20&&mean<=120&&Math.sqrt(variance)<1.5)antiCheat.suspicion+=3;
+ }
+ antiCheat.suspicion=Math.min(100,Math.max(0,antiCheat.suspicion-0.15));
+ if(antiCheat.suspicion>=85)antiCheat.held=true;
+ return true;
+}
+function antiCheatStatus(){return {review:antiCheat.held,level:antiCheat.suspicion>=60?"review":antiCheat.suspicion>=30?"watch":"normal"};}
 let lastFrame=performance.now(),elapsedSave=0;
 function render(){
  $("score").textContent=fmt(points);
@@ -98,7 +127,9 @@ function buy(kind){
  setMessage((kind==="click"?"클릭 파워":"자동 클릭")+" 1레벨 강화!");
  render();save();
 }
-$("clickButton").addEventListener("click",()=>{
+$("clickButton").addEventListener("click",(event)=>{
+ if(!inspectClick(event)){setMessage("🛡️ 신뢰할 수 없는 입력은 점수에 반영하지 않았어요.");return;}
+ if(antiCheat.held&&performance.now()-antiCheat.lastWarning>12000){antiCheat.lastWarning=performance.now();setMessage("🛡️ 입력 패턴 확인이 필요해요. 플레이 기록은 유지되지만 이번 세션의 순위 등록은 보류됩니다.");}
  if(capped())return;
  const before=earned;grant(clickGain());game.clicks++;
  if(before===earned)setMessage("현재 시간별 상한 도달! 플레이 시간이 늘면 상한도 늘어나.");
@@ -123,6 +154,7 @@ window.ClickerSeason2={
  getBest:()=>best.toString(),
  getClicks:()=>String(game.clicks),
  getActiveMs:()=>Math.floor(game.activeMs),
+ getAntiCheatStatus:antiCheatStatus,
  format:fmt
 };
 document.addEventListener("visibilitychange",()=>{lastFrame=performance.now();save()});

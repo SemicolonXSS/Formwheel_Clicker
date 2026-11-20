@@ -23,7 +23,7 @@
 <div style="position:sticky;top:0;z-index:999;background:#271b52;color:#fff;padding:9px 14px;text-align:center;font:600 14px system-ui">🌌 클릭커 시즌 2 · 업그레이드 가격 완화 · <a style="color:#fff;text-decoration:underline" href="./season1-02/">📜 시즌 1.02 플레이·리더보드</a></div>
 <header><a class="logo fw-hub-logo" href="https://semicolonxss.github.io/Formwheel/" aria-label="FormWheel 메인으로 이동"><span class="fw-hub-form">Form</span><span class="fw-hub-icon" aria-hidden="true"></span><span class="fw-hub-wheel">Wheel</span></a><button class="home" onclick="location.href='https://semicolonxss.github.io/Formwheel/'">Home</button></header>
 <main><nav aria-label="시즌 탐색" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0 20px;padding:12px;background:#eef2ff;border:2px solid #9aacf9;border-radius:14px"><strong style="color:#263b70">🎮 시즌 2</strong><a href="./season1-02/" style="background:#435bd0;color:white;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:800">📜 시즌 1.02 및 옛 리더보드 보기 →</a></nav>
-<section class="hero"><h1>Clicker</h1><p>시즌 1 디자인 그대로, 접속하면 바로 시즌 2! 업그레이드 비용을 낮춰 더욱 수월하게 성장할 수 있어.</p><div class="notice">시즌 2 · 밸런스 조정 · 10시간 성장 상한 1e100</div></section>
+<section class="hero"><h1>Clicker</h1><p>시즌 1 디자인 그대로, 접속하면 바로 시즌 2! 업그레이드 비용을 낮춰 더욱 수월하게 성장할 수 있어.</p><div class="notice">시즌 2 · 무제한 성장 · 점수 및 강화 레벨 상한 해제</div></section>
 <div class="layout">
 <section class="card game">
 <div class="score-label">현재 점수</div><div class="score" id="score">0</div>
@@ -46,15 +46,14 @@
 </aside>
 </div>
 
-<section class="card panel" id="phasePanel" style="margin:18px 0;border:1px solid #a59af0"><div class="section-title">🌌 시즌 2 시간 성장 <span id="phaseLevel">0시간</span></div>
-<p id="phaseNote">시간이 지날수록 획득 상한이 증가해. 하지만 점수는 직접 어렵게 벌어야 해.</p>
-<div style="height:12px;border-radius:20px;background:#eee8ff;overflow:hidden;margin:15px 0"><div id="phaseProgress" style="width:0%;height:100%;background:linear-gradient(90deg,#7953c9,#e5a54c)"></div></div>
-<div class="stat"><span>현재 시간별 누적 획득 상한</span><strong id="phasePrice">1e4</strong></div>
-<p class="muted">10시간 기준 상한은 1e100. 상한은 실제 점수를 보장하지 않으며, 성장 상한 시간은 게임을 닫아도 계속 흐르고, 다음 접속 때 반영돼. 자동 점수 지급은 아니야.</p></section>
+<section class="card panel" id="phasePanel" style="margin:18px 0;border:1px solid #a59af0"><div class="section-title">🌌 시즌 2 무제한 성장 · 누적 시간 <span id="phaseLevel">0시간</span></div>
+<p id="phaseNote">점수 상한 없이 계속 성장할 수 있어. 점수는 직접 획득해야 해.</p>
+<div class="stat"><span>누적 획득 점수</span><strong id="phasePrice">0</strong></div>
+<p class="muted">클릭 파워와 자동 클릭 강화 레벨도 제한하지 않아. 기존 점수·강화 레벨·저장 기록은 유지돼.</p></section>
 <section class="card panel" style="margin:18px 0"><div class="section-title">🏆 시즌별 기록</div><p>시즌 2 기록은 별도로 저장돼. 기존 시즌 1.02 점수, PHASE, 리더보드는 그대로 남아 있어.</p><p><a href="./season1-02/#leaderboardList">📜 시즌 1.02 리더보드 열기 →</a></p></section>
 <section class="card leaderboard" id="season2Leaderboard" aria-labelledby="season2LeaderboardTitle">
  <div class="lb-head"><div class="lb-title" id="season2LeaderboardTitle">🏆 시즌 2 온라인 리더보드</div><button type="button" class="small" id="s2Refresh">새로고침</button></div>
- <p class="muted">시즌 2 전용 점수 순위 · 상위 20명 · 기존 시즌 1.02와 기록 분리</p>
+ <p class="muted">시즌 2 전용 점수 순위 · 상위 20명 · 온라인 등록은 기존 Firebase 규칙에 따라 1e100까지만 지원</p>
  <p class="notice">🛡️ Anti-Cheat 베타: 합성 클릭과 비정상적으로 정밀한 반복 입력을 감지하고, 의심 세션의 순위 등록을 보류합니다. 정상적인 빠른 클릭만으로 차단하지 않습니다. 브라우저 측 감지 기능이며 서버에서 실제 플레이 기록을 아직 검증하지 않습니다.</p>
  <div class="name-area" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
   <label for="s2Nickname">닉네임</label>
@@ -71,7 +70,7 @@
 </main>
 
 
-<script src="./assets/season2-main.js?v=20261120-upgrade-balance1"></script>
+<script src="./assets/season2-main.js?v=20261120-uncapped1"></script>
 <script type="module" src="./assets/season2-leaderboard.js?v=20261117-anti-cheat-beta1"></script>
 
 

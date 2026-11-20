@@ -39,22 +39,17 @@ let points=BigInt(game.points),earned=BigInt(game.earned),best=BigInt(game.best)
 const capped=()=>earned>=MAX_SCORE;
 const exponent=()=>Math.min(100,4+Math.floor(96*Math.min(TEN_HOURS,game.activeMs)/TEN_HOURS));
 const ceiling=()=>10n**BigInt(exponent());
-// Nightmare difficulty: gains rise slowly, while costs grow increasingly steep.
-// No existing season-2 save keys, levels, points, or historic records are rewritten.
-// Season 2 NIGHTMARE+: the elapsed-time ceiling is NOT a reward curve.
-// Advancement must be earned through slow income and sharply increasing prices.
-// Existing saves are preserved; only future earnings and purchases use these rules.
-// Each click upgrade doubles click power. Pricing is based on equivalent manual clicks:
-// 1st upgrade: 1000 clicks; 2nd: 800 clicks; each later level drops by 50,
-// with a floor of 200 manual clicks. Existing save data is unchanged.
+// Balanced future upgrade costs; saved levels, scores and legacy records stay intact.
+// The elapsed-time ceiling is NOT a reward curve or an automatic payout.
+// Click power still doubles per level. The next click upgrade costs the
+// equivalent of 100, 90, 80 ... minimum 40 clicks at the current power.
+// Auto upgrades now start at 250 points and double in price per level.
+// No migrations, refunds, or retroactive deductions are performed.
 const clickGain=()=>2n**BigInt(game.clickLevel);
 const autoGain=()=>game.autoLevel?2n**BigInt(Math.floor((game.autoLevel-1)/4)):0n;
 const upgradeCost=(level,kind)=>{
- if(kind==="click")return BigInt(level===0?1000:Math.max(200,800-50*(level-1)))*2n**BigInt(level);
- const base=250000n;
- const factor=20n;
- const fatigue=10n**BigInt(Math.floor(level*level/25));
- return base*factor**BigInt(level)*fatigue;
+ if(kind==="click")return BigInt(Math.max(40,100-10*level))*2n**BigInt(level);
+ return 250n*2n**BigInt(level);
 };
 // Beyond very high total earnings, additional gains are progressively reduced.
 // The minimum 1 point lets players progress without becoming mathematically stuck.

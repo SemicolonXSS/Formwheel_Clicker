@@ -87,8 +87,42 @@ function inspectClick(event){
   if(mean>=20&&mean<=120&&Math.sqrt(variance)<1.5)antiCheat.suspicion+=3;
  }
  antiCheat.suspicion=Math.min(100,Math.max(0,antiCheat.suspicion-0.15));
- if(antiCheat.suspicion>=85)antiCheat.held=true;
+ if(antiCheat.suspicion>=85){antiCheat.held=true;showChallenge();}
  return true;
+}
+// Human confirmation is session-only. Never removes saved progress.
+const challenge={active:false,lastPointer:null,lastTouch:null,openedAt:0,needsFreshMove:true,cooldownUntil:0,element:null};
+document.addEventListener("pointermove",e=>{if(e.isTrusted)challenge.lastPointer={x:e.clientX,y:e.clientY};},{passive:true});
+document.addEventListener("pointerdown",e=>{if(e.isTrusted){challenge.lastTouch={x:e.clientX,y:e.clientY};if(challenge.active&&performance.now()>challenge.openedAt+250)challenge.needsFreshMove=false;}},{passive:true});
+function showChallenge(){
+ if(challenge.active||performance.now()<challenge.cooldownUntil)return;
+ challenge.active=true;challenge.openedAt=performance.now();challenge.needsFreshMove=true;
+ const panel=document.createElement("div");challenge.element=panel;
+ panel.setAttribute("role","dialog");panel.setAttribute("aria-label","입력 확인");
+ panel.style.cssText="position:fixed;z-index:2147483000;padding:14px;background:#fff;color:#232044;border:2px solid #6753ca;border-radius:16px;box-shadow:0 8px 30px #15123d55;max-width:calc(100vw - 24px);width:210px;text-align:center;font:600 14px system-ui";
+ const title=document.createElement("div");title.textContent="🛡️ 입력 확인";title.style.marginBottom="10px";
+ const button=document.createElement("button");button.type="button";button.textContent="오토가 아닙니다";button.style.cssText="min-height:48px;width:100%;border:0;border-radius:10px;background:#5540b5;color:white;font:700 15px system-ui;cursor:pointer";
+ panel.append(title,button);document.body.append(panel);
+ const rect=panel.getBoundingClientRect(),clickRect=$("clickButton").getBoundingClientRect();
+ const w=innerWidth,h=innerHeight,margin=12;
+ const avoid=[challenge.lastPointer,challenge.lastTouch].filter(Boolean);
+ const overlaps=(x,y)=>x<clickRect.right+24&&x+rect.width>clickRect.left-24&&y<clickRect.bottom+24&&y+rect.height>clickRect.top-24;
+ let candidates=[];
+ for(let i=0;i<90;i++){
+  const x=margin+Math.random()*Math.max(0,w-rect.width-margin*2);
+  const y=margin+Math.random()*Math.max(0,h-rect.height-margin*2);
+  const distance=avoid.length?Math.min(...avoid.map(p=>Math.hypot(Math.max(x-p.x,0,p.x-x-rect.width),Math.max(y-p.y,0,p.y-y-rect.height)))):999;
+  if(!overlaps(x,y))candidates.push({x,y,distance});
+ }
+ candidates.sort((a,b)=>b.distance-a.distance);
+ const pos=candidates.find(p=>p.distance>=120)||candidates[0]||{x:margin,y:margin};
+ panel.style.left=pos.x+"px";panel.style.top=pos.y+"px";
+ button.addEventListener("click",e=>{
+  if(!e.isTrusted||performance.now()-challenge.openedAt<350||challenge.needsFreshMove)return;
+  challenge.active=false;challenge.cooldownUntil=performance.now()+30000;
+  antiCheat.suspicion=0;antiCheat.times=[];antiCheat.intervals=[];
+  panel.remove();challenge.element=null;setMessage("✅ 확인 완료! 계속 플레이할 수 있어요.");
+ });
 }
 function antiCheatStatus(){return {review:antiCheat.held,level:antiCheat.suspicion>=60?"review":antiCheat.suspicion>=30?"watch":"normal"};}
 let lastFrame=performance.now(),elapsedSave=0;
@@ -123,7 +157,9 @@ function buy(kind){
  render();save();
 }
 $("clickButton").addEventListener("click",(event)=>{
+ if(challenge.active)return;
  if(!inspectClick(event)){setMessage("🛡️ 신뢰할 수 없는 입력은 점수에 반영하지 않았어요.");return;}
+ if(challenge.active)return;
  if(antiCheat.held&&performance.now()-antiCheat.lastWarning>12000){antiCheat.lastWarning=performance.now();setMessage("🛡️ 입력 패턴 확인이 필요해요. 플레이 기록은 유지되지만 이번 세션의 순위 등록은 보류됩니다.");}
  grant(clickGain());game.clicks++;
  setMessage("");

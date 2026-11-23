@@ -89,6 +89,7 @@
 (function(){function init(){const btn=document.getElementById('clickButton');if(!btn)return;const label=document.createElement('div');label.id='fw-combo-status';label.setAttribute('aria-live','off');label.textContent='⚡ COMBO READY';btn.insertAdjacentElement('afterend',label);let count=0,last=0,timer;btn.addEventListener('click',function(e){if(e.detail===0)return;const now=performance.now();count=now-last<=1500?count+1:1;last=now;const level=count>=30?3:count>=15?2:count>=5?1:0;label.dataset.level=String(level);label.textContent=level===3?'🔥 COMBO MAX · '+count:level===2?'✨ GLOW · '+count:level===1?'⚡ SPARK · '+count:'COMBO · '+count;label.classList.remove('fw-pop');void label.offsetWidth;label.classList.add('fw-pop');clearTimeout(timer);timer=setTimeout(()=>{count=0;label.textContent='⚡ COMBO READY';label.dataset.level='0'},1500)},false)}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init()})();
 </script>
 <script defer src="https://semicolonxss.github.io/Formwheel/shared/share-card-v2.js?v=20261123"></script>
+<script defer src="https://semicolonxss.github.io/Formwheel/shared/game-discovery.js?v=20261124"></script>
 </body>
 </html>
 

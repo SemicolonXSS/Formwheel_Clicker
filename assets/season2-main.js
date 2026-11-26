@@ -52,9 +52,12 @@ const softcapDivisor=()=>{
  const digits=earned===0n?1:earned.toString().length;
  return digits<=30?1n:10n**BigInt(Math.floor((digits-30)/4));
 };
-function grant(value){
+function effectiveGain(value){
  const nerfed=value/softcapDivisor();
- const add=value>0n&&nerfed===0n?1n:nerfed;
+ return value>0n&&nerfed===0n?1n:nerfed;
+}
+function grant(value){
+ const add=effectiveGain(value);
  points+=add;earned+=add;if(points>best)best=points;
  return add;
 }
@@ -127,18 +130,21 @@ function showChallenge(){
 function antiCheatStatus(){return {review:antiCheat.held,level:antiCheat.suspicion>=60?"review":antiCheat.suspicion>=30?"watch":"normal"};}
 let lastFrame=performance.now(),elapsedSave=0;
 function render(){
+ const click=effectiveGain(clickGain()),auto=effectiveGain(autoGain());
  $("score").textContent=fmt(points);
  $("score").title=points.toString();
  $("totalClicks").textContent=game.clicks.toLocaleString("ko-KR");
  $("highScore").textContent=fmt(best);
- $("clickPowerText").textContent="+"+fmt(clickGain());
- $("power").textContent=fmt(clickGain());
- $("auto").textContent=fmt(autoGain())+" /초";
+ $("clickPowerText").textContent="+"+fmt(click);
+ $("power").textContent=fmt(click);
+ $("power").title="기본 파워 "+fmt(clickGain())+" · 누적 획득량 감쇠 적용 후 표시";
+ $("auto").textContent=fmt(auto)+" /초";
+ $("auto").title="기본 초당 획득량 "+fmt(autoGain())+" · 누적 획득량 감쇠 적용 후 표시";
  $("multi").textContent="극악 난이도";
  const c=upgradeCost(game.clickLevel,"click"),a=upgradeCost(game.autoLevel,"auto");
  $("powerPrice").textContent=fmt(c);$("autoPrice").textContent=fmt(a);
- $("powerDesc").textContent="레벨 "+game.clickLevel+" · 클릭당 "+fmt(clickGain())+" 점";
- $("autoDesc").textContent="레벨 "+game.autoLevel+" · 초당 "+fmt(autoGain())+" 점";
+ $("powerDesc").textContent="레벨 "+game.clickLevel+" · 클릭당 "+fmt(click)+" 점";
+ $("autoDesc").textContent="레벨 "+game.autoLevel+" · 초당 "+fmt(auto)+" 점";
  $("powerUpgrade").disabled=points<c;
  $("autoUpgrade").disabled=points<a;
  const seconds=Math.floor(game.activeMs/1000),time=Math.floor(seconds/3600)+"시간 "+Math.floor(seconds%3600/60)+"분 "+seconds%60+"초";

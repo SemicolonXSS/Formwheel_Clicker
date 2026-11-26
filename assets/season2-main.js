@@ -4,7 +4,7 @@ const KEY="formwheel_clicker_season2_save_v1";
 const $=id=>document.getElementById(id);
 const $first=(...ids)=>ids.map($).find(Boolean);
 const fmt=n=>{n=BigInt(n);if(n<1000000000000000n)return n.toLocaleString("ko-KR");const z=n.toString();return z[0]+(z.slice(1,3)!=="00"?"."+z.slice(1,3):"")+"e"+(z.length-1)};
-const fallback={version:2,points:"0",earned:"0",best:"0",clicks:0,activeMs:0,clickLevel:0,autoLevel:0,lastGrowthAt:0};
+const fallback={version:2,points:"0",earned:"0",best:"0",autoRemainder:"0",clicks:0,activeMs:0,clickLevel:0,autoLevel:0,lastGrowthAt:0};
 function load(){
  try{
   const value=JSON.parse(localStorage.getItem(KEY)||"null");
@@ -13,6 +13,7 @@ function load(){
   for(const key of ["points","earned","best"]){
    if(typeof value[key]==="string"&&/^\d{1,10000}$/.test(value[key]))result[key]=value[key];
   }
+  if(typeof value.autoRemainder==="string"&&/^\d{1,3}$/.test(value.autoRemainder))result.autoRemainder=value.autoRemainder;
   for(const key of ["clicks","activeMs","clickLevel","autoLevel","lastGrowthAt"]){
    const n=Number(value[key]);
    if(Number.isSafeInteger(n)&&n>=0)result[key]=n;
@@ -56,13 +57,13 @@ function effectiveGain(value){
  const nerfed=value/softcapDivisor();
  return value>0n&&nerfed===0n?1n:nerfed;
 }
-function grant(value){
- const add=effectiveGain(value);
+function credit(add){
  points+=add;earned+=add;if(points>best)best=points;
  return add;
 }
+function grant(value){return credit(effectiveGain(value));}
 function save(){
- try{localStorage.setItem(KEY,JSON.stringify({...game,points:points.toString(),earned:earned.toString(),best:best.toString()}))}
+ try{localStorage.setItem(KEY,JSON.stringify({...game,autoRemainder:autoRemainder.toString(),points:points.toString(),earned:earned.toString(),best:best.toString()}))}
  catch(e){console.warn("Season 2 save failed",e)}
 }
 // Session-only heuristic: never deletes points, achievements, or saved progress.
@@ -102,10 +103,13 @@ function showChallenge(){
  challenge.active=true;challenge.openedAt=performance.now();challenge.needsFreshMove=true;
  const panel=document.createElement("div");challenge.element=panel;
  panel.setAttribute("role","dialog");panel.setAttribute("aria-label","입력 확인");
+ panel.setAttribute("aria-modal","true");
  panel.style.cssText="position:fixed;z-index:2147483000;padding:14px;background:#fff;color:#232044;border:2px solid #6753ca;border-radius:16px;box-shadow:0 8px 30px #15123d55;max-width:calc(100vw - 24px);width:210px;text-align:center;font:600 14px system-ui";
  const title=document.createElement("div");title.textContent="🛡️ 입력 확인";title.style.marginBottom="10px";
  const button=document.createElement("button");button.type="button";button.textContent="오토가 아닙니다";button.style.cssText="min-height:48px;width:100%;border:0;border-radius:10px;background:#5540b5;color:white;font:700 15px system-ui;cursor:pointer";
  panel.append(title,button);document.body.append(panel);
+ const previousFocus=document.activeElement,background=[...document.body.children].filter(e=>e!==panel).map(e=>[e,e.inert]);
+ background.forEach(([e])=>{e.inert=true;});
  const rect=panel.getBoundingClientRect(),clickRect=$("clickButton").getBoundingClientRect();
  const w=innerWidth,h=innerHeight,margin=12;
  const avoid=[challenge.lastPointer,challenge.lastTouch].filter(Boolean);
@@ -120,15 +124,32 @@ function showChallenge(){
  candidates.sort((a,b)=>b.distance-a.distance);
  const pos=candidates.find(p=>p.distance>=120)||candidates[0]||{x:margin,y:margin};
  panel.style.left=pos.x+"px";panel.style.top=pos.y+"px";
+ panel.style.maxHeight="calc(100dvh - 24px)";panel.style.overflow="auto";
+ const keepInView=()=>{const r=panel.getBoundingClientRect();panel.style.left=Math.max(12,Math.min(r.left,innerWidth-r.width-12))+"px";panel.style.top=Math.max(12,Math.min(r.top,innerHeight-r.height-12))+"px";};
+ window.addEventListener("resize",keepInView);
+ panel.addEventListener("keydown",e=>{if(e.key==="Tab"){e.preventDefault();button.focus();}});
+ button.focus({preventScroll:true});
  button.addEventListener("click",e=>{
-  if(!e.isTrusted||performance.now()-challenge.openedAt<350||challenge.needsFreshMove)return;
+  if(!e.isTrusted||performance.now()-challenge.openedAt<350||(e.detail!==0&&challenge.needsFreshMove))return;
   challenge.active=false;challenge.cooldownUntil=performance.now()+30000;
   antiCheat.suspicion=0;antiCheat.times=[];antiCheat.intervals=[];
+  window.removeEventListener("resize",keepInView);background.forEach(([el,inert])=>{el.inert=inert;});
   panel.remove();challenge.element=null;setMessage("✅ 확인 완료! 계속 플레이할 수 있어요.");
+  (previousFocus?.isConnected?previousFocus:$("clickButton")).focus({preventScroll:true});
  });
 }
 function antiCheatStatus(){return {review:antiCheat.held,level:antiCheat.suspicion>=60?"review":antiCheat.suspicion>=30?"watch":"normal"};}
 let lastFrame=performance.now(),elapsedSave=0;
+let autoRemainder=BigInt(game.autoRemainder),autoVisible=document.visibilityState==="visible";
+function advanceAuto(now){
+ const elapsed=Math.max(0,Math.min(2000,now-lastFrame));lastFrame=now;
+ if(autoVisible&&game.autoLevel>0){
+  autoRemainder+=effectiveGain(autoGain())*BigInt(Math.floor(elapsed));
+  credit(autoRemainder/1000n);autoRemainder%=1000n;
+ }
+ autoVisible=document.visibilityState==="visible";
+ return elapsed;
+}
 function render(){
  const click=effectiveGain(clickGain()),auto=effectiveGain(autoGain());
  $("score").textContent=fmt(points);
@@ -154,6 +175,7 @@ function render(){
 }
 function setMessage(t){$("bonusText").textContent=t}
 function buy(kind){
+ advanceAuto(performance.now());
  const k=kind==="click"?"clickLevel":"autoLevel";
  const cost=upgradeCost(game[k],kind);
  if(points<cost){setMessage("점수가 부족해!");return;}
@@ -175,12 +197,8 @@ $("powerUpgrade").addEventListener("click",()=>buy("click"));
 $("autoUpgrade").addEventListener("click",()=>buy("auto"));
 function tick(){
  const now=performance.now();
- const elapsed=Math.max(0,Math.min(2000,now-lastFrame));
- lastFrame=now;
+ const elapsed=advanceAuto(now);
  advanceGrowthClock();
- if(document.visibilityState==="visible"&&game.autoLevel>0){
-  grant(autoGain()*BigInt(Math.floor(elapsed))/1000n);
- }
  elapsedSave+=elapsed;render();
  if(elapsedSave>=5000){elapsedSave=0;save()}
 }
@@ -193,8 +211,8 @@ window.ClickerSeason2={
  getAntiCheatStatus:antiCheatStatus,
  format:fmt
 };
-document.addEventListener("visibilitychange",()=>{advanceGrowthClock();lastFrame=performance.now();render();save()});
-window.addEventListener("pagehide",()=>{advanceGrowthClock();save()});
+document.addEventListener("visibilitychange",()=>{advanceAuto(performance.now());advanceGrowthClock();render();save()});
+window.addEventListener("pagehide",()=>{advanceAuto(performance.now());advanceGrowthClock();save()});
 setInterval(tick,1000);
 render();
 save();

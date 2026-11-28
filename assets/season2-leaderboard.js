@@ -20,6 +20,7 @@ function normalizeScore(value){
 }
 function drawRows(records,myUid){
  const target=el("s2List");
+ el("s2MyRank").textContent="";
  target.replaceChildren();
  if(!records.length){const empty=document.createElement("div");empty.className="empty";empty.textContent="아직 등록된 시즌 2 점수가 없어요. 첫 번째 기록에 도전해 봐!";target.append(empty);return;}
  records.forEach((item,index)=>{
@@ -41,17 +42,22 @@ try{
  const config={apiKey:"AIzaSyBreTSe1m0-xlbF4aupnU5isRZCihR25IE",authDomain:"formwheel.firebaseapp.com",databaseURL:"https://formwheel-default-rtdb.firebaseio.com",projectId:"formwheel",storageBucket:"formwheel.firebasestorage.app",messagingSenderId:"431583088241",appId:"1:431583088241:web:74e0e34ea1e3e1170c55d0"};
  const app=getApps().find(x=>x.name==="[DEFAULT]")||initializeApp(config);
  const db=getDatabase(app),auth=getAuth(app);
- let busy=false;
+ let busy=false,refreshVersion=0;
  async function refresh(){
+  const version=++refreshVersion;
+  el("s2MyRank").textContent="";
   status("시즌 2 순위를 불러오는 중…");
   try{
    const snapshot=await get(query(ref(db,root),orderByChild("score"),limitToLast(20)));
+   if(version!==refreshVersion)return;
    const rows=Object.entries(snapshot.val()||{}).map(([uid,v])=>({uid,name:cleanName(v?.name),score:v?.score}))
-    .filter(v=>v.name&&typeof v.score==="string"&&/^[0-9]{101}$/.test(v.score))
+    .filter(v=>v.name&&typeof v.score==="string"&&/^[0-9]{101}$/.test(v.score)&&v.score<=maxScore.toString())
     .sort((a,b)=>b.score.localeCompare(a.score));
    drawRows(rows,auth.currentUser?.uid||"");
    status("온라인 순위 연결됨 · 최고 점수 상위 20명");
   }catch(error){
+   if(version!==refreshVersion)return;
+   el("s2MyRank").textContent="";
    console.warn("Season 2 leaderboard read unavailable",error?.code||error?.message||error);
    status("시즌 2 Firebase 읽기 권한이나 연결을 확인해 주세요. 기존 게임 기록은 안전해요.");
    el("s2List").textContent="온라인 랭킹을 표시할 수 없어요. 시즌 2 전용 Firebase Rules가 아직 게시되지 않았을 수 있어요.";
